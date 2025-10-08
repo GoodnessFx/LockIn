@@ -1,9 +1,6 @@
-import { router } from 'expo-router';
 import * as SecureStore from 'expo-secure-store';
-import { useCallback, useEffect, useMemo } from 'react';
-import { create } from 'zustand';
-import { Modal, View } from 'react-native';
-import { useAuthModal, useAuthStore, authKey } from './store';
+import { useCallback, useEffect } from 'react';
+import { useAuthStore, authKey } from './store';
 
 
 /**
@@ -14,7 +11,6 @@ import { useAuthModal, useAuthStore, authKey } from './store';
  */
 export const useAuth = () => {
   const { isReady, auth, setAuth } = useAuthStore();
-  const { isOpen, close, open } = useAuthModal();
 
   const initiate = useCallback(() => {
     SecureStore.getItemAsync(authKey).then((auth) => {
@@ -28,36 +24,25 @@ export const useAuth = () => {
   useEffect(() => {}, []);
 
   const signIn = useCallback(() => {
-    const proxyURL = process.env.EXPO_PUBLIC_PROXY_BASE_URL;
-    const baseURL = process.env.EXPO_PUBLIC_BASE_URL;
-    if (!proxyURL || !baseURL) {
-      // Fallback: set a demo auth so the app is usable without backend config
-      setAuth({
-        user: {
-          name: 'Demo User',
-          email: 'demo@example.com',
-        },
-        token: 'demo-token',
-      });
-      return;
-    }
-    open({ mode: 'signin' });
-  }, [open, setAuth]);
-  const signUp = useCallback(() => {
-    open({ mode: 'signup' });
-  }, [open]);
+    // Always use a dummy auth for this app
+    setAuth({
+      user: {
+        name: 'Demo User',
+        email: 'demo@example.com',
+      },
+      token: 'demo-token',
+    });
+  }, [setAuth]);
 
   const signOut = useCallback(() => {
     setAuth(null);
-    close();
-  }, [close]);
+  }, [setAuth]);
 
   return {
     isReady,
     isAuthenticated: isReady ? !!auth : null,
     signIn,
     signOut,
-    signUp,
     auth,
     setAuth,
     initiate,
@@ -67,15 +52,15 @@ export const useAuth = () => {
 /**
  * This hook will automatically open the authentication modal if the user is not authenticated.
  */
-export const useRequireAuth = (options) => {
-  const { isAuthenticated, isReady } = useAuth();
-  const { open } = useAuthModal();
+export const useRequireAuth = () => {
+  const { isAuthenticated, isReady, signIn } = useAuth();
 
   useEffect(() => {
-    if (!isAuthenticated && isReady) {
-      open({ mode: options?.mode });
+    if (isReady && !isAuthenticated) {
+      // Auto sign-in with dummy auth so the app is immediately usable
+      signIn();
     }
-  }, [isAuthenticated, open, options?.mode, isReady]);
+  }, [isAuthenticated, isReady, signIn]);
 };
 
 export default useAuth;
