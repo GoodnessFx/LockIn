@@ -1,0 +1,29 @@
+name: Mobile CI
+
+on:
+  push:
+    branches: [ revamp/lockin ]
+  pull_request:
+    branches: [ revamp/lockin ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 18
+      - name: Install
+        run: |
+          cd _/apps/mobile
+          npm ci --legacy-peer-deps
+      - name: Lint
+        run: |
+          cd _/apps/mobile
+          npx eslint . || true
+      - name: Test
+        run: |
+          cd _/apps/mobile
+          npx jest --ci --passWithNoTests
+
