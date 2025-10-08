@@ -97,7 +97,7 @@ export class NotificationService {
 
     await Notifications.scheduleNotificationAsync({
       content: {
-        title: titles[type] || 'ChopLife Update',
+        title: titles[type] || 'LockIn Update',
         body: message,
         data: { type, groupName },
       },
@@ -153,7 +153,7 @@ export class NotificationService {
   static async scheduleAIInsight(insight) {
     await Notifications.scheduleNotificationAsync({
       content: {
-        title: 'Smart Tip from ChopLife 🤖',
+        title: 'Smart Tip from LockIn 🤖',
         body: insight,
         data: { type: 'ai_insight' },
       },

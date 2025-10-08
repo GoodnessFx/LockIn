@@ -81,7 +81,7 @@ export default function Dashboard() {
             textAlign: "center",
           }}
         >
-          Welcome to ChopLife
+          Welcome to LockIn
         </Text>
         <Text
           style={{
@@ -135,7 +135,7 @@ export default function Dashboard() {
         {/* Header */}
         <View style={{ marginBottom: 32 }}>
           <Text style={{ fontSize: 32, fontWeight: "bold", color: "#1E293B" }}>
-            ChopLife
+            LockIn
           </Text>
           <Text style={{ fontSize: 16, color: "#64748B", marginTop: 4 }}>
             Welcome back, {user?.name || user?.email || "there"}!

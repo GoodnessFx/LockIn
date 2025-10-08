@@ -100,7 +100,7 @@ export default function GroupsScreen() {
         {/* Header */}
         <View style={{ marginBottom: 24 }}>
           <Text style={{ fontSize: 28, fontWeight: 'bold', color: '#1E293B' }}>
-            ChopLife Groups
+            LockIn Groups
           </Text>
           <Text style={{ fontSize: 16, color: '#64748B', marginTop: 4 }}>
             Save together, achieve more
@@ -292,7 +292,7 @@ export default function GroupsScreen() {
                 Browse Public Groups
               </Text>
               <Text style={{ fontSize: 14, color: '#64748B', marginTop: 2 }}>
-                Join groups created by other ChopLife users
+                Join groups created by other LockIn users
               </Text>
             </View>
           </TouchableOpacity>

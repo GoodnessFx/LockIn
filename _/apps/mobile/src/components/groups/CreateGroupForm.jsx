@@ -74,7 +74,7 @@ export default function CreateGroupForm({ onSave, onCancel }) {
         showsVerticalScrollIndicator={false}
       >
         <Text style={{ fontSize: 24, fontWeight: 'bold', color: '#1E293B', marginBottom: 24 }}>
-          Create ChopLife Group
+          Create LockIn Group
         </Text>
 
         {/* Group Avatar */}
