@@ -10,7 +10,17 @@
     "resolveJsonModule": true,
     "allowJs": true,
     "noEmit": true,
-    "types": ["react", "react-native", "node"]
+    "types": [
+      "react",
+      "react-native",
+      "node"
+    ]
   },
-  "include": ["/*.ts", "/*.tsx", "**/*.js", "**/*.jsx"]
+  "include": [
+    "/*.ts",
+    "/*.tsx",
+    "**/*.js",
+    "**/*.jsx"
+  ],
+  "extends": "expo/tsconfig.base"
 }
