@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "ChopLife",
-    "slug": "choplife",
+    "name": "LockIn",
+    "slug": "lockin",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
@@ -17,19 +17,19 @@
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/adaptive-icon.png",
-        "backgroundColor": "#ffffff"
+        "backgroundColor": "#0b0b0f"
       },
       "permissions": [
         "android.permission.RECORD_AUDIO",
         "android.permission.MODIFY_AUDIO_SETTINGS"
       ],
-      "package": "com.choplife.app"
+      "package": "com.lockin.app"
     },
     "plugins": [
       [
         "expo-router",
         {
-          "sitemap": false
+          "origin": false
         }
       ],
       [
@@ -40,18 +40,7 @@
           "resizeMode": "contain"
         }
       ],
-      "expo-audio",
-      [
-        "expo-build-properties",
-        {
-          "ios": {
-            "useFrameworks": "static"
-          }
-        }
-      ],
-      "expo-video",
-      "expo-secure-store",
-      "expo-web-browser"
+      
     ],
     "web": {
       "bundler": "metro",
@@ -62,8 +51,7 @@
     },
     "extra": {
       "router": {
-        "origin": false,
-        "sitemap": false
+        "origin": false
       },
       "eas": {
         "projectId": "2bf5d906-b3d5-48c5-b600-a9f76f02a600"

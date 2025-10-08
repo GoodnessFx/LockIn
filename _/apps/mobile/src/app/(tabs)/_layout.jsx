@@ -7,13 +7,13 @@ export default function TabLayout() {
       screenOptions={{
         headerShown: false,
         tabBarStyle: {
-          backgroundColor: '#fff',
+          backgroundColor: '#0b0b0f',
           borderTopWidth: 1,
-          borderColor: '#E5E7EB',
+          borderColor: '#111218',
           paddingTop: 4,
           paddingBottom: 4,
         },
-        tabBarActiveTintColor: '#F97316',
+        tabBarActiveTintColor: '#7dd3fc',
         tabBarInactiveTintColor: '#6B7280',
         tabBarLabelStyle: {
           fontSize: 12,
@@ -34,7 +34,7 @@ export default function TabLayout() {
       <Tabs.Screen
         name="savings"
         options={{
-          title: 'My Goals',
+          title: 'LAI',
           tabBarIcon: ({ color, size }) => (
             <PiggyBank color={color} size={24} />
           ),
@@ -43,7 +43,7 @@ export default function TabLayout() {
       <Tabs.Screen
         name="accounts"
         options={{
-          title: 'Groups',
+          title: 'Lockmate',
           tabBarIcon: ({ color, size }) => (
             <CreditCard color={color} size={24} />
           ),
@@ -52,7 +52,7 @@ export default function TabLayout() {
       <Tabs.Screen
         name="analytics"
         options={{
-          title: 'Activity',
+          title: 'Progress',
           tabBarIcon: ({ color, size }) => (
             <BarChart3 color={color} size={24} />
           ),
@@ -61,7 +61,7 @@ export default function TabLayout() {
       <Tabs.Screen
         name="settings"
         options={{
-          title: 'Settings',
+          title: 'Profile',
           tabBarIcon: ({ color, size }) => (
             <Settings color={color} size={24} />
           ),
