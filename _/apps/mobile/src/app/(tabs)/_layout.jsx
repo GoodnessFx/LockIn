@@ -9,15 +9,25 @@ export default function TabLayout() {
         tabBarStyle: {
           backgroundColor: '#ffffff',
           borderTopWidth: 1,
-          borderColor: '#e5e7eb',
-          paddingTop: 4,
-          paddingBottom: 4,
+          borderColor: '#e0e0e0',
+          paddingTop: 6,
+          paddingBottom: 6,
+          height: 65,
+          shadowColor: '#000',
+          shadowOffset: { width: 0, height: -1 },
+          shadowOpacity: 0.05,
+          shadowRadius: 4,
+          elevation: 4,
         },
-        tabBarActiveTintColor: '#0b0b0f',
-        tabBarInactiveTintColor: '#9CA3AF',
+        tabBarActiveTintColor: '#6C5CE7',
+        tabBarInactiveTintColor: '#6c757d',
         tabBarLabelStyle: {
-          fontSize: 12,
-          fontWeight: '600',
+          fontSize: 11,
+          fontWeight: '500',
+          marginTop: 2,
+        },
+        tabBarIconStyle: {
+          marginTop: 2,
         },
       }}
     >

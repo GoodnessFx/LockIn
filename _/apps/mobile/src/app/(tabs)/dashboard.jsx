@@ -115,20 +115,20 @@ export default function Dashboard() {
 
   if (!isAuthenticated) {
     return (
-      <View style={{ flex: 1, justifyContent: "center", alignItems: "center", backgroundColor: "#0b0b0f", paddingHorizontal: 32 }}>
-        <StatusBar style="light" />
-        <Target size={80} color="#7dd3fc" />
-        <Text style={{ fontSize: 28, fontWeight: "bold", color: "#ffffff", marginTop: 24, textAlign: "center" }}>
+      <View style={{ flex: 1, justifyContent: "center", alignItems: "center", backgroundColor: "#ffffff", paddingHorizontal: 32 }}>
+        <StatusBar style="dark" />
+        <Target size={80} color="#6C5CE7" />
+        <Text style={{ fontSize: 28, fontWeight: "bold", color: "#0b0b0f", marginTop: 24, textAlign: "center" }}>
           Welcome to LockIn
         </Text>
-        <Text style={{ fontSize: 16, color: "#94a3b8", marginTop: 12, textAlign: "center", lineHeight: 24 }}>
+        <Text style={{ fontSize: 16, color: "#6c757d", marginTop: 12, textAlign: "center", lineHeight: 24 }}>
           Dial in. Build relentlessly. Win together.
         </Text>
         <TouchableOpacity
           onPress={signIn}
-          style={{ backgroundColor: "#7dd3fc", paddingHorizontal: 32, paddingVertical: 16, borderRadius: 12, marginTop: 32, width: "100%" }}
+          style={{ backgroundColor: "#6C5CE7", paddingHorizontal: 32, paddingVertical: 16, borderRadius: 12, marginTop: 32, width: "100%" }}
         >
-          <Text style={{ color: "#0b0b0f", fontSize: 16, fontWeight: "600", textAlign: "center" }}>
+          <Text style={{ color: "#ffffff", fontSize: 16, fontWeight: "600", textAlign: "center" }}>
             Get Started
           </Text>
         </TouchableOpacity>
@@ -138,7 +138,7 @@ export default function Dashboard() {
 
   return (
     <View style={{ flex: 1, backgroundColor: "#ffffff" }}>
-      <StatusBar style="light" />
+      <StatusBar style="dark" />
       <ScrollView
         style={{ flex: 1 }}
         contentContainerStyle={{
@@ -153,7 +153,7 @@ export default function Dashboard() {
           <Text style={{ fontSize: 32, fontWeight: "bold", color: "#0b0b0f" }}>
             LockIn
           </Text>
-          <Text style={{ fontSize: 16, color: "#6b7280", marginTop: 4 }}>
+          <Text style={{ fontSize: 16, color: "#6c757d", marginTop: 4 }}>
             Welcome back, {user?.name || user?.email || "there"}!
           </Text>
         </View>
@@ -164,39 +164,44 @@ export default function Dashboard() {
             90-Day Sprint
           </Text>
           <View style={{
-            backgroundColor: "#f8fafc",
+            backgroundColor: "#f8f9fa",
             borderRadius: 16,
             padding: 24,
             borderWidth: 1,
-            borderColor: "#e5e7eb",
+            borderColor: "#e0e0e0",
+            shadowColor: '#000',
+            shadowOffset: { width: 0, height: 2 },
+            shadowOpacity: 0.1,
+            shadowRadius: 8,
+            elevation: 4,
           }}>
             <View style={{ flexDirection: "row", justifyContent: "space-around", marginBottom: 16 }}>
               <View style={{ alignItems: "center" }}>
-                <Text style={{ fontSize: 32, fontWeight: "bold", color: "#0b0b0f" }}>
+                <Text style={{ fontSize: 32, fontWeight: "bold", color: "#6C5CE7" }}>
                   {timeLeft.days}
                 </Text>
-                <Text style={{ fontSize: 14, color: "#6b7280" }}>Days</Text>
+                <Text style={{ fontSize: 14, color: "#6c757d" }}>Days</Text>
               </View>
               <View style={{ alignItems: "center" }}>
-                <Text style={{ fontSize: 32, fontWeight: "bold", color: "#0b0b0f" }}>
+                <Text style={{ fontSize: 32, fontWeight: "bold", color: "#6C5CE7" }}>
                   {timeLeft.hours}
                 </Text>
-                <Text style={{ fontSize: 14, color: "#6b7280" }}>Hours</Text>
+                <Text style={{ fontSize: 14, color: "#6c757d" }}>Hours</Text>
               </View>
               <View style={{ alignItems: "center" }}>
-                <Text style={{ fontSize: 32, fontWeight: "bold", color: "#0b0b0f" }}>
+                <Text style={{ fontSize: 32, fontWeight: "bold", color: "#6C5CE7" }}>
                   {timeLeft.minutes}
                 </Text>
-                <Text style={{ fontSize: 14, color: "#6b7280" }}>Minutes</Text>
+                <Text style={{ fontSize: 14, color: "#6c757d" }}>Minutes</Text>
               </View>
               <View style={{ alignItems: "center" }}>
-                <Text style={{ fontSize: 32, fontWeight: "bold", color: "#0b0b0f" }}>
+                <Text style={{ fontSize: 32, fontWeight: "bold", color: "#6C5CE7" }}>
                   {timeLeft.seconds}
                 </Text>
-                <Text style={{ fontSize: 14, color: "#6b7280" }}>Seconds</Text>
+                <Text style={{ fontSize: 14, color: "#6c757d" }}>Seconds</Text>
               </View>
             </View>
-            <Text style={{ fontSize: 16, color: "#6b7280", textAlign: "center" }}>
+            <Text style={{ fontSize: 16, color: "#6c757d", textAlign: "center" }}>
               until your next milestone
             </Text>
           </View>
@@ -212,26 +217,32 @@ export default function Dashboard() {
             borderRadius: 16,
             padding: 24,
             borderWidth: 1,
-            borderColor: "#e5e7eb",
+            borderColor: "#e0e0e0",
           }}>
             <View style={{ alignItems: "center", marginBottom: 20 }}>
-              <Text style={{ fontSize: 48, fontWeight: "bold", color: "#0b0b0f", marginBottom: 8 }}>
+              <Text style={{ fontSize: 48, fontWeight: "bold", color: "#6C5CE7", marginBottom: 8 }}>
                 {formatTime(focusTime)}
               </Text>
-              <Text style={{ fontSize: 16, color: "#6b7280", textTransform: "capitalize" }}>
+              <Text style={{ fontSize: 16, color: "#6c757d", textTransform: "capitalize" }}>
                 {focusMode} Session
               </Text>
             </View>
             <View style={{ flexDirection: "row", justifyContent: "center", gap: 16 }}>
               <TouchableOpacity
                 onPress={toggleFocusTimer}
+                activeOpacity={0.7}
                 style={{
-                  backgroundColor: isFocusRunning ? "#ef4444" : "#0b0b0f",
+                  backgroundColor: isFocusRunning ? "#ef4444" : "#6C5CE7",
                   borderRadius: 12,
                   paddingVertical: 12,
                   paddingHorizontal: 24,
                   flexDirection: "row",
                   alignItems: "center",
+                  shadowColor: '#000',
+                  shadowOffset: { width: 0, height: 2 },
+                  shadowOpacity: 0.1,
+                  shadowRadius: 4,
+                  elevation: 3,
                 }}
               >
                 {isFocusRunning ? <Pause size={20} color="#ffffff" /> : <Play size={20} color="#ffffff" />}
@@ -241,13 +252,19 @@ export default function Dashboard() {
               </TouchableOpacity>
               <TouchableOpacity
                 onPress={resetFocusTimer}
+                activeOpacity={0.7}
                 style={{
-                  backgroundColor: "#e5e7eb",
+                  backgroundColor: "#e0e0e0",
                   borderRadius: 12,
                   paddingVertical: 12,
                   paddingHorizontal: 24,
                   flexDirection: "row",
                   alignItems: "center",
+                  shadowColor: '#000',
+                  shadowOffset: { width: 0, height: 2 },
+                  shadowOpacity: 0.1,
+                  shadowRadius: 4,
+                  elevation: 3,
                 }}
               >
                 <RotateCcw size={20} color="#0b0b0f" />
@@ -271,7 +288,7 @@ export default function Dashboard() {
               borderRadius: 12,
               padding: 16,
               borderWidth: 1,
-              borderColor: "#e5e7eb",
+              borderColor: "#e0e0e0",
             }}>
               <View style={{ flexDirection: "row", alignItems: "center", marginBottom: 8 }}>
                 <Zap size={20} color="#0b0b0f" />
@@ -288,7 +305,7 @@ export default function Dashboard() {
               borderRadius: 12,
               padding: 16,
               borderWidth: 1,
-              borderColor: "#e5e7eb",
+              borderColor: "#e0e0e0",
             }}>
               <View style={{ flexDirection: "row", alignItems: "center", marginBottom: 8 }}>
                 <CheckCircle size={20} color="#10b981" />
@@ -309,7 +326,7 @@ export default function Dashboard() {
             borderRadius: 16,
             padding: 20,
             borderWidth: 1,
-            borderColor: "#e5e7eb",
+            borderColor: "#e0e0e0",
           }}>
             <View style={{ flexDirection: "row", alignItems: "center", marginBottom: 16 }}>
               <Target size={20} color="#0b0b0f" />
@@ -354,7 +371,7 @@ export default function Dashboard() {
               padding: 16,
               alignItems: "center",
               borderWidth: 1,
-              borderColor: "#e5e7eb",
+              borderColor: "#e0e0e0",
             }}>
               <Plus size={24} color="#0b0b0f" />
               <Text style={{ fontSize: 14, fontWeight: "500", color: "#0b0b0f", marginTop: 8 }}>
@@ -368,7 +385,7 @@ export default function Dashboard() {
               padding: 16,
               alignItems: "center",
               borderWidth: 1,
-              borderColor: "#e5e7eb",
+              borderColor: "#e0e0e0",
             }}>
               <Calendar size={24} color="#0b0b0f" />
               <Text style={{ fontSize: 14, fontWeight: "500", color: "#0b0b0f", marginTop: 8 }}>
@@ -382,7 +399,7 @@ export default function Dashboard() {
               padding: 16,
               alignItems: "center",
               borderWidth: 1,
-              borderColor: "#e5e7eb",
+              borderColor: "#e0e0e0",
             }}>
               <TrendingUp size={24} color="#0b0b0f" />
               <Text style={{ fontSize: 14, fontWeight: "500", color: "#0b0b0f", marginTop: 8 }}>

@@ -1,6 +1,12 @@
 import { serializeError } from 'serialize-error';
 
 export const reportErrorToRemote = async ({ error }) => {
+  // Skip remote error reporting in development to avoid missing env vars
+  if (__DEV__) {
+    console.debug('reportErrorToRemote: Skipping remote error reporting in development mode', error);
+    return { success: true };
+  }
+  
   if (
     !process.env.EXPO_PUBLIC_LOGS_ENDPOINT ||
     !process.env.EXPO_PUBLIC_PROJECT_GROUP_ID ||

@@ -97,7 +97,7 @@ export default function LAIScreen() {
           <Text style={{ fontSize: 32, fontWeight: 'bold', color: '#0b0b0f' }}>
             LAI
           </Text>
-          <Text style={{ fontSize: 16, color: '#6b7280', marginTop: 4 }}>
+          <Text style={{ fontSize: 16, color: '#6c757d', marginTop: 4 }}>
             A warm space to grow in your niche
           </Text>
         </View>
@@ -105,7 +105,7 @@ export default function LAIScreen() {
         {/* Search Bar */}
         <View
           style={{
-            backgroundColor: '#f8fafc',
+            backgroundColor: '#f8f9fa',
             borderRadius: 12,
             paddingHorizontal: 16,
             paddingVertical: 12,
@@ -113,15 +113,15 @@ export default function LAIScreen() {
             alignItems: 'center',
             marginBottom: 24,
             borderWidth: 1,
-            borderColor: '#e5e7eb',
+            borderColor: '#e0e0e0',
           }}
         >
-          <Search size={20} color="#6b7280" />
+          <Search size={20} color="#6c757d" />
           <TextInput
             value={searchQuery}
             onChangeText={setSearchQuery}
             placeholder="Search documents..."
-            placeholderTextColor="#6b7280"
+            placeholderTextColor="#6c757d"
             style={{
               flex: 1,
               marginLeft: 12,
@@ -137,12 +137,12 @@ export default function LAIScreen() {
             onPress={handleAddPhoto}
             style={{
               flex: 1,
-              backgroundColor: '#f8fafc',
+              backgroundColor: '#f8f9fa',
               borderRadius: 12,
               padding: 16,
               alignItems: 'center',
               borderWidth: 1,
-              borderColor: '#e5e7eb',
+              borderColor: '#e0e0e0',
             }}
           >
             <Camera size={24} color="#0b0b0f" />
@@ -154,12 +154,12 @@ export default function LAIScreen() {
             onPress={handleAddDocument}
             style={{
               flex: 1,
-              backgroundColor: '#f8fafc',
+              backgroundColor: '#f8f9fa',
               borderRadius: 12,
               padding: 16,
               alignItems: 'center',
               borderWidth: 1,
-              borderColor: '#e5e7eb',
+              borderColor: '#e0e0e0',
             }}
           >
             <FileText size={24} color="#0b0b0f" />
@@ -178,12 +178,12 @@ export default function LAIScreen() {
             <TouchableOpacity
               key={course.id}
               style={{
-                backgroundColor: '#f8fafc',
+                backgroundColor: '#f8f9fa',
                 borderRadius: 12,
                 padding: 16,
                 marginBottom: 12,
                 borderWidth: 1,
-                borderColor: '#e5e7eb',
+                borderColor: '#e0e0e0',
               }}
             >
               <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
@@ -229,12 +229,12 @@ export default function LAIScreen() {
           {true ? (
             <View
               style={{
-                backgroundColor: '#f8fafc',
+                backgroundColor: '#f8f9fa',
                 borderRadius: 12,
                 padding: 40,
                 alignItems: 'center',
                 borderWidth: 1,
-                borderColor: '#e5e7eb',
+                borderColor: '#e0e0e0',
               }}
             >
               <BookOpen size={48} color="#6b7280" />
@@ -263,12 +263,12 @@ export default function LAIScreen() {
               <TouchableOpacity
                 key={doc.id}
                 style={{
-                  backgroundColor: '#f8fafc',
+                  backgroundColor: '#f8f9fa',
                   borderRadius: 12,
                   padding: 16,
                   marginBottom: 12,
                   borderWidth: 1,
-                  borderColor: '#e5e7eb',
+                  borderColor: '#e0e0e0',
                 }}
               >
                 <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 8 }}>

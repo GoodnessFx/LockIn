@@ -20,22 +20,22 @@ export default function Onboarding() {
 
   const features = [
     {
-      icon: <Target size={32} color="#7dd3fc" />,
+      icon: <Target size={32} color="#6C5CE7" />,
       title: "90-Day Sprints",
       description: "Track your progress with countdown timers and milestones"
     },
     {
-      icon: <BookOpen size={32} color="#7dd3fc" />,
+      icon: <BookOpen size={32} color="#6C5CE7" />,
       title: "Learning AI",
       description: "Document your journey with photos and documents"
     },
     {
-      icon: <Users size={32} color="#7dd3fc" />,
+      icon: <Users size={32} color="#6C5CE7" />,
       title: "Lockmate",
       description: "Connect with accountability partners"
     },
     {
-      icon: <Lock size={32} color="#7dd3fc" />,
+      icon: <Lock size={32} color="#6C5CE7" />,
       title: "Lock In",
       description: "Commit to your goals and build relentlessly"
     }
@@ -58,7 +58,7 @@ export default function Onboarding() {
         {/* Logo Section */}
         <View style={styles.logoSection}>
           <Animated.View entering={FadeIn.duration(600)} style={styles.logoContainer}>
-            <Lock size={48} color="#0b0b0f" />
+            <Lock size={48} color="#6C5CE7" />
           </Animated.View>
           <Animated.Text entering={FadeIn.duration(600)} style={styles.title}>LockIn</Animated.Text>
           <Text style={styles.subtitle}>Dial in. Build relentlessly. Win together.</Text>
@@ -84,7 +84,7 @@ export default function Onboarding() {
           <TouchableOpacity
             style={styles.ctaButton}
             onPress={handleGetStarted}
-            activeOpacity={0.8}
+            activeOpacity={0.7}
           >
             <Text style={styles.ctaText}>Get Started</Text>
             <ArrowRight size={20} color="#ffffff" />
@@ -116,7 +116,7 @@ const styles = StyleSheet.create({
     width: 80,
     height: 80,
     borderRadius: 40,
-    backgroundColor: '#0b0b0f10',
+    backgroundColor: '#6C5CE710',
     alignItems: 'center',
     justifyContent: 'center',
     marginBottom: 24,
@@ -142,18 +142,23 @@ const styles = StyleSheet.create({
   featureCard: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#f8fafc',
+    backgroundColor: '#f8f9fa',
     borderRadius: 16,
     padding: 20,
     marginBottom: 16,
     borderWidth: 1,
-    borderColor: '#e5e7eb',
+    borderColor: '#e0e0e0',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 8,
+    elevation: 4,
   },
   featureIcon: {
     width: 60,
     height: 60,
     borderRadius: 30,
-    backgroundColor: '#0b0b0f10',
+    backgroundColor: '#6C5CE710',
     alignItems: 'center',
     justifyContent: 'center',
     marginRight: 16,
@@ -169,7 +174,7 @@ const styles = StyleSheet.create({
   },
   featureDescription: {
     fontSize: 14,
-    color: '#6b7280',
+    color: '#6c757d',
     lineHeight: 20,
   },
   ctaSection: {
@@ -177,7 +182,7 @@ const styles = StyleSheet.create({
     marginBottom: 40,
   },
   ctaButton: {
-    backgroundColor: '#0b0b0f',
+    backgroundColor: '#6C5CE7',
     borderRadius: 16,
     paddingVertical: 16,
     paddingHorizontal: 32,
@@ -186,6 +191,11 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     width: '100%',
     marginBottom: 16,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.2,
+    shadowRadius: 8,
+    elevation: 5,
   },
   ctaText: {
     fontSize: 18,
@@ -195,7 +205,7 @@ const styles = StyleSheet.create({
   },
   ctaSubtext: {
     fontSize: 14,
-    color: '#6b7280',
+    color: '#6c757d',
     textAlign: 'center',
   },
 });
