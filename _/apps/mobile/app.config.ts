@@ -32,19 +32,19 @@ const cfg: ExpoConfig = {
     bundleIdentifier: "com.lockin.app",
     supportsTablet: true,
     infoPlist: {
-      NSMicrophoneUsageDescription: "This app uses the microphone for voice narration and AI coaching features.",
-      NSUserNotificationsUsageDescription: "This app sends notifications to help you stay on track with your 97-day commitment."
+      NSMicrophoneUsageDescription:
+        "This app uses the microphone for voice narration and AI coaching features.",
+      NSUserNotificationsUsageDescription:
+        "This app sends notifications to help you stay on track with your 97-day commitment."
     }
   },
   plugins: [
     "expo-splash-screen",
     "expo-notifications",
     "expo-background-fetch",
-    "expo-task-manager",
-    "expo-speech",
-    "expo-av"
+    "expo-task-manager"
   ],
-  web: { 
+  web: {
     favicon: "./assets/images/favicon.png",
     bundler: "metro"
   },
@@ -56,4 +56,3 @@ const cfg: ExpoConfig = {
 };
 
 export default cfg;
-
