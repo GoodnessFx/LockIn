@@ -137,7 +137,7 @@ export default function Dashboard() {
   }
 
   return (
-    <View style={{ flex: 1, backgroundColor: "#0b0b0f" }}>
+    <View style={{ flex: 1, backgroundColor: "#ffffff" }}>
       <StatusBar style="light" />
       <ScrollView
         style={{ flex: 1 }}
@@ -150,53 +150,53 @@ export default function Dashboard() {
       >
         {/* Header */}
         <View style={{ marginBottom: 32 }}>
-          <Text style={{ fontSize: 32, fontWeight: "bold", color: "#ffffff" }}>
-            Dashboard
+          <Text style={{ fontSize: 32, fontWeight: "bold", color: "#0b0b0f" }}>
+            LockIn
           </Text>
-          <Text style={{ fontSize: 16, color: "#94a3b8", marginTop: 4 }}>
+          <Text style={{ fontSize: 16, color: "#6b7280", marginTop: 4 }}>
             Welcome back, {user?.name || user?.email || "there"}!
           </Text>
         </View>
 
         {/* 90-Day Sprint Countdown */}
         <View style={{ marginBottom: 32 }}>
-          <Text style={{ fontSize: 20, fontWeight: "600", color: "#ffffff", marginBottom: 16 }}>
+          <Text style={{ fontSize: 20, fontWeight: "600", color: "#0b0b0f", marginBottom: 16 }}>
             90-Day Sprint
           </Text>
           <View style={{
-            backgroundColor: "#1a1a2e",
+            backgroundColor: "#f8fafc",
             borderRadius: 16,
             padding: 24,
             borderWidth: 1,
-            borderColor: "#2d3748",
+            borderColor: "#e5e7eb",
           }}>
             <View style={{ flexDirection: "row", justifyContent: "space-around", marginBottom: 16 }}>
               <View style={{ alignItems: "center" }}>
-                <Text style={{ fontSize: 32, fontWeight: "bold", color: "#7dd3fc" }}>
+                <Text style={{ fontSize: 32, fontWeight: "bold", color: "#0b0b0f" }}>
                   {timeLeft.days}
                 </Text>
-                <Text style={{ fontSize: 14, color: "#94a3b8" }}>Days</Text>
+                <Text style={{ fontSize: 14, color: "#6b7280" }}>Days</Text>
               </View>
               <View style={{ alignItems: "center" }}>
-                <Text style={{ fontSize: 32, fontWeight: "bold", color: "#7dd3fc" }}>
+                <Text style={{ fontSize: 32, fontWeight: "bold", color: "#0b0b0f" }}>
                   {timeLeft.hours}
                 </Text>
-                <Text style={{ fontSize: 14, color: "#94a3b8" }}>Hours</Text>
+                <Text style={{ fontSize: 14, color: "#6b7280" }}>Hours</Text>
               </View>
               <View style={{ alignItems: "center" }}>
-                <Text style={{ fontSize: 32, fontWeight: "bold", color: "#7dd3fc" }}>
+                <Text style={{ fontSize: 32, fontWeight: "bold", color: "#0b0b0f" }}>
                   {timeLeft.minutes}
                 </Text>
-                <Text style={{ fontSize: 14, color: "#94a3b8" }}>Minutes</Text>
+                <Text style={{ fontSize: 14, color: "#6b7280" }}>Minutes</Text>
               </View>
               <View style={{ alignItems: "center" }}>
-                <Text style={{ fontSize: 32, fontWeight: "bold", color: "#7dd3fc" }}>
+                <Text style={{ fontSize: 32, fontWeight: "bold", color: "#0b0b0f" }}>
                   {timeLeft.seconds}
                 </Text>
-                <Text style={{ fontSize: 14, color: "#94a3b8" }}>Seconds</Text>
+                <Text style={{ fontSize: 14, color: "#6b7280" }}>Seconds</Text>
               </View>
             </View>
-            <Text style={{ fontSize: 16, color: "#94a3b8", textAlign: "center" }}>
+            <Text style={{ fontSize: 16, color: "#6b7280", textAlign: "center" }}>
               until your next milestone
             </Text>
           </View>
@@ -204,21 +204,21 @@ export default function Dashboard() {
 
         {/* Focus Timer */}
         <View style={{ marginBottom: 32 }}>
-          <Text style={{ fontSize: 20, fontWeight: "600", color: "#ffffff", marginBottom: 16 }}>
+          <Text style={{ fontSize: 20, fontWeight: "600", color: "#0b0b0f", marginBottom: 16 }}>
             Focus Timer
           </Text>
           <View style={{
-            backgroundColor: "#1a1a2e",
+            backgroundColor: "#f8fafc",
             borderRadius: 16,
             padding: 24,
             borderWidth: 1,
-            borderColor: "#2d3748",
+            borderColor: "#e5e7eb",
           }}>
             <View style={{ alignItems: "center", marginBottom: 20 }}>
-              <Text style={{ fontSize: 48, fontWeight: "bold", color: "#7dd3fc", marginBottom: 8 }}>
+              <Text style={{ fontSize: 48, fontWeight: "bold", color: "#0b0b0f", marginBottom: 8 }}>
                 {formatTime(focusTime)}
               </Text>
-              <Text style={{ fontSize: 16, color: "#94a3b8", textTransform: "capitalize" }}>
+              <Text style={{ fontSize: 16, color: "#6b7280", textTransform: "capitalize" }}>
                 {focusMode} Session
               </Text>
             </View>
@@ -226,7 +226,7 @@ export default function Dashboard() {
               <TouchableOpacity
                 onPress={toggleFocusTimer}
                 style={{
-                  backgroundColor: isFocusRunning ? "#ef4444" : "#7dd3fc",
+                  backgroundColor: isFocusRunning ? "#ef4444" : "#0b0b0f",
                   borderRadius: 12,
                   paddingVertical: 12,
                   paddingHorizontal: 24,
@@ -242,7 +242,7 @@ export default function Dashboard() {
               <TouchableOpacity
                 onPress={resetFocusTimer}
                 style={{
-                  backgroundColor: "#2d3748",
+                  backgroundColor: "#e5e7eb",
                   borderRadius: 12,
                   paddingVertical: 12,
                   paddingHorizontal: 24,
@@ -250,8 +250,8 @@ export default function Dashboard() {
                   alignItems: "center",
                 }}
               >
-                <RotateCcw size={20} color="#ffffff" />
-                <Text style={{ color: "#ffffff", fontSize: 16, fontWeight: "600", marginLeft: 8 }}>
+                <RotateCcw size={20} color="#0b0b0f" />
+                <Text style={{ color: "#0b0b0f", fontSize: 16, fontWeight: "600", marginLeft: 8 }}>
                   Reset
                 </Text>
               </TouchableOpacity>
@@ -261,43 +261,43 @@ export default function Dashboard() {
 
         {/* Progress Stats */}
         <View style={{ marginBottom: 32 }}>
-          <Text style={{ fontSize: 20, fontWeight: "600", color: "#ffffff", marginBottom: 16 }}>
+          <Text style={{ fontSize: 20, fontWeight: "600", color: "#0b0b0f", marginBottom: 16 }}>
             Today's Progress
           </Text>
           <View style={{ flexDirection: "row", gap: 12 }}>
             <View style={{
               flex: 1,
-              backgroundColor: "#1a1a2e",
+              backgroundColor: "#f8fafc",
               borderRadius: 12,
               padding: 16,
               borderWidth: 1,
-              borderColor: "#2d3748",
+              borderColor: "#e5e7eb",
             }}>
               <View style={{ flexDirection: "row", alignItems: "center", marginBottom: 8 }}>
-                <Zap size={20} color="#7dd3fc" />
-                <Text style={{ fontSize: 14, color: "#94a3b8", marginLeft: 8 }}>Streak</Text>
+                <Zap size={20} color="#0b0b0f" />
+                <Text style={{ fontSize: 14, color: "#6b7280", marginLeft: 8 }}>Streak</Text>
               </View>
-              <Text style={{ fontSize: 24, fontWeight: "bold", color: "#ffffff" }}>
+              <Text style={{ fontSize: 24, fontWeight: "bold", color: "#0b0b0f" }}>
                 {progressData.streak}
               </Text>
-              <Text style={{ fontSize: 12, color: "#94a3b8" }}>days</Text>
+              <Text style={{ fontSize: 12, color: "#6b7280" }}>days</Text>
             </View>
             <View style={{
               flex: 1,
-              backgroundColor: "#1a1a2e",
+              backgroundColor: "#f8fafc",
               borderRadius: 12,
               padding: 16,
               borderWidth: 1,
-              borderColor: "#2d3748",
+              borderColor: "#e5e7eb",
             }}>
               <View style={{ flexDirection: "row", alignItems: "center", marginBottom: 8 }}>
                 <CheckCircle size={20} color="#10b981" />
-                <Text style={{ fontSize: 14, color: "#94a3b8", marginLeft: 8 }}>Goals</Text>
+                <Text style={{ fontSize: 14, color: "#6b7280", marginLeft: 8 }}>Goals</Text>
               </View>
-              <Text style={{ fontSize: 24, fontWeight: "bold", color: "#ffffff" }}>
+              <Text style={{ fontSize: 24, fontWeight: "bold", color: "#0b0b0f" }}>
                 {progressData.goalsCompleted}
               </Text>
-              <Text style={{ fontSize: 12, color: "#94a3b8" }}>completed</Text>
+              <Text style={{ fontSize: 12, color: "#6b7280" }}>completed</Text>
             </View>
           </View>
         </View>
@@ -305,36 +305,36 @@ export default function Dashboard() {
         {/* Weekly Goal Progress */}
         <View style={{ marginBottom: 32 }}>
           <View style={{
-            backgroundColor: "#1a1a2e",
+            backgroundColor: "#f8fafc",
             borderRadius: 16,
             padding: 20,
             borderWidth: 1,
-            borderColor: "#2d3748",
+            borderColor: "#e5e7eb",
           }}>
             <View style={{ flexDirection: "row", alignItems: "center", marginBottom: 16 }}>
-              <Target size={20} color="#7dd3fc" />
-              <Text style={{ fontSize: 18, fontWeight: "600", color: "#ffffff", marginLeft: 8 }}>
+              <Target size={20} color="#0b0b0f" />
+              <Text style={{ fontSize: 18, fontWeight: "600", color: "#0b0b0f", marginLeft: 8 }}>
                 Weekly Focus Goal
               </Text>
             </View>
             <View style={{ flexDirection: "row", justifyContent: "space-between", marginBottom: 8 }}>
-              <Text style={{ fontSize: 14, color: "#94a3b8" }}>
+              <Text style={{ fontSize: 14, color: "#6b7280" }}>
                 {progressData.weeklyProgress} / {progressData.weeklyGoal} hours
               </Text>
-              <Text style={{ fontSize: 14, color: "#7dd3fc", fontWeight: "600" }}>
+              <Text style={{ fontSize: 14, color: "#0b0b0f", fontWeight: "600" }}>
                 {Math.round((progressData.weeklyProgress / progressData.weeklyGoal) * 100)}%
               </Text>
             </View>
             <View style={{
               height: 8,
-              backgroundColor: "#2d3748",
+              backgroundColor: "#e5e7eb",
               borderRadius: 4,
               overflow: "hidden",
             }}>
               <View style={{
                 height: "100%",
                 width: `${(progressData.weeklyProgress / progressData.weeklyGoal) * 100}%`,
-                backgroundColor: "#7dd3fc",
+                backgroundColor: "#0b0b0f",
                 borderRadius: 4,
               }} />
             </View>
@@ -343,49 +343,49 @@ export default function Dashboard() {
 
         {/* Quick Actions */}
         <View style={{ marginBottom: 32 }}>
-          <Text style={{ fontSize: 20, fontWeight: "600", color: "#ffffff", marginBottom: 16 }}>
+          <Text style={{ fontSize: 20, fontWeight: "600", color: "#0b0b0f", marginBottom: 16 }}>
             Quick Actions
           </Text>
           <View style={{ flexDirection: "row", gap: 12 }}>
             <TouchableOpacity style={{
               flex: 1,
-              backgroundColor: "#1a1a2e",
+              backgroundColor: "#f8fafc",
               borderRadius: 12,
               padding: 16,
               alignItems: "center",
               borderWidth: 1,
-              borderColor: "#2d3748",
+              borderColor: "#e5e7eb",
             }}>
-              <Plus size={24} color="#7dd3fc" />
-              <Text style={{ fontSize: 14, fontWeight: "500", color: "#ffffff", marginTop: 8 }}>
+              <Plus size={24} color="#0b0b0f" />
+              <Text style={{ fontSize: 14, fontWeight: "500", color: "#0b0b0f", marginTop: 8 }}>
                 Add Goal
               </Text>
             </TouchableOpacity>
             <TouchableOpacity style={{
               flex: 1,
-              backgroundColor: "#1a1a2e",
+              backgroundColor: "#f8fafc",
               borderRadius: 12,
               padding: 16,
               alignItems: "center",
               borderWidth: 1,
-              borderColor: "#2d3748",
+              borderColor: "#e5e7eb",
             }}>
-              <Calendar size={24} color="#7dd3fc" />
-              <Text style={{ fontSize: 14, fontWeight: "500", color: "#ffffff", marginTop: 8 }}>
+              <Calendar size={24} color="#0b0b0f" />
+              <Text style={{ fontSize: 14, fontWeight: "500", color: "#0b0b0f", marginTop: 8 }}>
                 Schedule
               </Text>
             </TouchableOpacity>
             <TouchableOpacity style={{
               flex: 1,
-              backgroundColor: "#1a1a2e",
+              backgroundColor: "#f8fafc",
               borderRadius: 12,
               padding: 16,
               alignItems: "center",
               borderWidth: 1,
-              borderColor: "#2d3748",
+              borderColor: "#e5e7eb",
             }}>
-              <TrendingUp size={24} color="#7dd3fc" />
-              <Text style={{ fontSize: 14, fontWeight: "500", color: "#ffffff", marginTop: 8 }}>
+              <TrendingUp size={24} color="#0b0b0f" />
+              <Text style={{ fontSize: 14, fontWeight: "500", color: "#0b0b0f", marginTop: 8 }}>
                 Analytics
               </Text>
             </TouchableOpacity>

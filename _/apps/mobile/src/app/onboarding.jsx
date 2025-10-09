@@ -3,7 +3,7 @@ import { View, Text, StyleSheet, TouchableOpacity, Image, Dimensions } from 'rea
 import { useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useAppStore } from '@/store/appStore';
-import { LinearGradient } from 'expo-linear-gradient';
+import Animated, { FadeIn, FadeOut, withTiming, useSharedValue, useAnimatedStyle } from 'react-native-reanimated';
 import { ArrowRight, Target, Users, BookOpen, Lock } from 'lucide-react-native';
 
 const { width, height } = Dimensions.get('window');
@@ -41,25 +41,33 @@ export default function Onboarding() {
     }
   ];
 
+  const opacity = useSharedValue(0);
+  const scale = useSharedValue(0.9);
+  React.useEffect(() => {
+    opacity.value = withTiming(1, { duration: 600 });
+    scale.value = withTiming(1, { duration: 600 });
+  }, []);
+  const animatedStyle = useAnimatedStyle(() => ({
+    opacity: opacity.value,
+    transform: [{ scale: scale.value }],
+  }));
+
   return (
-    <LinearGradient
-      colors={['#0b0b0f', '#1a1a2e', '#16213e']}
-      style={[styles.container, { paddingTop: insets.top }]}
-    >
+    <View style={[styles.container, { paddingTop: insets.top, backgroundColor: '#ffffff' }]}>
       <View style={styles.content}>
         {/* Logo Section */}
         <View style={styles.logoSection}>
-          <View style={styles.logoContainer}>
-            <Lock size={48} color="#7dd3fc" />
-          </View>
-          <Text style={styles.title}>LockIn</Text>
+          <Animated.View entering={FadeIn.duration(600)} style={styles.logoContainer}>
+            <Lock size={48} color="#0b0b0f" />
+          </Animated.View>
+          <Animated.Text entering={FadeIn.duration(600)} style={styles.title}>LockIn</Animated.Text>
           <Text style={styles.subtitle}>Dial in. Build relentlessly. Win together.</Text>
         </View>
 
         {/* Features Section */}
         <View style={styles.featuresSection}>
           {features.map((feature, index) => (
-            <View key={index} style={styles.featureCard}>
+            <Animated.View key={index} style={[styles.featureCard, animatedStyle]}>
               <View style={styles.featureIcon}>
                 {feature.icon}
               </View>
@@ -67,7 +75,7 @@ export default function Onboarding() {
                 <Text style={styles.featureTitle}>{feature.title}</Text>
                 <Text style={styles.featureDescription}>{feature.description}</Text>
               </View>
-            </View>
+            </Animated.View>
           ))}
         </View>
 
@@ -79,7 +87,7 @@ export default function Onboarding() {
             activeOpacity={0.8}
           >
             <Text style={styles.ctaText}>Get Started</Text>
-            <ArrowRight size={20} color="#0b0b0f" />
+            <ArrowRight size={20} color="#ffffff" />
           </TouchableOpacity>
           
           <Text style={styles.ctaSubtext}>
@@ -87,7 +95,7 @@ export default function Onboarding() {
           </Text>
         </View>
       </View>
-    </LinearGradient>
+    </View>
   );
 }
 
@@ -108,7 +116,7 @@ const styles = StyleSheet.create({
     width: 80,
     height: 80,
     borderRadius: 40,
-    backgroundColor: '#7dd3fc20',
+    backgroundColor: '#0b0b0f10',
     alignItems: 'center',
     justifyContent: 'center',
     marginBottom: 24,
@@ -116,13 +124,13 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 36,
     fontWeight: 'bold',
-    color: '#ffffff',
+    color: '#0b0b0f',
     marginBottom: 8,
     textAlign: 'center',
   },
   subtitle: {
     fontSize: 16,
-    color: '#94a3b8',
+    color: '#6b7280',
     textAlign: 'center',
     lineHeight: 24,
   },
@@ -134,18 +142,18 @@ const styles = StyleSheet.create({
   featureCard: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#1a1a2e80',
+    backgroundColor: '#f8fafc',
     borderRadius: 16,
     padding: 20,
     marginBottom: 16,
     borderWidth: 1,
-    borderColor: '#2d3748',
+    borderColor: '#e5e7eb',
   },
   featureIcon: {
     width: 60,
     height: 60,
     borderRadius: 30,
-    backgroundColor: '#7dd3fc20',
+    backgroundColor: '#0b0b0f10',
     alignItems: 'center',
     justifyContent: 'center',
     marginRight: 16,
@@ -156,12 +164,12 @@ const styles = StyleSheet.create({
   featureTitle: {
     fontSize: 18,
     fontWeight: '600',
-    color: '#ffffff',
+    color: '#0b0b0f',
     marginBottom: 4,
   },
   featureDescription: {
     fontSize: 14,
-    color: '#94a3b8',
+    color: '#6b7280',
     lineHeight: 20,
   },
   ctaSection: {
@@ -169,7 +177,7 @@ const styles = StyleSheet.create({
     marginBottom: 40,
   },
   ctaButton: {
-    backgroundColor: '#7dd3fc',
+    backgroundColor: '#0b0b0f',
     borderRadius: 16,
     paddingVertical: 16,
     paddingHorizontal: 32,
@@ -182,12 +190,12 @@ const styles = StyleSheet.create({
   ctaText: {
     fontSize: 18,
     fontWeight: '600',
-    color: '#0b0b0f',
+    color: '#ffffff',
     marginRight: 8,
   },
   ctaSubtext: {
     fontSize: 14,
-    color: '#64748b',
+    color: '#6b7280',
     textAlign: 'center',
   },
 });

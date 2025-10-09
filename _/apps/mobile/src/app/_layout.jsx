@@ -3,6 +3,8 @@ import { Stack } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
 import { useEffect } from "react";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
+import { View, Text } from 'react-native';
+import Animated, { FadeIn, withTiming, useSharedValue, useAnimatedStyle } from 'react-native-reanimated';
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { useAppStore, hydrateAppStore } from "@/store/appStore";
 SplashScreen.preventAutoHideAsync();
@@ -34,7 +36,23 @@ export default function RootLayout() {
   }, [isReady]);
 
   if (!isReady) {
-    return null;
+    const opacity = useSharedValue(0);
+    const scale = useSharedValue(0.9);
+    useEffect(() => {
+      opacity.value = withTiming(1, { duration: 600 });
+      scale.value = withTiming(1, { duration: 600 });
+    }, []);
+    const animatedStyle = useAnimatedStyle(() => ({
+      opacity: opacity.value,
+      transform: [{ scale: scale.value }],
+    }));
+    return (
+      <View style={{ flex: 1, backgroundColor: '#ffffff', alignItems: 'center', justifyContent: 'center' }}>
+        <Animated.Text entering={FadeIn.duration(300)} style={{ fontSize: 36, fontWeight: '800', color: '#0b0b0f' }}>
+          LockIn
+        </Animated.Text>
+      </View>
+    );
   }
 
   return (

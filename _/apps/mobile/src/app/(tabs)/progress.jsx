@@ -6,6 +6,8 @@ import {
   TouchableOpacity,
   StatusBar,
   Dimensions,
+  TextInput,
+  Alert,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { 
@@ -20,12 +22,68 @@ import {
   Zap,
   Trophy
 } from 'lucide-react-native';
+import { Camera, FileText, Search } from 'lucide-react-native';
+import * as ImagePicker from 'expo-image-picker';
+import * as DocumentPicker from 'expo-document-picker';
 
 const { width } = Dimensions.get('window');
 
 export default function ProgressScreen() {
   const insets = useSafeAreaInsets();
   const [selectedPeriod, setSelectedPeriod] = useState('week'); // week, month, year
+  const [searchQuery, setSearchQuery] = useState('');
+  const [documents, setDocuments] = useState([]);
+
+  const handleAddPhoto = async () => {
+    const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
+    if (status !== 'granted') {
+      Alert.alert('Permission needed', 'Please grant camera roll permissions to add photos.');
+      return;
+    }
+
+    const result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      allowsEditing: true,
+      aspect: [4, 3],
+      quality: 1,
+    });
+
+    if (!result.canceled) {
+      const newDocument = {
+        id: Date.now().toString(),
+        type: 'image',
+        title: 'New Photo',
+        date: new Date().toISOString().split('T')[0],
+        tags: ['new'],
+        uri: result.assets[0].uri,
+      };
+      setDocuments([newDocument, ...documents]);
+    }
+  };
+
+  const handleAddDocument = async () => {
+    const result = await DocumentPicker.getDocumentAsync({
+      type: '*/*',
+      copyToCacheDirectory: true,
+    });
+
+    if (!result.canceled) {
+      const newDocument = {
+        id: Date.now().toString(),
+        type: 'document',
+        title: result.assets[0].name,
+        date: new Date().toISOString().split('T')[0],
+        tags: ['document'],
+        uri: result.assets[0].uri,
+      };
+      setDocuments([newDocument, ...documents]);
+    }
+  };
+
+  const filteredDocuments = documents.filter(doc =>
+    doc.title?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    (doc.tags || []).some(tag => tag.toLowerCase().includes(searchQuery.toLowerCase()))
+  );
 
   // Mock data for progress tracking
   const progressData = {
@@ -125,8 +183,8 @@ export default function ProgressScreen() {
   );
 
   return (
-    <View style={{ flex: 1, backgroundColor: '#0b0b0f' }}>
-      <StatusBar style="light" />
+    <View style={{ flex: 1, backgroundColor: '#ffffff' }}>
+      <StatusBar style="dark" />
       <ScrollView
         style={{ flex: 1 }}
         contentContainerStyle={{
@@ -138,12 +196,79 @@ export default function ProgressScreen() {
       >
         {/* Header */}
         <View style={{ marginBottom: 24 }}>
-          <Text style={{ fontSize: 32, fontWeight: 'bold', color: '#ffffff' }}>
+          <Text style={{ fontSize: 32, fontWeight: 'bold', color: '#0b0b0f' }}>
             Progress
           </Text>
-          <Text style={{ fontSize: 16, color: '#94a3b8', marginTop: 4 }}>
+          <Text style={{ fontSize: 16, color: '#6b7280', marginTop: 4 }}>
             Track your growth and achievements
           </Text>
+        </View>
+
+        {/* Quick Add: Documents & Photos */}
+        <View style={{ flexDirection: 'row', marginBottom: 16, gap: 12 }}>
+          <TouchableOpacity
+            onPress={handleAddPhoto}
+            style={{
+              flex: 1,
+              backgroundColor: '#f8fafc',
+              borderRadius: 12,
+              padding: 16,
+              alignItems: 'center',
+              borderWidth: 1,
+              borderColor: '#e5e7eb',
+            }}
+          >
+            <Camera size={24} color="#0b0b0f" />
+            <Text style={{ fontSize: 14, fontWeight: '500', color: '#0b0b0f', marginTop: 8 }}>
+              Add Photo
+            </Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            onPress={handleAddDocument}
+            style={{
+              flex: 1,
+              backgroundColor: '#f8fafc',
+              borderRadius: 12,
+              padding: 16,
+              alignItems: 'center',
+              borderWidth: 1,
+              borderColor: '#e5e7eb',
+            }}
+          >
+            <FileText size={24} color="#0b0b0f" />
+            <Text style={{ fontSize: 14, fontWeight: '500', color: '#0b0b0f', marginTop: 8 }}>
+              Add Document
+            </Text>
+          </TouchableOpacity>
+        </View>
+
+        {/* Search Docs */}
+        <View
+          style={{
+            backgroundColor: '#f8fafc',
+            borderRadius: 12,
+            paddingHorizontal: 16,
+            paddingVertical: 12,
+            flexDirection: 'row',
+            alignItems: 'center',
+            marginBottom: 24,
+            borderWidth: 1,
+            borderColor: '#e5e7eb',
+          }}
+        >
+          <Search size={20} color="#6b7280" />
+          <TextInput
+            value={searchQuery}
+            onChangeText={setSearchQuery}
+            placeholder="Search documents..."
+            placeholderTextColor="#6b7280"
+            style={{
+              flex: 1,
+              marginLeft: 12,
+              fontSize: 16,
+              color: '#0b0b0f',
+            }}
+          />
         </View>
 
         {/* Period Selector */}
@@ -226,18 +351,18 @@ export default function ProgressScreen() {
         }}>
           <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 16 }}>
             <BarChart3 size={20} color="#7dd3fc" />
-            <Text style={{ fontSize: 18, fontWeight: '600', color: '#ffffff', marginLeft: 8 }}>
+            <Text style={{ fontSize: 18, fontWeight: '600', color: '#0b0b0f', marginLeft: 8 }}>
               Productivity Trend
             </Text>
           </View>
           <View style={{
             height: 120,
-            backgroundColor: '#2d3748',
+            backgroundColor: '#e5e7eb',
             borderRadius: 8,
             alignItems: 'center',
             justifyContent: 'center',
           }}>
-            <Text style={{ color: '#94a3b8' }}>Chart visualization coming soon</Text>
+            <Text style={{ color: '#6b7280' }}>Chart visualization coming soon</Text>
           </View>
         </View>
 
@@ -265,7 +390,7 @@ export default function ProgressScreen() {
         }}>
           <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 16 }}>
             <Target size={20} color="#7dd3fc" />
-            <Text style={{ fontSize: 18, fontWeight: '600', color: '#ffffff', marginLeft: 8 }}>
+            <Text style={{ fontSize: 18, fontWeight: '600', color: '#0b0b0f', marginLeft: 8 }}>
               Current Goals
             </Text>
           </View>
@@ -278,14 +403,14 @@ export default function ProgressScreen() {
               </View>
               <View style={{
                 height: 6,
-                backgroundColor: '#2d3748',
+                backgroundColor: '#e5e7eb',
                 borderRadius: 3,
                 overflow: 'hidden',
               }}>
                 <View style={{
                   height: '100%',
                   width: '75%',
-                  backgroundColor: '#7dd3fc',
+                  backgroundColor: '#0b0b0f',
                   borderRadius: 3,
                 }} />
               </View>
@@ -298,14 +423,14 @@ export default function ProgressScreen() {
               </View>
               <View style={{
                 height: 6,
-                backgroundColor: '#2d3748',
+                backgroundColor: '#e5e7eb',
                 borderRadius: 3,
                 overflow: 'hidden',
               }}>
                 <View style={{
                   height: '100%',
                   width: '45%',
-                  backgroundColor: '#10b981',
+                  backgroundColor: '#0b0b0f',
                   borderRadius: 3,
                 }} />
               </View>
@@ -318,19 +443,64 @@ export default function ProgressScreen() {
               </View>
               <View style={{
                 height: 6,
-                backgroundColor: '#2d3748',
+                backgroundColor: '#e5e7eb',
                 borderRadius: 3,
                 overflow: 'hidden',
               }}>
                 <View style={{
                   height: '100%',
                   width: '90%',
-                  backgroundColor: '#f59e0b',
+                  backgroundColor: '#0b0b0f',
                   borderRadius: 3,
                 }} />
               </View>
             </View>
           </View>
+
+        {/* Documents moved here */}
+        <View style={{ marginBottom: 24 }}>
+          <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 16 }}>
+            <FileText size={20} color="#0b0b0f" />
+            <Text style={{ fontSize: 20, fontWeight: '600', color: '#0b0b0f', marginLeft: 8 }}>
+              Documents ({filteredDocuments.length})
+            </Text>
+          </View>
+          {filteredDocuments.length === 0 ? (
+            <View
+              style={{
+                backgroundColor: '#f8fafc',
+                borderRadius: 12,
+                padding: 40,
+                alignItems: 'center',
+                borderWidth: 1,
+                borderColor: '#e5e7eb',
+              }}
+            >
+              <Text style={{ fontSize: 16, color: '#6b7280', textAlign: 'center' }}>
+                Add progress photos and documents to track your journey.
+              </Text>
+            </View>
+          ) : (
+            filteredDocuments.map((doc) => (
+              <View
+                key={doc.id}
+                style={{
+                  backgroundColor: '#f8fafc',
+                  borderRadius: 12,
+                  padding: 16,
+                  marginBottom: 12,
+                  borderWidth: 1,
+                  borderColor: '#e5e7eb',
+                }}
+              >
+                <Text style={{ fontSize: 16, fontWeight: '600', color: '#0b0b0f' }}>
+                  {doc.title}
+                </Text>
+                <Text style={{ fontSize: 12, color: '#6b7280' }}>{doc.date}</Text>
+              </View>
+            ))
+          )}
+        </View>
         </View>
       </ScrollView>
     </View>

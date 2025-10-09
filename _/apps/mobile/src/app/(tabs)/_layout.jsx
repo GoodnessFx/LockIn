@@ -7,17 +7,17 @@ export default function TabLayout() {
       screenOptions={{
         headerShown: false,
         tabBarStyle: {
-          backgroundColor: '#0b0b0f',
+          backgroundColor: '#ffffff',
           borderTopWidth: 1,
-          borderColor: '#111218',
+          borderColor: '#e5e7eb',
           paddingTop: 4,
           paddingBottom: 4,
         },
-        tabBarActiveTintColor: '#7dd3fc',
-        tabBarInactiveTintColor: '#6B7280',
+        tabBarActiveTintColor: '#0b0b0f',
+        tabBarInactiveTintColor: '#9CA3AF',
         tabBarLabelStyle: {
           fontSize: 12,
-          fontWeight: '500',
+          fontWeight: '600',
         },
       }}
     >
@@ -25,7 +25,7 @@ export default function TabLayout() {
       <Tabs.Screen
         name="dashboard"
         options={{
-          title: 'Dashboard',
+          title: 'LockIn',
           tabBarIcon: ({ color, size }) => (
             <Home color={color} size={24} />
           ),

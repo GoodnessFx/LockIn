@@ -86,7 +86,7 @@ export const useAppStore = create<AppState>()(
       },
       
       // Theme
-      theme: 'dark', // Default to dark theme
+      theme: 'light', // Default to light theme for white-themed app
       async setTheme(t) {
         await AsyncStorage.setItem('lockin:theme', t);
         set({ theme: t });

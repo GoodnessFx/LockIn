@@ -58,10 +58,10 @@ export default function BatteryProgressIndicator({
   const fillPadding = strokeWidth + 2;
 
   const getBatteryColor = (level: number) => {
-    if (level >= 75) return colors.batteryFull;
-    if (level >= 50) return colors.batteryMedium;
-    if (level >= 25) return colors.batteryLow;
-    return colors.batteryEmpty;
+    if (level >= 75) return '#10b981'; // Green
+    if (level >= 50) return '#f59e0b'; // Amber
+    if (level >= 25) return '#f97316'; // Orange
+    return '#ef4444'; // Red
   };
 
   const animatedProps = useAnimatedProps(() => {
@@ -95,10 +95,10 @@ export default function BatteryProgressIndicator({
           y={0}
           width={batteryWidth}
           height={batteryHeight}
-          rx={4}
-          ry={4}
+          rx={6}
+          ry={6}
           fill="none"
-          stroke={colors.textSecondary}
+          stroke="#e5e7eb"
           strokeWidth={strokeWidth}
         />
         
@@ -108,9 +108,9 @@ export default function BatteryProgressIndicator({
           y={(batteryHeight - terminalHeight) / 2}
           width={terminalWidth}
           height={terminalHeight}
-          rx={2}
-          ry={2}
-          fill={colors.textSecondary}
+          rx={3}
+          ry={3}
+          fill="#e5e7eb"
         />
         
         {/* Battery fill */}
@@ -118,8 +118,8 @@ export default function BatteryProgressIndicator({
           x={fillPadding}
           y={fillPadding}
           height={batteryHeight - fillPadding * 2}
-          rx={2}
-          ry={2}
+          rx={4}
+          ry={4}
           fill="url(#batteryGradient)"
           animatedProps={animatedProps}
         />
@@ -129,7 +129,7 @@ export default function BatteryProgressIndicator({
         <Text style={[
           styles.percentageText, 
           { 
-            color: colors.text, 
+            color: '#0b0b0f', 
             fontSize,
             marginTop: 4 
           }
@@ -147,7 +147,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   percentageText: {
-    fontWeight: '600',
+    fontWeight: '700',
     textAlign: 'center',
   },
 });

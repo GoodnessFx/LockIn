@@ -23,38 +23,12 @@ import {
   File,
   Trash2
 } from 'lucide-react-native';
-import * as ImagePicker from 'expo-image-picker';
-import * as DocumentPicker from 'expo-document-picker';
+// Removed document/photo features per requirement (moved to Progress)
 
 export default function LAIScreen() {
   const insets = useSafeAreaInsets();
   const [searchQuery, setSearchQuery] = useState('');
-  const [documents, setDocuments] = useState([
-    {
-      id: '1',
-      type: 'image',
-      title: 'Learning Progress Photo',
-      date: '2024-01-15',
-      tags: ['progress', 'learning'],
-      uri: null,
-    },
-    {
-      id: '2',
-      type: 'document',
-      title: 'Course Notes.pdf',
-      date: '2024-01-14',
-      tags: ['notes', 'course'],
-      uri: null,
-    },
-    {
-      id: '3',
-      type: 'image',
-      title: 'Whiteboard Session',
-      date: '2024-01-13',
-      tags: ['whiteboard', 'session'],
-      uri: null,
-    },
-  ]);
+  const [documents] = useState([]);
 
   const [learningJourney, setLearningJourney] = useState([
     {
@@ -83,51 +57,8 @@ export default function LAIScreen() {
     },
   ]);
 
-  const handleAddPhoto = async () => {
-    const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
-    if (status !== 'granted') {
-      Alert.alert('Permission needed', 'Please grant camera roll permissions to add photos.');
-      return;
-    }
-
-    const result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.Images,
-      allowsEditing: true,
-      aspect: [4, 3],
-      quality: 1,
-    });
-
-    if (!result.canceled) {
-      const newDocument = {
-        id: Date.now().toString(),
-        type: 'image',
-        title: 'New Photo',
-        date: new Date().toISOString().split('T')[0],
-        tags: ['new'],
-        uri: result.assets[0].uri,
-      };
-      setDocuments([newDocument, ...documents]);
-    }
-  };
-
-  const handleAddDocument = async () => {
-    const result = await DocumentPicker.getDocumentAsync({
-      type: '*/*',
-      copyToCacheDirectory: true,
-    });
-
-    if (!result.canceled) {
-      const newDocument = {
-        id: Date.now().toString(),
-        type: 'document',
-        title: result.assets[0].name,
-        date: new Date().toISOString().split('T')[0],
-        tags: ['document'],
-        uri: result.assets[0].uri,
-      };
-      setDocuments([newDocument, ...documents]);
-    }
-  };
+  const handleAddPhoto = () => Alert.alert('Moved', 'Add Photo is now in Progress tab.');
+  const handleAddDocument = () => Alert.alert('Moved', 'Add Document is now in Progress tab.');
 
   const handleDeleteDocument = (id) => {
     Alert.alert(
@@ -150,8 +81,8 @@ export default function LAIScreen() {
   );
 
   return (
-    <View style={{ flex: 1, backgroundColor: '#0b0b0f' }}>
-      <StatusBar style="light" />
+    <View style={{ flex: 1, backgroundColor: '#ffffff' }}>
+      <StatusBar style="dark" />
       <ScrollView
         style={{ flex: 1 }}
         contentContainerStyle={{
@@ -163,18 +94,18 @@ export default function LAIScreen() {
       >
         {/* Header */}
         <View style={{ marginBottom: 24 }}>
-          <Text style={{ fontSize: 32, fontWeight: 'bold', color: '#ffffff' }}>
-            Learning AI
+          <Text style={{ fontSize: 32, fontWeight: 'bold', color: '#0b0b0f' }}>
+            LAI
           </Text>
-          <Text style={{ fontSize: 16, color: '#94a3b8', marginTop: 4 }}>
-            Document your learning journey
+          <Text style={{ fontSize: 16, color: '#6b7280', marginTop: 4 }}>
+            A warm space to grow in your niche
           </Text>
         </View>
 
         {/* Search Bar */}
         <View
           style={{
-            backgroundColor: '#1a1a2e',
+            backgroundColor: '#f8fafc',
             borderRadius: 12,
             paddingHorizontal: 16,
             paddingVertical: 12,
@@ -182,20 +113,20 @@ export default function LAIScreen() {
             alignItems: 'center',
             marginBottom: 24,
             borderWidth: 1,
-            borderColor: '#2d3748',
+            borderColor: '#e5e7eb',
           }}
         >
-          <Search size={20} color="#64748b" />
+          <Search size={20} color="#6b7280" />
           <TextInput
             value={searchQuery}
             onChangeText={setSearchQuery}
             placeholder="Search documents..."
-            placeholderTextColor="#64748b"
+            placeholderTextColor="#6b7280"
             style={{
               flex: 1,
               marginLeft: 12,
               fontSize: 16,
-              color: '#ffffff',
+              color: '#0b0b0f',
             }}
           />
         </View>
@@ -206,16 +137,16 @@ export default function LAIScreen() {
             onPress={handleAddPhoto}
             style={{
               flex: 1,
-              backgroundColor: '#1a1a2e',
+              backgroundColor: '#f8fafc',
               borderRadius: 12,
               padding: 16,
               alignItems: 'center',
               borderWidth: 1,
-              borderColor: '#2d3748',
+              borderColor: '#e5e7eb',
             }}
           >
-            <Camera size={24} color="#7dd3fc" />
-            <Text style={{ fontSize: 14, fontWeight: '500', color: '#ffffff', marginTop: 8 }}>
+            <Camera size={24} color="#0b0b0f" />
+            <Text style={{ fontSize: 14, fontWeight: '500', color: '#0b0b0f', marginTop: 8 }}>
               Add Photo
             </Text>
           </TouchableOpacity>
@@ -223,16 +154,16 @@ export default function LAIScreen() {
             onPress={handleAddDocument}
             style={{
               flex: 1,
-              backgroundColor: '#1a1a2e',
+              backgroundColor: '#f8fafc',
               borderRadius: 12,
               padding: 16,
               alignItems: 'center',
               borderWidth: 1,
-              borderColor: '#2d3748',
+              borderColor: '#e5e7eb',
             }}
           >
-            <FileText size={24} color="#7dd3fc" />
-            <Text style={{ fontSize: 14, fontWeight: '500', color: '#ffffff', marginTop: 8 }}>
+            <FileText size={24} color="#0b0b0f" />
+            <Text style={{ fontSize: 14, fontWeight: '500', color: '#0b0b0f', marginTop: 8 }}>
               Add Document
             </Text>
           </TouchableOpacity>
@@ -240,39 +171,39 @@ export default function LAIScreen() {
 
         {/* Learning Progress */}
         <View style={{ marginBottom: 24 }}>
-          <Text style={{ fontSize: 20, fontWeight: '600', color: '#ffffff', marginBottom: 16 }}>
+          <Text style={{ fontSize: 20, fontWeight: '600', color: '#0b0b0f', marginBottom: 16 }}>
             Learning Progress
           </Text>
           {learningJourney.map((course) => (
             <TouchableOpacity
               key={course.id}
               style={{
-                backgroundColor: '#1a1a2e',
+                backgroundColor: '#f8fafc',
                 borderRadius: 12,
                 padding: 16,
                 marginBottom: 12,
                 borderWidth: 1,
-                borderColor: '#2d3748',
+                borderColor: '#e5e7eb',
               }}
             >
               <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
-                <Text style={{ fontSize: 16, fontWeight: '600', color: '#ffffff', flex: 1 }}>
+                <Text style={{ fontSize: 16, fontWeight: '600', color: '#0b0b0f', flex: 1 }}>
                   {course.title}
                 </Text>
                 <ChevronRight size={20} color="#64748b" />
               </View>
               <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 8 }}>
-                <Text style={{ fontSize: 14, color: '#94a3b8' }}>
+                <Text style={{ fontSize: 14, color: '#6b7280' }}>
                   {course.completedLessons}/{course.totalLessons} lessons
                 </Text>
-                <Text style={{ fontSize: 14, color: '#7dd3fc', fontWeight: '600' }}>
+                <Text style={{ fontSize: 14, color: '#0b0b0f', fontWeight: '600' }}>
                   {course.progress}%
                 </Text>
               </View>
               <View
                 style={{
                   height: 6,
-                  backgroundColor: '#2d3748',
+                  backgroundColor: '#e5e7eb',
                   borderRadius: 3,
                   overflow: 'hidden',
                 }}
@@ -281,7 +212,7 @@ export default function LAIScreen() {
                   style={{
                     height: '100%',
                     width: `${course.progress}%`,
-                    backgroundColor: '#7dd3fc',
+                    backgroundColor: '#0b0b0f',
                     borderRadius: 3,
                   }}
                 />
@@ -292,38 +223,38 @@ export default function LAIScreen() {
 
         {/* Documents */}
         <View>
-          <Text style={{ fontSize: 20, fontWeight: '600', color: '#ffffff', marginBottom: 16 }}>
-            Documents ({filteredDocuments.length})
+          <Text style={{ fontSize: 20, fontWeight: '600', color: '#0b0b0f', marginBottom: 16 }}>
+            Documents (moved to Progress)
           </Text>
-          {filteredDocuments.length === 0 ? (
+          {true ? (
             <View
               style={{
-                backgroundColor: '#1a1a2e',
+                backgroundColor: '#f8fafc',
                 borderRadius: 12,
                 padding: 40,
                 alignItems: 'center',
                 borderWidth: 1,
-                borderColor: '#2d3748',
+                borderColor: '#e5e7eb',
               }}
             >
-              <BookOpen size={48} color="#64748b" />
-              <Text style={{ fontSize: 18, fontWeight: '600', color: '#ffffff', marginTop: 16, marginBottom: 8 }}>
-                No Documents Yet
+              <BookOpen size={48} color="#6b7280" />
+              <Text style={{ fontSize: 18, fontWeight: '600', color: '#0b0b0f', marginTop: 16, marginBottom: 8 }}>
+                Find documents in Progress tab
               </Text>
-              <Text style={{ fontSize: 14, color: '#94a3b8', textAlign: 'center', marginBottom: 24 }}>
-                Start documenting your learning journey by adding photos and documents
+              <Text style={{ fontSize: 14, color: '#6b7280', textAlign: 'center', marginBottom: 24 }}>
+                Add Photo and Add Document actions have been moved
               </Text>
               <TouchableOpacity
                 onPress={handleAddPhoto}
                 style={{
-                  backgroundColor: '#7dd3fc',
+                  backgroundColor: '#0b0b0f',
                   borderRadius: 12,
                   paddingHorizontal: 24,
                   paddingVertical: 12,
                 }}
               >
-                <Text style={{ fontSize: 16, fontWeight: '600', color: '#0b0b0f' }}>
-                  Add Your First Document
+                <Text style={{ fontSize: 16, fontWeight: '600', color: '#ffffff' }}>
+                  Open Progress
                 </Text>
               </TouchableOpacity>
             </View>
@@ -332,12 +263,12 @@ export default function LAIScreen() {
               <TouchableOpacity
                 key={doc.id}
                 style={{
-                  backgroundColor: '#1a1a2e',
+                  backgroundColor: '#f8fafc',
                   borderRadius: 12,
                   padding: 16,
                   marginBottom: 12,
                   borderWidth: 1,
-                  borderColor: '#2d3748',
+                  borderColor: '#e5e7eb',
                 }}
               >
                 <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 8 }}>
@@ -346,23 +277,23 @@ export default function LAIScreen() {
                       width: 40,
                       height: 40,
                       borderRadius: 20,
-                      backgroundColor: doc.type === 'image' ? '#7dd3fc20' : '#10b98120',
+                      backgroundColor: doc.type === 'image' ? '#0b0b0f10' : '#10b98120',
                       alignItems: 'center',
                       justifyContent: 'center',
                       marginRight: 12,
                     }}
                   >
                     {doc.type === 'image' ? (
-                      <ImageIcon size={20} color={doc.type === 'image' ? '#7dd3fc' : '#10b981'} />
+                      <ImageIcon size={20} color={doc.type === 'image' ? '#0b0b0f' : '#10b981'} />
                     ) : (
-                      <File size={20} color={doc.type === 'image' ? '#7dd3fc' : '#10b981'} />
+                      <File size={20} color={doc.type === 'image' ? '#0b0b0f' : '#10b981'} />
                     )}
                   </View>
                   <View style={{ flex: 1 }}>
-                    <Text style={{ fontSize: 16, fontWeight: '600', color: '#ffffff' }}>
+                    <Text style={{ fontSize: 16, fontWeight: '600', color: '#0b0b0f' }}>
                       {doc.title}
                     </Text>
-                    <Text style={{ fontSize: 12, color: '#94a3b8' }}>
+                    <Text style={{ fontSize: 12, color: '#6b7280' }}>
                       {doc.date}
                     </Text>
                   </View>
@@ -371,7 +302,7 @@ export default function LAIScreen() {
                     style={{
                       padding: 8,
                       borderRadius: 8,
-                      backgroundColor: '#ef444420',
+                      backgroundColor: '#ef444410',
                     }}
                   >
                     <Trash2 size={16} color="#ef4444" />
@@ -382,13 +313,13 @@ export default function LAIScreen() {
                     <View
                       key={index}
                       style={{
-                        backgroundColor: '#2d3748',
+                        backgroundColor: '#e5e7eb',
                         borderRadius: 6,
                         paddingHorizontal: 8,
                         paddingVertical: 4,
                       }}
                     >
-                      <Text style={{ fontSize: 12, color: '#94a3b8' }}>#{tag}</Text>
+                      <Text style={{ fontSize: 12, color: '#6b7280' }}>#{tag}</Text>
                     </View>
                   ))}
                 </View>

@@ -8,17 +8,17 @@ const cfg: ExpoConfig = {
   orientation: "portrait",
   newArchEnabled: true,
   icon: "./assets/images/icon.png",
-  userInterfaceStyle: "automatic",
+  userInterfaceStyle: "light",
   splash: {
     image: "./assets/images/splash-icon.png",
     resizeMode: "contain",
-    backgroundColor: "#0b0b0f"
+    backgroundColor: "#ffffff"
   },
   android: {
     package: "com.lockin.app",
     adaptiveIcon: {
       foregroundImage: "./assets/images/adaptive-icon.png",
-      backgroundColor: "#0b0b0f"
+      backgroundColor: "#ffffff"
     },
     permissions: [
       "android.permission.RECORD_AUDIO",

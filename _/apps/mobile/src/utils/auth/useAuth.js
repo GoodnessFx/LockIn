@@ -27,7 +27,7 @@ export const useAuth = () => {
     // Always use a dummy auth for this app
     setAuth({
       user: {
-        name: 'Demo User',
+        name: 'IG',
         email: 'demo@example.com',
       },
       token: 'demo-token',
