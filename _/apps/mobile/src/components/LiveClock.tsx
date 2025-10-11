@@ -1,114 +1,153 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet } from 'react-native';
-import { useTheme } from '../hooks/ThemeProvider';
+import Animated, { 
+  useSharedValue, 
+  useAnimatedStyle, 
+  withTiming,
+  withRepeat,
+  withSequence,
+  Easing 
+} from 'react-native-reanimated';
 
 interface LiveClockProps {
-  timezone?: string;
   showDate?: boolean;
   showSeconds?: boolean;
+  format?: '12h' | '24h';
   size?: 'small' | 'medium' | 'large';
+  color?: string;
 }
 
 export default function LiveClock({ 
-  timezone = 'local',
-  showDate = true,
-  showSeconds = true,
-  size = 'medium'
+  showDate = true, 
+  showSeconds = true, 
+  format = '12h',
+  size = 'medium',
+  color = '#0b0b0f'
 }: LiveClockProps) {
-  const { colors, typography } = useTheme();
-  const [currentTime, setCurrentTime] = useState(new Date());
+  const [time, setTime] = useState(new Date());
+  const [date, setDate] = useState(new Date());
+
+  const pulseAnimation = useSharedValue(1);
+  const glowAnimation = useSharedValue(0);
+
+  // Size configurations
+  const sizeConfig = {
+    small: { 
+      timeFontSize: 16, 
+      dateFontSize: 12, 
+      containerPadding: 8,
+      spacing: 4 
+    },
+    medium: { 
+      timeFontSize: 24, 
+      dateFontSize: 14, 
+      containerPadding: 12,
+      spacing: 6 
+    },
+    large: { 
+      timeFontSize: 32, 
+      dateFontSize: 16, 
+      containerPadding: 16,
+      spacing: 8 
+    }
+  };
+
+  const config = sizeConfig[size];
 
   useEffect(() => {
-    const timer = setInterval(() => {
-      setCurrentTime(new Date());
-    }, 1000);
-
-    return () => clearInterval(timer);
-  }, []);
-
-  const formatTime = (date: Date) => {
-    const options: Intl.DateTimeFormatOptions = {
-      hour: '2-digit',
-      minute: '2-digit',
-      ...(showSeconds && { second: '2-digit' }),
-      hour12: true,
+    const updateTime = () => {
+      const now = new Date();
+      setTime(now);
+      setDate(now);
     };
 
-    if (timezone !== 'local') {
-      options.timeZone = timezone;
-    }
+    updateTime();
+    const interval = setInterval(updateTime, 1000);
 
-    return date.toLocaleTimeString('en-US', options);
+    // Start subtle pulse animation
+    pulseAnimation.value = withRepeat(
+      withSequence(
+        withTiming(1.02, { duration: 2000, easing: Easing.inOut(Easing.ease) }),
+        withTiming(1, { duration: 2000, easing: Easing.inOut(Easing.ease) })
+      ),
+      -1,
+      false
+    );
+
+    // Start glow animation
+    glowAnimation.value = withRepeat(
+      withSequence(
+        withTiming(1, { duration: 3000, easing: Easing.inOut(Easing.ease) }),
+        withTiming(0, { duration: 3000, easing: Easing.inOut(Easing.ease) })
+      ),
+      -1,
+      false
+    );
+
+    return () => clearInterval(interval);
+  }, [pulseAnimation, glowAnimation]);
+
+  const animatedStyle = useAnimatedStyle(() => ({
+    transform: [{ scale: pulseAnimation.value }],
+  }));
+
+  const glowStyle = useAnimatedStyle(() => ({
+    opacity: glowAnimation.value * 0.1,
+  }));
+
+  const formatTime = (date: Date) => {
+    const hours = format === '12h' 
+      ? date.getHours() % 12 || 12
+      : date.getHours();
+    const minutes = date.getMinutes();
+    const seconds = date.getSeconds();
+    const ampm = format === '12h' ? (date.getHours() >= 12 ? 'PM' : 'AM') : '';
+
+    const timeString = `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`;
+    const secondsString = showSeconds ? `:${seconds.toString().padStart(2, '0')}` : '';
+    
+    return `${timeString}${secondsString} ${ampm}`.trim();
   };
 
   const formatDate = (date: Date) => {
     const options: Intl.DateTimeFormatOptions = {
-      weekday: 'short',
-      month: 'short',
-      day: 'numeric',
+      weekday: 'long',
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric'
     };
-
-    if (timezone !== 'local') {
-      options.timeZone = timezone;
-    }
-
     return date.toLocaleDateString('en-US', options);
   };
 
-  const getSizeStyles = () => {
-    switch (size) {
-      case 'small':
-        return {
-          timeFontSize: 16,
-          dateFontSize: 12,
-          containerPadding: 8,
-        };
-      case 'large':
-        return {
-          timeFontSize: 28,
-          dateFontSize: 16,
-          containerPadding: 16,
-        };
-      default:
-        return {
-          timeFontSize: 20,
-          dateFontSize: 14,
-          containerPadding: 12,
-        };
-    }
-  };
-
-  const sizeStyles = getSizeStyles();
-
   return (
-    <View style={[
-      styles.container, 
-      { 
-        backgroundColor: colors.surface,
-        padding: sizeStyles.containerPadding 
-      }
-    ]}>
-      <Text style={[
-        styles.timeText, 
-        { 
-          color: colors.text, 
-          fontSize: sizeStyles.timeFontSize 
-        }
-      ]}>
-        {formatTime(currentTime)}
-      </Text>
-      
-      {showDate && (
+    <View style={styles.container}>
+      <Animated.View style={[styles.clockContainer, animatedStyle]}>
         <Text style={[
-          styles.dateText, 
+          styles.timeText, 
           { 
-            color: colors.textSecondary, 
-            fontSize: sizeStyles.dateFontSize 
+            fontSize: config.timeFontSize, 
+            color,
+            marginBottom: showDate ? config.spacing : 0 
           }
         ]}>
-          {formatDate(currentTime)}
+          {formatTime(time)}
         </Text>
-      )}
+        
+        {showDate && (
+          <Text style={[
+            styles.dateText, 
+            { 
+              fontSize: config.dateFontSize, 
+              color: color + '80' // Add transparency
+            }
+          ]}>
+            {formatDate(date)}
+          </Text>
+        )}
+      </Animated.View>
+      
+      {/* Subtle glow effect */}
+      <Animated.View style={[styles.glowEffect, glowStyle]} />
     </View>
   );
 }
@@ -117,22 +156,31 @@ const styles = StyleSheet.create({
   container: {
     alignItems: 'center',
     justifyContent: 'center',
-    borderRadius: 12,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 2,
+    position: 'relative',
+  },
+  clockContainer: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: 12,
   },
   timeText: {
-    fontWeight: '700',
-    fontFamily: 'monospace',
+    fontWeight: 'bold',
+    textAlign: 'center',
     letterSpacing: 1,
   },
   dateText: {
     fontWeight: '500',
-    marginTop: 2,
-    textTransform: 'uppercase',
-    letterSpacing: 0.5,
+    textAlign: 'center',
+    opacity: 0.8,
+  },
+  glowEffect: {
+    position: 'absolute',
+    top: -5,
+    left: -5,
+    right: -5,
+    bottom: -5,
+    backgroundColor: '#6C5CE7',
+    borderRadius: 15,
+    zIndex: -1,
   },
 });

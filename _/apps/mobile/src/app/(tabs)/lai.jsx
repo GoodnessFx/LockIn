@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   View,
   Text,
@@ -21,14 +21,21 @@ import {
   ChevronRight,
   Image as ImageIcon,
   File,
-  Trash2
+  Trash2,
+  MessageCircle,
+  Lightbulb,
+  TrendingUp
 } from 'lucide-react-native';
-// Removed document/photo features per requirement (moved to Progress)
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useAppStore } from '@/store/appStore';
 
 export default function LAIScreen() {
   const insets = useSafeAreaInsets();
   const [searchQuery, setSearchQuery] = useState('');
   const [documents] = useState([]);
+  const [assistantMessage, setAssistantMessage] = useState('');
+  const [progressNotes, setProgressNotes] = useState([]);
+  const { progress } = useAppStore();
 
   const [learningJourney, setLearningJourney] = useState([
     {
@@ -56,6 +63,56 @@ export default function LAIScreen() {
       lastAccessed: '2024-01-15',
     },
   ]);
+
+  // Growth mindset motivational messages
+  const motivationalMessages = [
+    `Day ${progress?.currentDay || 1} of your 97-day transformation! You're becoming unstoppable! 🚀`,
+    "Your commitment battery is charged! Every action builds your future self! ⚡",
+    "Growth happens in the discomfort zone. You're exactly where you need to be! 💪",
+    "Small consistent actions compound into extraordinary results. Keep building! 🏗️",
+    "Your future self is counting on today's version of you. Make it count! 🎯",
+    "Every expert was once a beginner who refused to give up. You're on the right path! 🌟",
+    "The compound effect of daily progress is your superpower. Use it! ⭐",
+    "You're not just learning skills, you're building character. Stay locked in! 🔒"
+  ];
+
+  // Load progress notes from AsyncStorage
+  useEffect(() => {
+    loadProgressNotes();
+    generateMotivationalMessage();
+  }, []);
+
+  const loadProgressNotes = async () => {
+    try {
+      const notes = await AsyncStorage.getItem('lai_progress_notes');
+      if (notes) {
+        setProgressNotes(JSON.parse(notes));
+      }
+    } catch (error) {
+      console.error('Error loading progress notes:', error);
+    }
+  };
+
+  const saveProgressNote = async (note) => {
+    try {
+      const newNote = {
+        id: Date.now().toString(),
+        text: note,
+        date: new Date().toISOString(),
+        type: 'user'
+      };
+      const updatedNotes = [...progressNotes, newNote];
+      setProgressNotes(updatedNotes);
+      await AsyncStorage.setItem('lai_progress_notes', JSON.stringify(updatedNotes));
+    } catch (error) {
+      console.error('Error saving progress note:', error);
+    }
+  };
+
+  const generateMotivationalMessage = () => {
+    const randomMessage = motivationalMessages[Math.floor(Math.random() * motivationalMessages.length)];
+    setAssistantMessage(randomMessage);
+  };
 
   const handleAddPhoto = () => Alert.alert('Moved', 'Add Photo is now in Progress tab.');
   const handleAddDocument = () => Alert.alert('Moved', 'Add Document is now in Progress tab.');
@@ -101,6 +158,25 @@ export default function LAIScreen() {
             A warm space to grow in your niche
           </Text>
         </View>
+
+        {/* Assistant Message */}
+        {assistantMessage && (
+          <View style={{
+            backgroundColor: '#f0f8ff',
+            borderRadius: 12,
+            padding: 16,
+            marginBottom: 24,
+            borderLeftWidth: 4,
+            borderLeftColor: '#6C5CE7',
+            flexDirection: 'row',
+            alignItems: 'center',
+          }}>
+            <MessageCircle size={24} color="#6C5CE7" style={{ marginRight: 12 }} />
+            <Text style={{ flex: 1, fontSize: 14, color: '#0b0b0f', lineHeight: 20 }}>
+              {assistantMessage}
+            </Text>
+          </View>
+        )}
 
         {/* Search Bar */}
         <View
@@ -324,6 +400,53 @@ export default function LAIScreen() {
                   ))}
                 </View>
               </TouchableOpacity>
+            ))
+          )}
+        </View>
+
+        {/* Progress Notes Section */}
+        <View style={{ marginTop: 24 }}>
+          <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 16 }}>
+            <Lightbulb size={20} color="#6C5CE7" />
+            <Text style={{ fontSize: 20, fontWeight: '600', color: '#0b0b0f', marginLeft: 8 }}>
+              Progress Notes
+            </Text>
+          </View>
+          
+          {progressNotes.length === 0 ? (
+            <View style={{
+              backgroundColor: '#f8f9fa',
+              borderRadius: 12,
+              padding: 24,
+              alignItems: 'center',
+              borderWidth: 1,
+              borderColor: '#e0e0e0',
+            }}>
+              <TrendingUp size={32} color="#6b7280" />
+              <Text style={{ fontSize: 16, color: '#6b7280', marginTop: 12, textAlign: 'center' }}>
+                Start documenting your learning journey
+              </Text>
+              <Text style={{ fontSize: 14, color: '#6b7280', marginTop: 4, textAlign: 'center' }}>
+                Add notes about your progress and insights
+              </Text>
+            </View>
+          ) : (
+            progressNotes.slice(-3).map((note) => (
+              <View key={note.id} style={{
+                backgroundColor: '#f8f9fa',
+                borderRadius: 12,
+                padding: 16,
+                marginBottom: 12,
+                borderWidth: 1,
+                borderColor: '#e0e0e0',
+              }}>
+                <Text style={{ fontSize: 14, color: '#0b0b0f', lineHeight: 20 }}>
+                  {note.text}
+                </Text>
+                <Text style={{ fontSize: 12, color: '#6b7280', marginTop: 8 }}>
+                  {new Date(note.date).toLocaleDateString()}
+                </Text>
+              </View>
             ))
           )}
         </View>

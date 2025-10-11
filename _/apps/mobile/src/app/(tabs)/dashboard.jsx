@@ -23,11 +23,40 @@ import {
 } from "lucide-react-native";
 import { useAuth } from "@/utils/auth/useAuth";
 import useUser from "@/utils/auth/useUser";
+import { useAppStore } from "@/store/appStore";
+import BatteryProgressIndicator from "@/components/BatteryProgressIndicator";
+import CountdownTimer from "@/components/CountdownTimer";
+import LiveClock from "@/components/LiveClock";
 
 export default function Dashboard() {
   const insets = useSafeAreaInsets();
   const { isAuthenticated, signIn } = useAuth();
   const { data: user, loading } = useUser();
+  const { progress, updateProgress } = useAppStore();
+
+  // Handle authentication state
+  if (!isAuthenticated) {
+    return (
+      <View style={{ flex: 1, backgroundColor: '#ffffff', alignItems: 'center', justifyContent: 'center' }}>
+        <Text style={{ fontSize: 18, color: '#6c757d', marginBottom: 20 }}>
+          Please sign in to continue
+        </Text>
+        <TouchableOpacity
+          onPress={signIn}
+          style={{
+            backgroundColor: '#6C5CE7',
+            paddingHorizontal: 24,
+            paddingVertical: 12,
+            borderRadius: 8,
+          }}
+        >
+          <Text style={{ color: '#ffffff', fontSize: 16, fontWeight: '600' }}>
+            Sign In
+          </Text>
+        </TouchableOpacity>
+      </View>
+    );
+  }
 
   // Countdown timer state
   const [timeLeft, setTimeLeft] = useState({
@@ -37,7 +66,7 @@ export default function Dashboard() {
     seconds: 0,
   });
   const [isRunning, setIsRunning] = useState(false);
-  const [targetDate] = useState(new Date(Date.now() + 90 * 24 * 60 * 60 * 1000)); // 90 days from now
+  const [targetDate] = useState(new Date(Date.now() + 97 * 24 * 60 * 60 * 1000)); // 97 days from now
 
   // Focus timer state
   const [focusTime, setFocusTime] = useState(25 * 60); // 25 minutes in seconds
@@ -158,10 +187,15 @@ export default function Dashboard() {
           </Text>
         </View>
 
-        {/* 90-Day Sprint Countdown */}
+        {/* Live Clock */}
+        <View style={{ marginBottom: 24, alignItems: 'center' }}>
+          <LiveClock size="medium" color="#6C5CE7" />
+        </View>
+
+        {/* 97-Day Commitment Countdown */}
         <View style={{ marginBottom: 32 }}>
-          <Text style={{ fontSize: 20, fontWeight: "600", color: "#0b0b0f", marginBottom: 16 }}>
-            90-Day Sprint
+          <Text style={{ fontSize: 20, fontWeight: "600", color: "#0b0b0f", marginBottom: 16, textAlign: 'center' }}>
+            97-Day Commitment Sprint
           </Text>
           <View style={{
             backgroundColor: "#f8f9fa",
@@ -174,35 +208,43 @@ export default function Dashboard() {
             shadowOpacity: 0.1,
             shadowRadius: 8,
             elevation: 4,
+            alignItems: 'center',
           }}>
-            <View style={{ flexDirection: "row", justifyContent: "space-around", marginBottom: 16 }}>
-              <View style={{ alignItems: "center" }}>
-                <Text style={{ fontSize: 32, fontWeight: "bold", color: "#6C5CE7" }}>
-                  {timeLeft.days}
-                </Text>
-                <Text style={{ fontSize: 14, color: "#6c757d" }}>Days</Text>
-              </View>
-              <View style={{ alignItems: "center" }}>
-                <Text style={{ fontSize: 32, fontWeight: "bold", color: "#6C5CE7" }}>
-                  {timeLeft.hours}
-                </Text>
-                <Text style={{ fontSize: 14, color: "#6c757d" }}>Hours</Text>
-              </View>
-              <View style={{ alignItems: "center" }}>
-                <Text style={{ fontSize: 32, fontWeight: "bold", color: "#6C5CE7" }}>
-                  {timeLeft.minutes}
-                </Text>
-                <Text style={{ fontSize: 14, color: "#6c757d" }}>Minutes</Text>
-              </View>
-              <View style={{ alignItems: "center" }}>
-                <Text style={{ fontSize: 32, fontWeight: "bold", color: "#6C5CE7" }}>
-                  {timeLeft.seconds}
-                </Text>
-                <Text style={{ fontSize: 14, color: "#6c757d" }}>Seconds</Text>
-              </View>
-            </View>
-            <Text style={{ fontSize: 16, color: "#6c757d", textAlign: "center" }}>
-              until your next milestone
+            <CountdownTimer 
+              targetDate={targetDate} 
+              size="medium"
+              onComplete={() => {
+                // Handle completion
+                console.log('97-day sprint completed!');
+              }}
+            />
+            <Text style={{ fontSize: 16, color: "#6c757d", textAlign: "center", marginTop: 16 }}>
+              until your transformation is complete
+            </Text>
+          </View>
+        </View>
+
+        {/* Battery Progress Indicator */}
+        <View style={{ marginBottom: 32 }}>
+          <Text style={{ fontSize: 20, fontWeight: "600", color: "#0b0b0f", marginBottom: 16, textAlign: 'center' }}>
+            Commitment Battery
+          </Text>
+          <View style={{
+            backgroundColor: "#f8f9fa",
+            borderRadius: 16,
+            padding: 24,
+            borderWidth: 1,
+            borderColor: "#e0e0e0",
+            shadowColor: '#000',
+            shadowOffset: { width: 0, height: 2 },
+            shadowOpacity: 0.1,
+            shadowRadius: 8,
+            elevation: 4,
+            alignItems: 'center',
+          }}>
+            <BatteryProgressIndicator size={140} showPercentage={true} showText={true} />
+            <Text style={{ fontSize: 14, color: "#6c757d", textAlign: "center", marginTop: 12 }}>
+              Your commitment energy level
             </Text>
           </View>
         </View>

@@ -3,213 +3,171 @@ import { View, Text, StyleSheet } from 'react-native';
 import Animated, { 
   useSharedValue, 
   useAnimatedStyle, 
-  withTiming,
-  interpolate,
-  Extrapolate
+  withTiming, 
+  withRepeat,
+  withSequence,
+  Easing 
 } from 'react-native-reanimated';
-import { useTheme } from '../hooks/ThemeProvider';
-import { APP_CONFIG } from '../../config/constants';
 
 interface CountdownTimerProps {
-  targetDate?: string;
-  commitmentStartDate?: string;
+  targetDate: Date;
+  onComplete?: () => void;
+  showLabels?: boolean;
+  size?: 'small' | 'medium' | 'large';
 }
 
 export default function CountdownTimer({ 
   targetDate, 
-  commitmentStartDate 
+  onComplete, 
+  showLabels = true,
+  size = 'medium' 
 }: CountdownTimerProps) {
-  const { colors, typography } = useTheme();
   const [timeLeft, setTimeLeft] = useState({
     days: 0,
     hours: 0,
     minutes: 0,
-    seconds: 0
+    seconds: 0,
   });
-  
-  const [isExpired, setIsExpired] = useState(false);
-  const pulseAnim = useSharedValue(1);
 
-  // Calculate target date - either provided or 97 days from start
-  const getTargetDate = () => {
-    if (targetDate) return new Date(targetDate);
-    if (commitmentStartDate) {
-      const start = new Date(commitmentStartDate);
-      return new Date(start.getTime() + APP_CONFIG.COMMITMENT_DAYS * 24 * 60 * 60 * 1000);
-    }
-    // Default to 97 days from now
-    return new Date(Date.now() + APP_CONFIG.COMMITMENT_DAYS * 24 * 60 * 60 * 1000);
+  const pulseAnimation = useSharedValue(1);
+  const glowAnimation = useSharedValue(0);
+
+  // Size configurations
+  const sizeConfig = {
+    small: { fontSize: 24, containerSize: 60, spacing: 8 },
+    medium: { fontSize: 32, containerSize: 80, spacing: 12 },
+    large: { fontSize: 48, containerSize: 100, spacing: 16 }
   };
 
+  const config = sizeConfig[size];
+
   useEffect(() => {
-    const target = getTargetDate();
-    
     const updateTimer = () => {
       const now = new Date().getTime();
-      const targetTime = target.getTime();
-      const difference = targetTime - now;
+      const target = targetDate.getTime();
+      const difference = target - now;
 
       if (difference > 0) {
-        const days = Math.floor(difference / (1000 * 60 * 60 * 24));
-        const hours = Math.floor((difference % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-        const minutes = Math.floor((difference % (1000 * 60 * 60)) / (1000 * 60));
-        const seconds = Math.floor((difference % (1000 * 60)) / 1000);
-
-        setTimeLeft({ days, hours, minutes, seconds });
-        setIsExpired(false);
-        
-        // Pulse animation for urgency when < 7 days
-        if (days < 7) {
-          pulseAnim.value = withTiming(1.1, { duration: 1000 }, () => {
-            pulseAnim.value = withTiming(1, { duration: 1000 });
-          });
-        }
+        setTimeLeft({
+          days: Math.floor(difference / (1000 * 60 * 60 * 24)),
+          hours: Math.floor((difference % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)),
+          minutes: Math.floor((difference % (1000 * 60 * 60)) / (1000 * 60)),
+          seconds: Math.floor((difference % (1000 * 60)) / 1000),
+        });
       } else {
         setTimeLeft({ days: 0, hours: 0, minutes: 0, seconds: 0 });
-        setIsExpired(true);
+        if (onComplete) onComplete();
       }
     };
 
     updateTimer();
     const interval = setInterval(updateTimer, 1000);
+
+    // Start pulse animation
+    pulseAnimation.value = withRepeat(
+      withSequence(
+        withTiming(1.1, { duration: 1000, easing: Easing.inOut(Easing.ease) }),
+        withTiming(1, { duration: 1000, easing: Easing.inOut(Easing.ease) })
+      ),
+      -1,
+      false
+    );
+
+    // Start glow animation
+    glowAnimation.value = withRepeat(
+      withSequence(
+        withTiming(1, { duration: 2000, easing: Easing.inOut(Easing.ease) }),
+        withTiming(0, { duration: 2000, easing: Easing.inOut(Easing.ease) })
+      ),
+      -1,
+      false
+    );
+
     return () => clearInterval(interval);
-  }, [targetDate, commitmentStartDate]);
+  }, [targetDate, onComplete, pulseAnimation, glowAnimation]);
 
-  const animatedStyle = useAnimatedStyle(() => {
-    const scale = interpolate(
-      pulseAnim.value,
-      [1, 1.1],
-      [1, 1.1],
-      Extrapolate.CLAMP
-    );
-    
-    return {
-      transform: [{ scale }],
-    };
-  });
+  const animatedStyle = useAnimatedStyle(() => ({
+    transform: [{ scale: pulseAnimation.value }],
+  }));
 
-  if (isExpired) {
-    return (
-      <View style={[styles.container, { backgroundColor: colors.surface }]}>
-        <Text style={[styles.celebrationText, { color: colors.success }]}>
-          🎉 Commitment Complete!
+  const glowStyle = useAnimatedStyle(() => ({
+    opacity: glowAnimation.value * 0.3,
+  }));
+
+  const TimeUnit = ({ value, label }: { value: number; label: string }) => (
+    <View style={[styles.timeUnit, { width: config.containerSize }]}>
+      <Animated.View style={[styles.timeContainer, animatedStyle]}>
+        <Text style={[styles.timeValue, { fontSize: config.fontSize }]}>
+          {value.toString().padStart(2, '0')}
         </Text>
-        <Text style={[styles.celebrationSubtext, { color: colors.textSecondary }]}>
-          You've successfully completed your 97-day journey!
-        </Text>
-      </View>
-    );
-  }
+      </Animated.View>
+      {showLabels && (
+        <Text style={styles.timeLabel}>{label}</Text>
+      )}
+    </View>
+  );
 
   return (
-    <Animated.View style={[styles.container, { backgroundColor: colors.surface }, animatedStyle]}>
-      <View style={styles.timeContainer}>
-        <View style={styles.timeUnit}>
-          <Text style={[styles.timeNumber, { color: colors.text }]}>
-            {timeLeft.days.toString().padStart(2, '0')}
-          </Text>
-          <Text style={[styles.timeLabel, { color: colors.textSecondary }]}>
-            Days
-          </Text>
-        </View>
-        
-        <View style={styles.separator}>
-          <Text style={[styles.separatorText, { color: colors.textSecondary }]}>:</Text>
-        </View>
-        
-        <View style={styles.timeUnit}>
-          <Text style={[styles.timeNumber, { color: colors.text }]}>
-            {timeLeft.hours.toString().padStart(2, '0')}
-          </Text>
-          <Text style={[styles.timeLabel, { color: colors.textSecondary }]}>
-            Hours
-          </Text>
-        </View>
-        
-        <View style={styles.separator}>
-          <Text style={[styles.separatorText, { color: colors.textSecondary }]}>:</Text>
-        </View>
-        
-        <View style={styles.timeUnit}>
-          <Text style={[styles.timeNumber, { color: colors.text }]}>
-            {timeLeft.minutes.toString().padStart(2, '0')}
-          </Text>
-          <Text style={[styles.timeLabel, { color: colors.textSecondary }]}>
-            Min
-          </Text>
-        </View>
+    <View style={styles.container}>
+      <View style={[styles.timerContainer, { gap: config.spacing }]}>
+        <TimeUnit value={timeLeft.days} label="Days" />
+        <TimeUnit value={timeLeft.hours} label="Hours" />
+        <TimeUnit value={timeLeft.minutes} label="Minutes" />
+        <TimeUnit value={timeLeft.seconds} label="Seconds" />
       </View>
       
-      <Text style={[styles.motivationText, { color: colors.textSecondary }]}>
-        {timeLeft.days < 7 
-          ? "Final stretch! You've got this! 💪" 
-          : timeLeft.days < 30 
-          ? "Keep the momentum going! 🚀" 
-          : "Every day counts toward your goal! ⭐"
-        }
-      </Text>
-    </Animated.View>
+      {/* Glow effect */}
+      <Animated.View style={[styles.glowEffect, glowStyle]} />
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
-    padding: 20,
-    borderRadius: 16,
     alignItems: 'center',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 8,
-    elevation: 4,
+    justifyContent: 'center',
+    position: 'relative',
   },
-  timeContainer: {
+  timerContainer: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    marginBottom: 12,
   },
   timeUnit: {
     alignItems: 'center',
-    minWidth: 60,
+    justifyContent: 'center',
   },
-  timeNumber: {
-    fontSize: 32,
-    fontWeight: '800',
-    lineHeight: 36,
+  timeContainer: {
+    backgroundColor: '#6C5CE7',
+    borderRadius: 12,
+    paddingVertical: 8,
+    paddingHorizontal: 12,
+    marginBottom: 4,
+    shadowColor: '#6C5CE7',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+    elevation: 8,
+  },
+  timeValue: {
+    color: '#ffffff',
+    fontWeight: 'bold',
+    textAlign: 'center',
   },
   timeLabel: {
     fontSize: 12,
-    fontWeight: '600',
-    marginTop: 4,
-    textTransform: 'uppercase',
-    letterSpacing: 0.5,
-  },
-  separator: {
-    marginHorizontal: 8,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  separatorText: {
-    fontSize: 24,
-    fontWeight: '700',
-  },
-  motivationText: {
-    fontSize: 14,
+    color: '#6c757d',
     fontWeight: '500',
     textAlign: 'center',
-    marginTop: 8,
   },
-  celebrationText: {
-    fontSize: 24,
-    fontWeight: '800',
-    textAlign: 'center',
-    marginBottom: 8,
-  },
-  celebrationSubtext: {
-    fontSize: 16,
-    fontWeight: '500',
-    textAlign: 'center',
+  glowEffect: {
+    position: 'absolute',
+    top: -10,
+    left: -10,
+    right: -10,
+    bottom: -10,
+    backgroundColor: '#6C5CE7',
+    borderRadius: 20,
+    zIndex: -1,
   },
 });
-

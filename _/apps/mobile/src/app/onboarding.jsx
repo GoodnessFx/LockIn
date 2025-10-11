@@ -4,7 +4,8 @@ import { useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useAppStore } from '@/store/appStore';
 import Animated, { FadeIn, FadeOut, withTiming, useSharedValue, useAnimatedStyle } from 'react-native-reanimated';
-import { ArrowRight, Target, Users, BookOpen, Lock } from 'lucide-react-native';
+import { ArrowRight, Target, Users, BookOpen, Lock, Linkedin, Twitter } from 'lucide-react-native';
+import { Linking } from 'react-native';
 
 const { width, height } = Dimensions.get('window');
 
@@ -18,26 +19,30 @@ export default function Onboarding() {
     router.replace('/(tabs)/dashboard');
   };
 
+  const handleSocialLink = (url) => {
+    Linking.openURL(url).catch(err => console.error('Failed to open URL:', err));
+  };
+
   const features = [
     {
       icon: <Target size={32} color="#6C5CE7" />,
-      title: "90-Day Sprints",
-      description: "Track your progress with countdown timers and milestones"
+      title: "97-Day Commitment",
+      description: "Transform your life with a proven 97-day sprint system"
     },
     {
       icon: <BookOpen size={32} color="#6C5CE7" />,
-      title: "Learning AI",
-      description: "Document your journey with photos and documents"
+      title: "AI Learning Coach",
+      description: "Personalized curriculum and motivational guidance"
     },
     {
       icon: <Users size={32} color="#6C5CE7" />,
-      title: "Lockmate",
-      description: "Connect with accountability partners"
+      title: "Lockmate Community",
+      description: "Connect with accountability partners and mentors"
     },
     {
       icon: <Lock size={32} color="#6C5CE7" />,
-      title: "Lock In",
-      description: "Commit to your goals and build relentlessly"
+      title: "Commitment Battery",
+      description: "Track your energy and stay locked in to your goals"
     }
   ];
 
@@ -93,6 +98,24 @@ export default function Onboarding() {
           <Text style={styles.ctaSubtext}>
             Join thousands building their dreams
           </Text>
+          
+          {/* Social Media Links */}
+          <View style={styles.socialLinks}>
+            <TouchableOpacity
+              onPress={() => handleSocialLink('https://linkedin.com/company/lockin')}
+              style={styles.socialButton}
+              activeOpacity={0.7}
+            >
+              <Linkedin size={24} color="#6C5CE7" />
+            </TouchableOpacity>
+            <TouchableOpacity
+              onPress={() => handleSocialLink('https://twitter.com/lockin')}
+              style={styles.socialButton}
+              activeOpacity={0.7}
+            >
+              <Twitter size={24} color="#6C5CE7" />
+            </TouchableOpacity>
+          </View>
         </View>
       </View>
     </View>
@@ -207,5 +230,26 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: '#6c757d',
     textAlign: 'center',
+  },
+  socialLinks: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    gap: 16,
+    marginTop: 20,
+  },
+  socialButton: {
+    width: 48,
+    height: 48,
+    borderRadius: 24,
+    backgroundColor: '#f8f9fa',
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderWidth: 1,
+    borderColor: '#e0e0e0',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 3,
   },
 });

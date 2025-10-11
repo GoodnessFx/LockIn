@@ -1,141 +1,88 @@
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
-import Svg, { Path, Rect, Defs, LinearGradient, Stop } from 'react-native-svg';
-import Animated, { 
-  useSharedValue, 
-  useAnimatedProps, 
-  withTiming,
-  interpolate,
-  Extrapolate
-} from 'react-native-reanimated';
-import { useTheme } from '../hooks/ThemeProvider';
-
-const AnimatedRect = Animated.createAnimatedComponent(Rect);
+import Svg, { Path, Defs, LinearGradient, Stop } from 'react-native-svg';
+import { useAppStore } from '../store/appStore';
 
 interface BatteryProgressIndicatorProps {
-  level: number; // 0-100
-  size?: 'small' | 'medium' | 'large';
+  size?: number;
   showPercentage?: boolean;
-  animated?: boolean;
+  showText?: boolean;
 }
 
 export default function BatteryProgressIndicator({ 
-  level, 
-  size = 'medium', 
-  showPercentage = true,
-  animated = true 
+  size = 120, 
+  showPercentage = true, 
+  showText = true 
 }: BatteryProgressIndicatorProps) {
-  const { colors } = useTheme();
-  const animatedLevel = useSharedValue(level);
-
-  React.useEffect(() => {
-    if (animated) {
-      animatedLevel.value = withTiming(level, { duration: 1000 });
-    } else {
-      animatedLevel.value = level;
-    }
-  }, [level, animated]);
-
-  const getSizeConfig = () => {
-    switch (size) {
-      case 'small':
-        return { width: 60, height: 30, strokeWidth: 2, fontSize: 10 };
-      case 'large':
-        return { width: 120, height: 60, strokeWidth: 3, fontSize: 16 };
-      default:
-        return { width: 80, height: 40, strokeWidth: 2, fontSize: 12 };
-    }
-  };
-
-  const sizeConfig = getSizeConfig();
-  const { width, height, strokeWidth, fontSize } = sizeConfig;
-
-  // Battery dimensions
-  const batteryWidth = width - 8; // Account for terminal
-  const batteryHeight = height;
-  const terminalWidth = 6;
-  const terminalHeight = height * 0.4;
-  const fillPadding = strokeWidth + 2;
-
+  const { progress } = useAppStore();
+  const batteryLevel = progress?.batteryLevel || 100;
+  
+  // Calculate progress percentage
+  const progressPercentage = Math.max(0, Math.min(100, batteryLevel));
+  
+  // Determine battery color based on level
   const getBatteryColor = (level: number) => {
-    if (level >= 75) return '#10b981'; // Green
-    if (level >= 50) return '#f59e0b'; // Amber
-    if (level >= 25) return '#f97316'; // Orange
-    return '#ef4444'; // Red
+    if (level >= 80) return '#00b894'; // Green
+    if (level >= 50) return '#fdcb6e'; // Yellow
+    if (level >= 20) return '#e17055'; // Orange
+    return '#636e72'; // Gray
   };
-
-  const animatedProps = useAnimatedProps(() => {
-    const fillWidth = interpolate(
-      animatedLevel.value,
-      [0, 100],
-      [0, batteryWidth - fillPadding * 2],
-      Extrapolate.CLAMP
-    );
-
-    return {
-      width: fillWidth,
-    };
-  });
-
-  const batteryColor = getBatteryColor(level);
-
+  
+  const batteryColor = getBatteryColor(progressPercentage);
+  
+  // Calculate the fill path based on battery level
+  const fillWidth = (progressPercentage / 100) * (size * 0.6); // 60% of battery width is fillable
+  
   return (
     <View style={styles.container}>
-      <Svg width={width} height={height} viewBox={`0 0 ${width} ${height}`}>
-        <Defs>
-          <LinearGradient id="batteryGradient" x1="0%" y1="0%" x2="100%" y2="0%">
-            <Stop offset="0%" stopColor={batteryColor} stopOpacity="0.8" />
-            <Stop offset="100%" stopColor={batteryColor} stopOpacity="1" />
-          </LinearGradient>
-        </Defs>
+      <View style={styles.batteryContainer}>
+        <Svg width={size} height={size * 0.6} viewBox={`0 0 ${size} ${size * 0.6}`}>
+          <Defs>
+            <LinearGradient id="batteryGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+              <Stop offset="0%" stopColor={batteryColor} stopOpacity="0.8" />
+              <Stop offset="100%" stopColor={batteryColor} stopOpacity="1" />
+            </LinearGradient>
+          </Defs>
+          
+          {/* Battery outline */}
+          <Path
+            d={`M 10 10 L ${size - 20} 10 L ${size - 20} ${size * 0.3} L ${size - 10} ${size * 0.3} L ${size - 10} ${size * 0.4} L ${size - 20} ${size * 0.4} L ${size - 20} ${size * 0.5} L 10 ${size * 0.5} Z`}
+            fill="none"
+            stroke="#e0e0e0"
+            strokeWidth="2"
+          />
+          
+          {/* Battery fill */}
+          <Path
+            d={`M 12 12 L ${12 + fillWidth} 12 L ${12 + fillWidth} ${size * 0.3 - 2} L ${12 + fillWidth} ${size * 0.3 - 2} L ${12 + fillWidth} ${size * 0.4 - 2} L ${12 + fillWidth} ${size * 0.4 - 2} L ${12 + fillWidth} ${size * 0.5 - 2} L 12 ${size * 0.5 - 2} Z`}
+            fill="url(#batteryGradient)"
+          />
+          
+          {/* Battery tip */}
+          <Path
+            d={`M ${size - 20} ${size * 0.25} L ${size - 15} ${size * 0.25} L ${size - 15} ${size * 0.35} L ${size - 20} ${size * 0.35} Z`}
+            fill="#e0e0e0"
+          />
+        </Svg>
         
-        {/* Battery body */}
-        <Rect
-          x={0}
-          y={0}
-          width={batteryWidth}
-          height={batteryHeight}
-          rx={6}
-          ry={6}
-          fill="none"
-          stroke="#e5e7eb"
-          strokeWidth={strokeWidth}
-        />
-        
-        {/* Battery terminal */}
-        <Rect
-          x={batteryWidth}
-          y={(batteryHeight - terminalHeight) / 2}
-          width={terminalWidth}
-          height={terminalHeight}
-          rx={3}
-          ry={3}
-          fill="#e5e7eb"
-        />
-        
-        {/* Battery fill */}
-        <AnimatedRect
-          x={fillPadding}
-          y={fillPadding}
-          height={batteryHeight - fillPadding * 2}
-          rx={4}
-          ry={4}
-          fill="url(#batteryGradient)"
-          animatedProps={animatedProps}
-        />
-      </Svg>
+        {showPercentage && (
+          <View style={styles.percentageContainer}>
+            <Text style={[styles.percentageText, { color: batteryColor }]}>
+              {Math.round(progressPercentage)}%
+            </Text>
+          </View>
+        )}
+      </View>
       
-      {showPercentage && (
-        <Text style={[
-          styles.percentageText, 
-          { 
-            color: '#0b0b0f', 
-            fontSize,
-            marginTop: 4 
-          }
-        ]}>
-          {Math.round(level)}%
-        </Text>
+      {showText && (
+        <View style={styles.textContainer}>
+          <Text style={styles.batteryLabel}>Commitment Battery</Text>
+          <Text style={styles.batterySubtext}>
+            {progressPercentage >= 80 ? 'Fully Charged!' : 
+             progressPercentage >= 50 ? 'Good Progress' : 
+             progressPercentage >= 20 ? 'Keep Going!' : 'Needs Recharge'}
+          </Text>
+        </View>
       )}
     </View>
   );
@@ -146,8 +93,35 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
+  batteryContainer: {
+    position: 'relative',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  percentageContainer: {
+    position: 'absolute',
+    top: '50%',
+    left: '50%',
+    transform: [{ translateX: -20 }, { translateY: -10 }],
+  },
   percentageText: {
-    fontWeight: '700',
+    fontSize: 16,
+    fontWeight: 'bold',
+    textAlign: 'center',
+  },
+  textContainer: {
+    marginTop: 12,
+    alignItems: 'center',
+  },
+  batteryLabel: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: '#0b0b0f',
+    marginBottom: 4,
+  },
+  batterySubtext: {
+    fontSize: 12,
+    color: '#6c757d',
     textAlign: 'center',
   },
 });

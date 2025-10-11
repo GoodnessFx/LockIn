@@ -174,7 +174,7 @@ export default function Profile() {
               </View>
               <View style={{ flex: 1 }}>
                 <Text style={{ fontSize: 24, fontWeight: 'bold', color: '#0b0b0f', marginBottom: 4 }}>
-                  {user?.name || 'IG'}
+                  {user?.name || user?.email || 'LockIn User'}
                 </Text>
                 <Text style={{ fontSize: 16, color: '#6c757d', marginBottom: 8 }}>
                   Level {userStats.level} • {userStats.xp} XP

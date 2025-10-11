@@ -25,6 +25,8 @@ import {
 import { Camera, FileText, Search } from 'lucide-react-native';
 import * as ImagePicker from 'expo-image-picker';
 import * as DocumentPicker from 'expo-document-picker';
+import { useAppStore } from '@/store/appStore';
+import BatteryProgressIndicator from '@/components/BatteryProgressIndicator';
 
 const { width } = Dimensions.get('window');
 
@@ -33,6 +35,7 @@ export default function ProgressScreen() {
   const [selectedPeriod, setSelectedPeriod] = useState('week'); // week, month, year
   const [searchQuery, setSearchQuery] = useState('');
   const [documents, setDocuments] = useState([]);
+  const { progress } = useAppStore();
 
   const handleAddPhoto = async () => {
     const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
@@ -202,6 +205,31 @@ export default function ProgressScreen() {
           <Text style={{ fontSize: 16, color: '#6b7280', marginTop: 4 }}>
             Track your growth and achievements
           </Text>
+        </View>
+
+        {/* Commitment Battery */}
+        <View style={{ marginBottom: 24 }}>
+          <Text style={{ fontSize: 20, fontWeight: '600', color: '#0b0b0f', marginBottom: 16, textAlign: 'center' }}>
+            Your Commitment Energy
+          </Text>
+          <View style={{
+            backgroundColor: '#f8f9fa',
+            borderRadius: 16,
+            padding: 20,
+            borderWidth: 1,
+            borderColor: '#e0e0e0',
+            shadowColor: '#000',
+            shadowOffset: { width: 0, height: 2 },
+            shadowOpacity: 0.1,
+            shadowRadius: 8,
+            elevation: 4,
+            alignItems: 'center',
+          }}>
+            <BatteryProgressIndicator size={120} showPercentage={true} showText={true} />
+            <Text style={{ fontSize: 14, color: '#6c757d', textAlign: 'center', marginTop: 12 }}>
+              Day {progress?.currentDay || 1} of {progress?.totalDays || 97} - Keep building!
+            </Text>
+          </View>
         </View>
 
         {/* Quick Add: Documents & Photos */}

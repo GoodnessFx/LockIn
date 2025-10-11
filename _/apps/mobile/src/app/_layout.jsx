@@ -1,4 +1,4 @@
-import { useAuth } from "@/utils/auth/useAuth";
+import React from "react";
 import { Stack } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
 import { useEffect } from "react";
@@ -7,6 +7,7 @@ import { View, Text } from 'react-native';
 import Animated, { FadeIn, withTiming, useSharedValue, useAnimatedStyle } from 'react-native-reanimated';
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { useAppStore, hydrateAppStore } from "@/store/appStore";
+
 SplashScreen.preventAutoHideAsync();
 
 const queryClient = new QueryClient({
@@ -21,19 +22,17 @@ const queryClient = new QueryClient({
 });
 
 export default function RootLayout() {
-  const { initiate, isReady } = useAuth();
   const hasOnboarded = useAppStore((s) => s.hasOnboarded);
+  const [isReady, setIsReady] = React.useState(false);
 
   useEffect(() => {
-    initiate();
-    hydrateAppStore();
-  }, [initiate]);
-
-  useEffect(() => {
-    if (isReady) {
+    const initialize = async () => {
+      await hydrateAppStore();
+      setIsReady(true);
       SplashScreen.hideAsync();
-    }
-  }, [isReady]);
+    };
+    initialize();
+  }, []);
 
   if (!isReady) {
     const opacity = useSharedValue(0);
@@ -48,9 +47,17 @@ export default function RootLayout() {
     }));
     return (
       <View style={{ flex: 1, backgroundColor: '#ffffff', alignItems: 'center', justifyContent: 'center' }}>
-        <Animated.Text entering={FadeIn.duration(300)} style={{ fontSize: 36, fontWeight: '800', color: '#0b0b0f' }}>
-          LockIn
-        </Animated.Text>
+        <Animated.View entering={FadeIn.duration(300)} style={{ alignItems: 'center' }}>
+          <Animated.Text style={{ fontSize: 48, fontWeight: '800', color: '#6C5CE7', marginBottom: 8 }}>
+            LockIn
+          </Animated.Text>
+          <Animated.Text style={{ fontSize: 18, fontWeight: '600', color: '#0b0b0f', marginBottom: 4 }}>
+            Dial In. Build Relentlessly.
+          </Animated.Text>
+          <Animated.Text style={{ fontSize: 14, color: '#6c757d', textAlign: 'center' }}>
+            Your 97-day transformation starts now
+          </Animated.Text>
+        </Animated.View>
       </View>
     );
   }
@@ -58,7 +65,7 @@ export default function RootLayout() {
   return (
     <QueryClientProvider client={queryClient}>
       <GestureHandlerRootView style={{ flex: 1 }}>
-        <Stack screenOptions={{ headerShown: false }} initialRouteName="index">
+        <Stack screenOptions={{ headerShown: false }}>
           <Stack.Screen name="index" />
           <Stack.Screen name="onboarding" />
           <Stack.Screen name="(tabs)" />
