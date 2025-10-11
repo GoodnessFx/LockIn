@@ -48,9 +48,14 @@ export default function RootLayout() {
     return (
       <View style={{ flex: 1, backgroundColor: '#ffffff', alignItems: 'center', justifyContent: 'center' }}>
         <Animated.View entering={FadeIn.duration(300)} style={{ alignItems: 'center' }}>
-          <Animated.Text style={{ fontSize: 48, fontWeight: '800', color: '#6C5CE7', marginBottom: 8 }}>
-            LockIn
-          </Animated.Text>
+          <Animated.View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 8 }}>
+            <Animated.Text style={{ fontSize: 48, fontWeight: '800', color: '#6C5CE7' }}>
+              LockIn
+            </Animated.Text>
+            <Animated.View style={{ marginLeft: 8 }}>
+              <Animated.Text style={{ fontSize: 32, color: '#000000' }}>🔒</Animated.Text>
+            </Animated.View>
+          </Animated.View>
           <Animated.Text style={{ fontSize: 18, fontWeight: '600', color: '#0b0b0f', marginBottom: 4 }}>
             Dial In. Build Relentlessly.
           </Animated.Text>

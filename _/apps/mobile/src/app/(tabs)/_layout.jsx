@@ -37,7 +37,7 @@ export default function TabLayout() {
         options={{
           title: 'LockIn',
           tabBarIcon: ({ color, size }) => (
-            <Home color={color} size={24} />
+            <Home color={color} size={20.4} />
           ),
         }}
       />
@@ -46,7 +46,7 @@ export default function TabLayout() {
         options={{
           title: 'LAI',
           tabBarIcon: ({ color, size }) => (
-            <BookOpen color={color} size={24} />
+            <BookOpen color={color} size={20.4} />
           ),
         }}
       />
@@ -55,7 +55,7 @@ export default function TabLayout() {
         options={{
           title: 'Lockmate',
           tabBarIcon: ({ color, size }) => (
-            <Users color={color} size={24} />
+            <Users color={color} size={20.4} />
           ),
         }}
       />
@@ -64,7 +64,7 @@ export default function TabLayout() {
         options={{
           title: 'Progress',
           tabBarIcon: ({ color, size }) => (
-            <BarChart3 color={color} size={24} />
+            <BarChart3 color={color} size={20.4} />
           ),
         }}
       />
@@ -73,7 +73,7 @@ export default function TabLayout() {
         options={{
           title: 'Profile',
           tabBarIcon: ({ color, size }) => (
-            <User color={color} size={24} />
+            <User color={color} size={20.4} />
           ),
         }}
       />

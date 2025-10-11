@@ -33,7 +33,7 @@ export default function LiveClock({
   // Size configurations
   const sizeConfig = {
     small: { 
-      timeFontSize: 16, 
+      timeFontSize: 17, 
       dateFontSize: 12, 
       containerPadding: 8,
       spacing: 4 

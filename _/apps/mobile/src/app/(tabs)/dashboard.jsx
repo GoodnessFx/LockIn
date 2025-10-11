@@ -179,9 +179,12 @@ export default function Dashboard() {
       >
         {/* Header */}
         <View style={{ marginBottom: 32 }}>
-          <Text style={{ fontSize: 32, fontWeight: "bold", color: "#0b0b0f" }}>
-            LockIn
-          </Text>
+          <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+            <Text style={{ fontSize: 32, fontWeight: "bold", color: "#0b0b0f" }}>
+              LockIn
+            </Text>
+            <Text style={{ fontSize: 24, color: "#000000", marginLeft: 8 }}>🔒</Text>
+          </View>
           <Text style={{ fontSize: 16, color: "#6c757d", marginTop: 4 }}>
             Welcome back, {user?.name || user?.email || "there"}!
           </Text>
@@ -396,6 +399,148 @@ export default function Dashboard() {
                 backgroundColor: "#0b0b0f",
                 borderRadius: 4,
               }} />
+            </View>
+          </View>
+        </View>
+
+        {/* Growth Features Section */}
+        <View style={{ marginBottom: 32 }}>
+          <Text style={{ fontSize: 20, fontWeight: "600", color: "#0b0b0f", marginBottom: 16 }}>
+            Accelerate Your Growth
+          </Text>
+          
+          {/* Niche Mastery Card */}
+          <View style={{
+            backgroundColor: "#f8f9fa",
+            borderRadius: 16,
+            padding: 20,
+            marginBottom: 16,
+            borderWidth: 1,
+            borderColor: "#e0e0e0",
+            shadowColor: '#000',
+            shadowOffset: { width: 0, height: 2 },
+            shadowOpacity: 0.1,
+            shadowRadius: 8,
+            elevation: 4,
+          }}>
+            <View style={{ flexDirection: "row", alignItems: "center", marginBottom: 12 }}>
+              <Award size={24} color="#6C5CE7" />
+              <Text style={{ fontSize: 18, fontWeight: "600", color: "#0b0b0f", marginLeft: 8 }}>
+                Niche Mastery Path
+              </Text>
+            </View>
+            <Text style={{ fontSize: 14, color: "#6c757d", marginBottom: 16, lineHeight: 20 }}>
+              Complete specialized learning tracks to become an expert in your field
+            </Text>
+            <View style={{ flexDirection: "row", gap: 8 }}>
+              <TouchableOpacity style={{
+                flex: 1,
+                backgroundColor: "#6C5CE7",
+                borderRadius: 8,
+                paddingVertical: 12,
+                alignItems: "center",
+              }}>
+                <Text style={{ color: "#ffffff", fontSize: 14, fontWeight: "600" }}>
+                  Start Track
+                </Text>
+              </TouchableOpacity>
+              <TouchableOpacity style={{
+                flex: 1,
+                backgroundColor: "#e0e0e0",
+                borderRadius: 8,
+                paddingVertical: 12,
+                alignItems: "center",
+              }}>
+                <Text style={{ color: "#0b0b0f", fontSize: 14, fontWeight: "600" }}>
+                  View All
+                </Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+
+          {/* Daily Challenge Card */}
+          <View style={{
+            backgroundColor: "#f8f9fa",
+            borderRadius: 16,
+            padding: 20,
+            marginBottom: 16,
+            borderWidth: 1,
+            borderColor: "#e0e0e0",
+            shadowColor: '#000',
+            shadowOffset: { width: 0, height: 2 },
+            shadowOpacity: 0.1,
+            shadowRadius: 8,
+            elevation: 4,
+          }}>
+            <View style={{ flexDirection: "row", alignItems: "center", marginBottom: 12 }}>
+              <Zap size={24} color="#fdcb6e" />
+              <Text style={{ fontSize: 18, fontWeight: "600", color: "#0b0b0f", marginLeft: 8 }}>
+                Daily Challenge
+              </Text>
+            </View>
+            <Text style={{ fontSize: 16, fontWeight: "600", color: "#0b0b0f", marginBottom: 8 }}>
+              Build a micro-project in 30 minutes
+            </Text>
+            <Text style={{ fontSize: 14, color: "#6c757d", marginBottom: 16, lineHeight: 20 }}>
+              Complete today's challenge to earn bonus XP and unlock achievements
+            </Text>
+            <TouchableOpacity style={{
+              backgroundColor: "#fdcb6e",
+              borderRadius: 8,
+              paddingVertical: 12,
+              alignItems: "center",
+            }}>
+              <Text style={{ color: "#ffffff", fontSize: 14, fontWeight: "600" }}>
+                Accept Challenge
+              </Text>
+            </TouchableOpacity>
+          </View>
+
+          {/* Community Features */}
+          <View style={{
+            backgroundColor: "#f8f9fa",
+            borderRadius: 16,
+            padding: 20,
+            borderWidth: 1,
+            borderColor: "#e0e0e0",
+            shadowColor: '#000',
+            shadowOffset: { width: 0, height: 2 },
+            shadowOpacity: 0.1,
+            shadowRadius: 8,
+            elevation: 4,
+          }}>
+            <View style={{ flexDirection: "row", alignItems: "center", marginBottom: 12 }}>
+              <Users size={24} color="#00b894" />
+              <Text style={{ fontSize: 18, fontWeight: "600", color: "#0b0b0f", marginLeft: 8 }}>
+                Community Growth
+              </Text>
+            </View>
+            <Text style={{ fontSize: 14, color: "#6c757d", marginBottom: 16, lineHeight: 20 }}>
+              Connect with like-minded builders and accelerate your learning together
+            </Text>
+            <View style={{ flexDirection: "row", gap: 8 }}>
+              <TouchableOpacity style={{
+                flex: 1,
+                backgroundColor: "#00b894",
+                borderRadius: 8,
+                paddingVertical: 12,
+                alignItems: "center",
+              }}>
+                <Text style={{ color: "#ffffff", fontSize: 14, fontWeight: "600" }}>
+                  Join Group
+                </Text>
+              </TouchableOpacity>
+              <TouchableOpacity style={{
+                flex: 1,
+                backgroundColor: "#e0e0e0",
+                borderRadius: 8,
+                paddingVertical: 12,
+                alignItems: "center",
+              }}>
+                <Text style={{ color: "#0b0b0f", fontSize: 14, fontWeight: "600" }}>
+                  Find Mentor
+                </Text>
+              </TouchableOpacity>
             </View>
           </View>
         </View>
