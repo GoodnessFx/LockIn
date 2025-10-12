@@ -39,22 +39,35 @@ const WEB_ALIASES = {
     './polyfills/web/scrollview.web.jsx'
   ),
 };
+
 const NATIVE_ALIASES = {
   './Libraries/Components/TextInput/TextInput': path.resolve(
     __dirname,
     './polyfills/native/texinput.native.jsx'
   ),
 };
+
 const SHARED_ALIASES = {
   'expo-image': path.resolve(__dirname, './polyfills/shared/expo-image.tsx'),
 };
-fs.mkdirSync(VIRTUAL_ROOT_UNRESOLVED, { recursive: true });
+
+// Ensure virtual root directories exist
+try {
+  if (!fs.existsSync(VIRTUAL_ROOT)) {
+    fs.mkdirSync(VIRTUAL_ROOT, { recursive: true });
+  }
+  if (!fs.existsSync(VIRTUAL_ROOT_UNRESOLVED)) {
+    fs.mkdirSync(VIRTUAL_ROOT_UNRESOLVED, { recursive: true });
+  }
+} catch (err) {
+  console.warn('Warning: Failed to create virtual root folders', err.message);
+}
+
 config.watchFolders = [...config.watchFolders, VIRTUAL_ROOT, VIRTUAL_ROOT_UNRESOLVED];
 
 // Add web-specific alias configuration through resolveRequest
 config.resolver.resolveRequest = (context, moduleName, platform) => {
   try {
-    // Polyfills are not resolved by Metro
     if (
       context.originModulePath.startsWith(`${__dirname}/polyfills/native`) ||
       context.originModulePath.startsWith(`${__dirname}/polyfills/web`) ||
@@ -62,15 +75,16 @@ config.resolver.resolveRequest = (context, moduleName, platform) => {
     ) {
       return context.resolveRequest(context, moduleName, platform);
     }
-    // Wildcard alias for Expo Google Fonts
+
     if (moduleName.startsWith('@expo-google-fonts/') && moduleName !== '@expo-google-fonts/dev') {
       return context.resolveRequest(context, '@expo-google-fonts/dev', platform);
     }
+
     if (SHARED_ALIASES[moduleName] && !moduleName.startsWith('./polyfills/')) {
       return context.resolveRequest(context, SHARED_ALIASES[moduleName], platform);
     }
+
     if (platform === 'web') {
-      // Only apply aliases if the module is one of our polyfills
       if (WEB_ALIASES[moduleName] && !moduleName.startsWith('./polyfills/')) {
         return context.resolveRequest(context, WEB_ALIASES[moduleName], platform);
       }
@@ -80,6 +94,7 @@ config.resolver.resolveRequest = (context, moduleName, platform) => {
     if (NATIVE_ALIASES[moduleName] && !moduleName.startsWith('./polyfills/')) {
       return context.resolveRequest(context, NATIVE_ALIASES[moduleName], platform);
     }
+
     return context.resolveRequest(context, moduleName, platform);
   } catch (error) {
     return handleResolveRequestError({ error, context, platform, moduleName });
@@ -93,7 +108,9 @@ config.cacheStores = () => [
     root: path.join(cacheDir, '.metro-cache'),
   }),
 ];
+
 config.resetCache = false;
+
 config.reporter = {
   ...config.reporter,
   update: (event) => {
@@ -107,9 +124,7 @@ config.reporter = {
     ];
     for (const errorType of reportableErrors) {
       if (event.type === errorType) {
-        reportErrorToRemote({ error: event.error }).catch((reportError) => {
-          // no-op
-        });
+        reportErrorToRemote({ error: event.error }).catch(() => {});
       }
     }
     return event;
