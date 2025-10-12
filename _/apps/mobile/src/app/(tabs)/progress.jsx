@@ -4,11 +4,11 @@ import {
   Text,
   ScrollView,
   TouchableOpacity,
-  StatusBar,
   Dimensions,
   TextInput,
   Alert,
 } from 'react-native';
+import { StatusBar } from 'expo-status-bar';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { 
   BarChart3, 
@@ -127,15 +127,20 @@ export default function ProgressScreen() {
 
   const currentData = progressData[selectedPeriod];
 
-  const StatCard = ({ icon, title, value, subtitle, color = '#7dd3fc' }) => (
+  const StatCard = ({ icon, title, value, subtitle, color = '#6C5CE7' }) => (
     <View style={{
-      backgroundColor: '#1a1a2e',
+      backgroundColor: '#f8f9fa',
       borderRadius: 16,
       padding: 20,
       flex: 1,
       marginHorizontal: 4,
       borderWidth: 1,
-      borderColor: '#2d3748',
+      borderColor: '#e0e0e0',
+      shadowColor: '#000',
+      shadowOffset: { width: 0, height: 2 },
+      shadowOpacity: 0.1,
+      shadowRadius: 8,
+      elevation: 4,
     }}>
       <View style={{
         width: 40,
@@ -148,13 +153,13 @@ export default function ProgressScreen() {
       }}>
         {icon}
       </View>
-      <Text style={{ fontSize: 24, fontWeight: 'bold', color: '#ffffff', marginBottom: 4 }}>
+      <Text style={{ fontSize: 24, fontWeight: 'bold', color: '#0b0b0f', marginBottom: 4 }}>
         {value}
       </Text>
-      <Text style={{ fontSize: 14, fontWeight: '500', color: '#ffffff', marginBottom: 2 }}>
+      <Text style={{ fontSize: 14, fontWeight: '500', color: '#0b0b0f', marginBottom: 2 }}>
         {title}
       </Text>
-      <Text style={{ fontSize: 12, color: '#94a3b8' }}>
+      <Text style={{ fontSize: 12, color: '#6c757d' }}>
         {subtitle}
       </Text>
     </View>
@@ -162,26 +167,32 @@ export default function ProgressScreen() {
 
   const AchievementCard = ({ achievement }) => (
     <View style={{
-      backgroundColor: '#1a1a2e',
+      backgroundColor: '#f8f9fa',
       borderRadius: 12,
       padding: 16,
       flexDirection: 'row',
       alignItems: 'center',
       borderWidth: 1,
-      borderColor: '#2d3748',
+      borderColor: '#e0e0e0',
+      marginBottom: 12,
+      shadowColor: '#000',
+      shadowOffset: { width: 0, height: 2 },
+      shadowOpacity: 0.1,
+      shadowRadius: 8,
+      elevation: 4,
     }}>
       <Text style={{ fontSize: 32, marginRight: 16 }}>
         {achievement.icon}
       </Text>
       <View style={{ flex: 1 }}>
-        <Text style={{ fontSize: 16, fontWeight: '600', color: '#ffffff', marginBottom: 4 }}>
+        <Text style={{ fontSize: 16, fontWeight: '600', color: '#0b0b0f', marginBottom: 4 }}>
           {achievement.title}
         </Text>
-        <Text style={{ fontSize: 14, color: '#94a3b8' }}>
+        <Text style={{ fontSize: 14, color: '#6c757d' }}>
           {achievement.description}
         </Text>
       </View>
-      <Award size={20} color="#f59e0b" />
+      <Award size={20} color="#fdcb6e" />
     </View>
   );
 
@@ -301,13 +312,13 @@ export default function ProgressScreen() {
 
         {/* Period Selector */}
         <View style={{
-          backgroundColor: '#1a1a2e',
+          backgroundColor: '#f8f9fa',
           borderRadius: 12,
           padding: 4,
           flexDirection: 'row',
           marginBottom: 24,
           borderWidth: 1,
-          borderColor: '#2d3748',
+          borderColor: '#e0e0e0',
         }}>
           {['week', 'month', 'year'].map((period) => (
             <TouchableOpacity
@@ -315,7 +326,7 @@ export default function ProgressScreen() {
               onPress={() => setSelectedPeriod(period)}
               style={{
                 flex: 1,
-                backgroundColor: selectedPeriod === period ? '#7dd3fc' : 'transparent',
+                backgroundColor: selectedPeriod === period ? '#6C5CE7' : 'transparent',
                 borderRadius: 8,
                 paddingVertical: 12,
                 alignItems: 'center',
@@ -324,7 +335,7 @@ export default function ProgressScreen() {
               <Text style={{
                 fontSize: 14,
                 fontWeight: '600',
-                color: selectedPeriod === period ? '#0b0b0f' : '#94a3b8',
+                color: selectedPeriod === period ? '#ffffff' : '#6c757d',
                 textTransform: 'capitalize',
               }}>
                 {period}
@@ -336,69 +347,76 @@ export default function ProgressScreen() {
         {/* Stats Grid */}
         <View style={{ flexDirection: 'row', marginBottom: 24 }}>
           <StatCard
-            icon={<Zap size={20} color="#7dd3fc" />}
+            icon={<Zap size={20} color="#6C5CE7" />}
             title="Streak"
             value={currentData.streak}
             subtitle="days"
-            color="#7dd3fc"
+            color="#6C5CE7"
           />
           <StatCard
-            icon={<CheckCircle size={20} color="#10b981" />}
+            icon={<CheckCircle size={20} color="#00b894" />}
             title="Goals"
             value={currentData.goalsCompleted}
             subtitle="completed"
-            color="#10b981"
+            color="#00b894"
           />
         </View>
 
         <View style={{ flexDirection: 'row', marginBottom: 24 }}>
           <StatCard
-            icon={<Clock size={20} color="#f59e0b" />}
+            icon={<Clock size={20} color="#fdcb6e" />}
             title="Focus Time"
             value={currentData.hoursFocused}
             subtitle="hours"
-            color="#f59e0b"
+            color="#fdcb6e"
           />
           <StatCard
-            icon={<Activity size={20} color="#ef4444" />}
+            icon={<Activity size={20} color="#e17055" />}
             title="Productivity"
             value={`${currentData.productivity}%`}
             subtitle="average"
-            color="#ef4444"
+            color="#e17055"
           />
         </View>
 
         {/* Productivity Chart Placeholder */}
         <View style={{
-          backgroundColor: '#1a1a2e',
+          backgroundColor: '#f8f9fa',
           borderRadius: 16,
           padding: 20,
           marginBottom: 24,
           borderWidth: 1,
-          borderColor: '#2d3748',
+          borderColor: '#e0e0e0',
+          shadowColor: '#000',
+          shadowOffset: { width: 0, height: 2 },
+          shadowOpacity: 0.1,
+          shadowRadius: 8,
+          elevation: 4,
         }}>
           <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 16 }}>
-            <BarChart3 size={20} color="#7dd3fc" />
+            <BarChart3 size={20} color="#6C5CE7" />
             <Text style={{ fontSize: 18, fontWeight: '600', color: '#0b0b0f', marginLeft: 8 }}>
               Productivity Trend
             </Text>
           </View>
           <View style={{
             height: 120,
-            backgroundColor: '#e5e7eb',
+            backgroundColor: '#ffffff',
             borderRadius: 8,
             alignItems: 'center',
             justifyContent: 'center',
+            borderWidth: 1,
+            borderColor: '#e0e0e0',
           }}>
-            <Text style={{ color: '#6b7280' }}>Chart visualization coming soon</Text>
+            <Text style={{ color: '#6c757d' }}>Chart visualization coming soon</Text>
           </View>
         </View>
 
         {/* Achievements */}
         <View style={{ marginBottom: 24 }}>
           <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 16 }}>
-            <Trophy size={20} color="#f59e0b" />
-            <Text style={{ fontSize: 20, fontWeight: '600', color: '#ffffff', marginLeft: 8 }}>
+            <Trophy size={20} color="#fdcb6e" />
+            <Text style={{ fontSize: 20, fontWeight: '600', color: '#0b0b0f', marginLeft: 8 }}>
               Recent Achievements
             </Text>
           </View>
@@ -409,15 +427,20 @@ export default function ProgressScreen() {
 
         {/* Goals Progress */}
         <View style={{
-          backgroundColor: '#1a1a2e',
+          backgroundColor: '#f8f9fa',
           borderRadius: 16,
           padding: 20,
           marginBottom: 24,
           borderWidth: 1,
-          borderColor: '#2d3748',
+          borderColor: '#e0e0e0',
+          shadowColor: '#000',
+          shadowOffset: { width: 0, height: 2 },
+          shadowOpacity: 0.1,
+          shadowRadius: 8,
+          elevation: 4,
         }}>
           <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 16 }}>
-            <Target size={20} color="#7dd3fc" />
+            <Target size={20} color="#6C5CE7" />
             <Text style={{ fontSize: 18, fontWeight: '600', color: '#0b0b0f', marginLeft: 8 }}>
               Current Goals
             </Text>
@@ -426,19 +449,19 @@ export default function ProgressScreen() {
           <View style={{ gap: 12 }}>
             <View>
               <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 4 }}>
-                <Text style={{ fontSize: 14, color: '#ffffff' }}>Learn React Native</Text>
-                <Text style={{ fontSize: 14, color: '#7dd3fc', fontWeight: '600' }}>75%</Text>
+                <Text style={{ fontSize: 14, color: '#0b0b0f' }}>Learn React Native</Text>
+                <Text style={{ fontSize: 14, color: '#6C5CE7', fontWeight: '600' }}>75%</Text>
               </View>
               <View style={{
                 height: 6,
-                backgroundColor: '#e5e7eb',
+                backgroundColor: '#e0e0e0',
                 borderRadius: 3,
                 overflow: 'hidden',
               }}>
                 <View style={{
                   height: '100%',
                   width: '75%',
-                  backgroundColor: '#0b0b0f',
+                  backgroundColor: '#6C5CE7',
                   borderRadius: 3,
                 }} />
               </View>
@@ -446,19 +469,19 @@ export default function ProgressScreen() {
 
             <View>
               <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 4 }}>
-                <Text style={{ fontSize: 14, color: '#ffffff' }}>Build Portfolio</Text>
-                <Text style={{ fontSize: 14, color: '#10b981', fontWeight: '600' }}>45%</Text>
+                <Text style={{ fontSize: 14, color: '#0b0b0f' }}>Build Portfolio</Text>
+                <Text style={{ fontSize: 14, color: '#00b894', fontWeight: '600' }}>45%</Text>
               </View>
               <View style={{
                 height: 6,
-                backgroundColor: '#e5e7eb',
+                backgroundColor: '#e0e0e0',
                 borderRadius: 3,
                 overflow: 'hidden',
               }}>
                 <View style={{
                   height: '100%',
                   width: '45%',
-                  backgroundColor: '#0b0b0f',
+                  backgroundColor: '#00b894',
                   borderRadius: 3,
                 }} />
               </View>
@@ -466,19 +489,19 @@ export default function ProgressScreen() {
 
             <View>
               <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 4 }}>
-                <Text style={{ fontSize: 14, color: '#ffffff' }}>Daily Exercise</Text>
-                <Text style={{ fontSize: 14, color: '#f59e0b', fontWeight: '600' }}>90%</Text>
+                <Text style={{ fontSize: 14, color: '#0b0b0f' }}>Daily Exercise</Text>
+                <Text style={{ fontSize: 14, color: '#fdcb6e', fontWeight: '600' }}>90%</Text>
               </View>
               <View style={{
                 height: 6,
-                backgroundColor: '#e5e7eb',
+                backgroundColor: '#e0e0e0',
                 borderRadius: 3,
                 overflow: 'hidden',
               }}>
                 <View style={{
                   height: '100%',
                   width: '90%',
-                  backgroundColor: '#0b0b0f',
+                  backgroundColor: '#fdcb6e',
                   borderRadius: 3,
                 }} />
               </View>

@@ -1,66 +1,55 @@
-import * as SecureStore from 'expo-secure-store';
-import { useCallback, useEffect } from 'react';
-import { useAuthStore, authKey } from './store';
+import { useState, useEffect } from 'react';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
-
-/**
- * This hook provides authentication functionality.
- * It may be easier to use the `useAuthModal` or `useRequireAuth` hooks
- * instead as those will also handle showing authentication to the user
- * directly.
- */
-export const useAuth = () => {
-  const { isReady, auth, setAuth } = useAuthStore();
-
-  const initiate = useCallback(() => {
-    SecureStore.getItemAsync(authKey).then((auth) => {
-      useAuthStore.setState({
-        auth: auth ? JSON.parse(auth) : null,
-        isReady: true,
-      });
-    });
-  }, []);
-
-  useEffect(() => {}, []);
-
-  const signIn = useCallback(() => {
-    // Always use a dummy auth for this app
-    setAuth({
-      user: {
-        name: 'IG',
-        email: 'demo@example.com',
-      },
-      token: 'demo-token',
-    });
-  }, [setAuth]);
-
-  const signOut = useCallback(() => {
-    setAuth(null);
-  }, [setAuth]);
-
-  return {
-    isReady,
-    isAuthenticated: isReady ? !!auth : null,
-    signIn,
-    signOut,
-    auth,
-    setAuth,
-    initiate,
-  };
-};
-
-/**
- * This hook will automatically open the authentication modal if the user is not authenticated.
- */
-export const useRequireAuth = () => {
-  const { isAuthenticated, isReady, signIn } = useAuth();
+export function useAuth() {
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    if (isReady && !isAuthenticated) {
-      // Auto sign-in with dummy auth so the app is immediately usable
-      signIn();
-    }
-  }, [isAuthenticated, isReady, signIn]);
-};
+    checkAuthStatus();
+  }, []);
 
-export default useAuth;
+  const checkAuthStatus = async () => {
+    try {
+      const token = await AsyncStorage.getItem('auth_token');
+      setIsAuthenticated(!!token);
+    } catch (error) {
+      console.error('Error checking auth status:', error);
+      setIsAuthenticated(false);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const signIn = async (email, password) => {
+    try {
+      setLoading(true);
+      // Simulate API call - replace with actual authentication
+      const mockToken = 'mock_auth_token_' + Date.now();
+      await AsyncStorage.setItem('auth_token', mockToken);
+      setIsAuthenticated(true);
+      return { success: true };
+    } catch (error) {
+      console.error('Sign in error:', error);
+      return { success: false, error: error.message };
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const signOut = async () => {
+    try {
+      await AsyncStorage.removeItem('auth_token');
+      setIsAuthenticated(false);
+    } catch (error) {
+      console.error('Sign out error:', error);
+    }
+  };
+
+  return {
+    isAuthenticated,
+    loading,
+    signIn,
+    signOut,
+  };
+}

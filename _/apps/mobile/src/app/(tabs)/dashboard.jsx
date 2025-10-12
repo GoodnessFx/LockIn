@@ -4,8 +4,8 @@ import {
   Text,
   ScrollView,
   TouchableOpacity,
-  StatusBar,
 } from "react-native";
+import { StatusBar } from "expo-status-bar";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import {
   Target,
@@ -20,6 +20,7 @@ import {
   Play,
   Pause,
   RotateCcw,
+  Users,
 } from "lucide-react-native";
 import { useAuth } from "@/utils/auth/useAuth";
 import useUser from "@/utils/auth/useUser";
@@ -34,26 +35,11 @@ export default function Dashboard() {
   const { data: user, loading } = useUser();
   const { progress, updateProgress } = useAppStore();
 
-  // Handle authentication state
-  if (!isAuthenticated) {
+  // Handle loading state
+  if (loading) {
     return (
-      <View style={{ flex: 1, backgroundColor: '#ffffff', alignItems: 'center', justifyContent: 'center' }}>
-        <Text style={{ fontSize: 18, color: '#6c757d', marginBottom: 20 }}>
-          Please sign in to continue
-        </Text>
-        <TouchableOpacity
-          onPress={signIn}
-          style={{
-            backgroundColor: '#6C5CE7',
-            paddingHorizontal: 24,
-            paddingVertical: 12,
-            borderRadius: 8,
-          }}
-        >
-          <Text style={{ color: '#ffffff', fontSize: 16, fontWeight: '600' }}>
-            Sign In
-          </Text>
-        </TouchableOpacity>
+      <View style={{ flex: 1, justifyContent: "center", alignItems: "center", backgroundColor: "#ffffff" }}>
+        <Text style={{ color: "#0b0b0f" }}>Loading...</Text>
       </View>
     );
   }
@@ -142,28 +128,6 @@ export default function Dashboard() {
     );
   }
 
-  if (!isAuthenticated) {
-    return (
-      <View style={{ flex: 1, justifyContent: "center", alignItems: "center", backgroundColor: "#ffffff", paddingHorizontal: 32 }}>
-        <StatusBar style="dark" />
-        <Target size={80} color="#6C5CE7" />
-        <Text style={{ fontSize: 28, fontWeight: "bold", color: "#0b0b0f", marginTop: 24, textAlign: "center" }}>
-          Welcome to LockIn
-        </Text>
-        <Text style={{ fontSize: 16, color: "#6c757d", marginTop: 12, textAlign: "center", lineHeight: 24 }}>
-          Dial in. Build relentlessly. Win together.
-        </Text>
-        <TouchableOpacity
-          onPress={signIn}
-          style={{ backgroundColor: "#6C5CE7", paddingHorizontal: 32, paddingVertical: 16, borderRadius: 12, marginTop: 32, width: "100%" }}
-        >
-          <Text style={{ color: "#ffffff", fontSize: 16, fontWeight: "600", textAlign: "center" }}>
-            Get Started
-          </Text>
-        </TouchableOpacity>
-      </View>
-    );
-  }
 
   return (
     <View style={{ flex: 1, backgroundColor: "#ffffff" }}>

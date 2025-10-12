@@ -4,8 +4,8 @@ import {
   Text,
   ScrollView,
   TouchableOpacity,
-  StatusBar,
 } from 'react-native';
+import { StatusBar } from 'expo-status-bar';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { 
   Users, 
@@ -43,10 +43,17 @@ export default function LockmateScreen() {
               width: 120,
               height: 120,
               borderRadius: 60,
-              backgroundColor: '#6C5CE720',
+              backgroundColor: '#f8f9fa',
               alignItems: 'center',
               justifyContent: 'center',
               marginBottom: 32,
+              borderWidth: 2,
+              borderColor: '#6C5CE7',
+              shadowColor: '#000',
+              shadowOffset: { width: 0, height: 4 },
+              shadowOpacity: 0.1,
+              shadowRadius: 8,
+              elevation: 4,
             }}
           >
             <Users size={60} color="#6C5CE7" />
@@ -104,10 +111,12 @@ export default function LockmateScreen() {
                     width: 40,
                     height: 40,
                     borderRadius: 20,
-                    backgroundColor: '#6C5CE720',
+                    backgroundColor: '#f8f9fa',
                     alignItems: 'center',
                     justifyContent: 'center',
                     marginRight: 16,
+                    borderWidth: 1,
+                    borderColor: '#6C5CE7',
                   }}>
                     <UserPlus size={20} color="#6C5CE7" />
                   </View>
@@ -126,10 +135,12 @@ export default function LockmateScreen() {
                     width: 40,
                     height: 40,
                     borderRadius: 20,
-                    backgroundColor: '#00b89420',
+                    backgroundColor: '#f8f9fa',
                     alignItems: 'center',
                     justifyContent: 'center',
                     marginRight: 16,
+                    borderWidth: 1,
+                    borderColor: '#00b894',
                   }}>
                     <MessageCircle size={20} color="#00b894" />
                   </View>
@@ -148,10 +159,12 @@ export default function LockmateScreen() {
                     width: 40,
                     height: 40,
                     borderRadius: 20,
-                    backgroundColor: '#fdcb6e20',
+                    backgroundColor: '#f8f9fa',
                     alignItems: 'center',
                     justifyContent: 'center',
                     marginRight: 16,
+                    borderWidth: 1,
+                    borderColor: '#fdcb6e',
                   }}>
                     <Trophy size={20} color="#fdcb6e" />
                   </View>
@@ -170,10 +183,12 @@ export default function LockmateScreen() {
                     width: 40,
                     height: 40,
                     borderRadius: 20,
-                    backgroundColor: '#e1705520',
+                    backgroundColor: '#f8f9fa',
                     alignItems: 'center',
                     justifyContent: 'center',
                     marginRight: 16,
+                    borderWidth: 1,
+                    borderColor: '#e17055',
                   }}>
                     <Bell size={20} color="#e17055" />
                   </View>

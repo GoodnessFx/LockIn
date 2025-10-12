@@ -22,13 +22,13 @@ import {
   Crown,
   Star,
   Trophy,
-  Zap
+  Zap,
+  Clock
 } from 'lucide-react-native';
-import { useRequireAuth, useAuth } from '@/utils/auth/useAuth';
+import { useAuth } from '@/utils/auth/useAuth';
 import useUser from '@/utils/auth/useUser';
 
 export default function Profile() {
-  useRequireAuth();
   const insets = useSafeAreaInsets();
   const { signOut } = useAuth();
   const { data: user } = useUser();

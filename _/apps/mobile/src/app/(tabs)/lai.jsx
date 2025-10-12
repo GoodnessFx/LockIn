@@ -4,11 +4,11 @@ import {
   Text,
   ScrollView,
   TouchableOpacity,
-  StatusBar,
   TextInput,
   Image,
   Alert,
 } from 'react-native';
+import { StatusBar } from 'expo-status-bar';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { 
   Plus, 
@@ -32,7 +32,7 @@ import { useAppStore } from '@/store/appStore';
 export default function LAIScreen() {
   const insets = useSafeAreaInsets();
   const [searchQuery, setSearchQuery] = useState('');
-  const [documents] = useState([]);
+  const [documents, setDocuments] = useState([]);
   const [assistantMessage, setAssistantMessage] = useState('');
   const [progressNotes, setProgressNotes] = useState([]);
   const { progress } = useAppStore();
@@ -178,69 +178,56 @@ export default function LAIScreen() {
           </View>
         )}
 
-        {/* Search Bar */}
-        <View
-          style={{
-            backgroundColor: '#f8f9fa',
-            borderRadius: 12,
-            paddingHorizontal: 16,
-            paddingVertical: 12,
-            flexDirection: 'row',
-            alignItems: 'center',
-            marginBottom: 24,
-            borderWidth: 1,
-            borderColor: '#e0e0e0',
-          }}
-        >
-          <Search size={20} color="#6c757d" />
+        {/* ChatGPT-like Prompt Interface */}
+        <View style={{
+          backgroundColor: '#f8f9fa',
+          borderRadius: 16,
+          padding: 20,
+          marginBottom: 24,
+          borderWidth: 1,
+          borderColor: '#e0e0e0',
+          shadowColor: '#000',
+          shadowOffset: { width: 0, height: 2 },
+          shadowOpacity: 0.1,
+          shadowRadius: 8,
+          elevation: 4,
+        }}>
+          <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 16 }}>
+            <MessageCircle size={24} color="#6C5CE7" />
+            <Text style={{ fontSize: 18, fontWeight: '600', color: '#0b0b0f', marginLeft: 8 }}>
+              Ask Your AI Coach
+            </Text>
+          </View>
+          
           <TextInput
-            value={searchQuery}
-            onChangeText={setSearchQuery}
-            placeholder="Search documents..."
-            placeholderTextColor="#6c757d"
             style={{
-              flex: 1,
-              marginLeft: 12,
+              backgroundColor: '#ffffff',
+              borderRadius: 12,
+              paddingHorizontal: 16,
+              paddingVertical: 12,
               fontSize: 16,
               color: '#0b0b0f',
+              borderWidth: 1,
+              borderColor: '#e0e0e0',
+              marginBottom: 12,
             }}
+            placeholder="Ask me anything about your learning journey..."
+            placeholderTextColor="#6c757d"
+            multiline
+            numberOfLines={3}
           />
-        </View>
-
-        {/* Quick Actions */}
-        <View style={{ flexDirection: 'row', marginBottom: 24, gap: 12 }}>
+          
           <TouchableOpacity
-            onPress={handleAddPhoto}
             style={{
-              flex: 1,
-              backgroundColor: '#f8f9fa',
+              backgroundColor: '#6C5CE7',
               borderRadius: 12,
-              padding: 16,
+              paddingVertical: 12,
+              paddingHorizontal: 24,
               alignItems: 'center',
-              borderWidth: 1,
-              borderColor: '#e0e0e0',
             }}
           >
-            <Camera size={24} color="#0b0b0f" />
-            <Text style={{ fontSize: 14, fontWeight: '500', color: '#0b0b0f', marginTop: 8 }}>
-              Add Photo
-            </Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            onPress={handleAddDocument}
-            style={{
-              flex: 1,
-              backgroundColor: '#f8f9fa',
-              borderRadius: 12,
-              padding: 16,
-              alignItems: 'center',
-              borderWidth: 1,
-              borderColor: '#e0e0e0',
-            }}
-          >
-            <FileText size={24} color="#0b0b0f" />
-            <Text style={{ fontSize: 14, fontWeight: '500', color: '#0b0b0f', marginTop: 8 }}>
-              Add Document
+            <Text style={{ color: '#ffffff', fontSize: 16, fontWeight: '600' }}>
+              Send Message
             </Text>
           </TouchableOpacity>
         </View>
@@ -297,112 +284,6 @@ export default function LAIScreen() {
           ))}
         </View>
 
-        {/* Documents */}
-        <View>
-          <Text style={{ fontSize: 20, fontWeight: '600', color: '#0b0b0f', marginBottom: 16 }}>
-            Documents (moved to Progress)
-          </Text>
-          {true ? (
-            <View
-              style={{
-                backgroundColor: '#f8f9fa',
-                borderRadius: 12,
-                padding: 40,
-                alignItems: 'center',
-                borderWidth: 1,
-                borderColor: '#e0e0e0',
-              }}
-            >
-              <BookOpen size={48} color="#6b7280" />
-              <Text style={{ fontSize: 18, fontWeight: '600', color: '#0b0b0f', marginTop: 16, marginBottom: 8 }}>
-                Find documents in Progress tab
-              </Text>
-              <Text style={{ fontSize: 14, color: '#6b7280', textAlign: 'center', marginBottom: 24 }}>
-                Add Photo and Add Document actions have been moved
-              </Text>
-              <TouchableOpacity
-                onPress={handleAddPhoto}
-                style={{
-                  backgroundColor: '#0b0b0f',
-                  borderRadius: 12,
-                  paddingHorizontal: 24,
-                  paddingVertical: 12,
-                }}
-              >
-                <Text style={{ fontSize: 16, fontWeight: '600', color: '#ffffff' }}>
-                  Open Progress
-                </Text>
-              </TouchableOpacity>
-            </View>
-          ) : (
-            filteredDocuments.map((doc) => (
-              <TouchableOpacity
-                key={doc.id}
-                style={{
-                  backgroundColor: '#f8f9fa',
-                  borderRadius: 12,
-                  padding: 16,
-                  marginBottom: 12,
-                  borderWidth: 1,
-                  borderColor: '#e0e0e0',
-                }}
-              >
-                <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 8 }}>
-                  <View
-                    style={{
-                      width: 40,
-                      height: 40,
-                      borderRadius: 20,
-                      backgroundColor: doc.type === 'image' ? '#0b0b0f10' : '#10b98120',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      marginRight: 12,
-                    }}
-                  >
-                    {doc.type === 'image' ? (
-                      <ImageIcon size={20} color={doc.type === 'image' ? '#0b0b0f' : '#10b981'} />
-                    ) : (
-                      <File size={20} color={doc.type === 'image' ? '#0b0b0f' : '#10b981'} />
-                    )}
-                  </View>
-                  <View style={{ flex: 1 }}>
-                    <Text style={{ fontSize: 16, fontWeight: '600', color: '#0b0b0f' }}>
-                      {doc.title}
-                    </Text>
-                    <Text style={{ fontSize: 12, color: '#6b7280' }}>
-                      {doc.date}
-                    </Text>
-                  </View>
-                  <TouchableOpacity
-                    onPress={() => handleDeleteDocument(doc.id)}
-                    style={{
-                      padding: 8,
-                      borderRadius: 8,
-                      backgroundColor: '#ef444410',
-                    }}
-                  >
-                    <Trash2 size={16} color="#ef4444" />
-                  </TouchableOpacity>
-                </View>
-                <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 6 }}>
-                  {doc.tags.map((tag, index) => (
-                    <View
-                      key={index}
-                      style={{
-                        backgroundColor: '#e5e7eb',
-                        borderRadius: 6,
-                        paddingHorizontal: 8,
-                        paddingVertical: 4,
-                      }}
-                    >
-                      <Text style={{ fontSize: 12, color: '#6b7280' }}>#{tag}</Text>
-                    </View>
-                  ))}
-                </View>
-              </TouchableOpacity>
-            ))
-          )}
-        </View>
 
         {/* Progress Notes Section */}
         <View style={{ marginTop: 24 }}>
