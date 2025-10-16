@@ -1,114 +1,45 @@
 import { Ionicons } from '@expo/vector-icons';
 import {
-  type RelativePathString,
-  type SitemapType,
   Stack,
   useGlobalSearchParams,
   useRouter,
-  useSitemap,
 } from 'expo-router';
-import React, { useState, useEffect, useMemo, useCallback } from 'react';
+import React, { useMemo } from 'react';
 import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { ErrorBoundaryWrapper } from '../../../__create/SharedErrorBoundary';
-
-interface ParentSitemap {
-  expoPages?: Array<{
-    id: string;
-    name: string;
-    filePath: string;
-    cleanRoute?: string;
-  }>;
-}
 
 function NotFoundScreen() {
   const router = useRouter();
   const params = useGlobalSearchParams();
-  const expoSitemap = useSitemap();
-  const [sitemap, setSitemap] = useState<SitemapType | ParentSitemap | null>(expoSitemap);
-
-  useEffect(() => {
-    if (typeof window !== 'undefined' && window.parent && window.parent !== window) {
-      const handler = (event: MessageEvent) => {
-        if (event.data.type === 'sandbox:sitemap') {
-          window.removeEventListener('message', handler);
-          setSitemap(event.data.sitemap);
-        }
-      };
-
-      window.parent.postMessage(
-        {
-          type: 'sandbox:sitemap',
-        },
-        '*'
-      );
-      window.addEventListener('message', handler);
-
-      return () => {
-        window.removeEventListener('message', handler);
-      };
-    }
-  }, []);
-
-  const isExpoSitemap = sitemap === expoSitemap;
   const missingPath = params['not-found']?.[0] || '';
-
-  const availableRoutes = useMemo(() => {
-    return (
-      expoSitemap?.children?.filter(
-        (child) =>
-          child.href &&
-          child.contextKey !== './auth.jsx' &&
-          child.contextKey !== './auth.web.jsx' &&
-          child.contextKey !== './+not-found.tsx' &&
-          child.contextKey !== 'expo-router/build/views/Sitemap.js'
-      ) || []
-    );
-  }, [expoSitemap]);
 
   const handleBack = () => {
     if (router.canGoBack()) {
       router.back();
     } else {
-      const hasTabsIndex = expoSitemap?.children?.some(
-        (child) =>
-          child.contextKey === './(tabs)/_layout.jsx' &&
-          child.children.some((child) => child.contextKey === './(tabs)/index.jsx')
-      );
-      if (isExpoSitemap) {
-        if (hasTabsIndex) {
-          router.replace('../(tabs)/index.jsx');
-        } else {
-          router.replace('../');
-        }
-      } else {
-        router.replace('..');
-      }
+      router.replace('/(tabs)/dashboard');
     }
   };
 
   const handleNavigate = (url: string) => {
     try {
       if (url) {
-        router.push(url as RelativePathString);
+        router.push(url);
       }
     } catch (error) {
       console.error('Navigation error:', error);
     }
   };
 
-  const handleCreatePage = useCallback(() => {
-    if (typeof window !== 'undefined' && window.parent && window.parent !== window) {
-      window.parent.postMessage(
-        {
-          type: 'sandbox:web:create',
-          path: missingPath,
-          view: 'mobile',
-        },
-        '*'
-      );
-    }
-  }, [missingPath]);
+  // Available routes for navigation
+  const availableRoutes = [
+    { name: 'Dashboard', path: '/(tabs)/dashboard' },
+    { name: 'LAI', path: '/(tabs)/lai' },
+    { name: 'Lockmate', path: '/(tabs)/lockmate' },
+    { name: 'Progress', path: '/(tabs)/progress' },
+    { name: 'Profile', path: '/(tabs)/profile' },
+  ];
+
   return (
     <>
       <Stack.Screen options={{ title: 'Page Not Found', headerShown: false }} />
@@ -138,88 +69,22 @@ function NotFoundScreen() {
               project. But no worries, you've got options!
             </Text>
 
-            {typeof window !== 'undefined' && window.parent && window.parent !== window && (
-              <View style={styles.createPageContainer}>
-                <View style={styles.createPageContent}>
-                  <View style={styles.createPageTextContainer}>
-                    <Text style={styles.createPageTitle}>Build it from scratch</Text>
-                    <Text style={styles.createPageDescription}>
-                      Create a new screen to live at "/{missingPath}"
-                    </Text>
-                  </View>
-                  <View style={styles.createPageButtonContainer}>
-                    <TouchableOpacity
-                      onPress={() => handleCreatePage()}
-                      style={styles.createPageButton}
-                    >
-                      <Text style={styles.createPageButtonText}>Create Screen</Text>
-                    </TouchableOpacity>
-                  </View>
-                </View>
-              </View>
-            )}
-
             <Text style={styles.routesLabel}>Check out all your project's routes here ↓</Text>
-            {!isExpoSitemap && sitemap ? (
-              <View style={styles.pagesContainer}>
-                <View style={styles.pagesListContainer}>
-                  <Text style={styles.pagesLabel}>MOBILE</Text>
-                  {((sitemap as ParentSitemap).expoPages || []).map((route, index: number) => (
-                    <TouchableOpacity
-                      key={route.id}
-                      onPress={() => handleNavigate(route.cleanRoute || '')}
-                      style={styles.pageButton}
-                    >
-                      <Text style={styles.routeName}>{route.name}</Text>
-                    </TouchableOpacity>
-                  ))}
-                </View>
+            
+            <View style={styles.pagesContainer}>
+              <View style={styles.pagesListContainer}>
+                <Text style={styles.pagesLabel}>MOBILE</Text>
+                {availableRoutes.map((route, index: number) => (
+                  <TouchableOpacity
+                    key={route.name}
+                    onPress={() => handleNavigate(route.path)}
+                    style={styles.pageButton}
+                  >
+                    <Text style={styles.routeName}>{route.name}</Text>
+                  </TouchableOpacity>
+                ))}
               </View>
-            ) : (
-              <View style={styles.pagesContainer}>
-                <View style={styles.pagesListContainer}>
-                  <Text style={styles.pagesLabel}>MOBILE</Text>
-                  {(availableRoutes as SitemapType[]).map((route: SitemapType, index: number) => {
-                    const url =
-                      typeof route.href === 'string' ? route.href : route.href?.pathname || '/';
-
-                    if (url === '/(tabs)' && route.children) {
-                      return route.children.map((childRoute: SitemapType) => {
-                        const childUrl =
-                          typeof childRoute.href === 'string'
-                            ? childRoute.href
-                            : childRoute.href.pathname || '/';
-                        const displayPath =
-                          childUrl === '/(tabs)'
-                            ? 'Homepage'
-                            : childUrl.replace(/^\//, '').replace(/^\(tabs\)\//, '');
-                        return (
-                          <TouchableOpacity
-                            key={childRoute.contextKey}
-                            onPress={() => handleNavigate(childUrl)}
-                            style={styles.pageButton}
-                          >
-                            <Text style={styles.routeName}>{displayPath}</Text>
-                          </TouchableOpacity>
-                        );
-                      });
-                    }
-
-                    const displayPath = url === '/' ? 'Homepage' : url.replace(/^\//, '');
-
-                    return (
-                      <TouchableOpacity
-                        key={route.contextKey}
-                        onPress={() => handleNavigate(url)}
-                        style={styles.pageButton}
-                      >
-                        <Text style={styles.routeName}>{displayPath}</Text>
-                      </TouchableOpacity>
-                    );
-                  })}
-                </View>
-              </View>
-            )}
+            </View>
           </View>
         </ScrollView>
       </SafeAreaView>
@@ -309,52 +174,6 @@ const styles = StyleSheet.create({
     marginBottom: 80,
     textAlign: 'center',
   },
-  createPageContainer: {
-    width: '100%',
-    maxWidth: 800,
-    marginBottom: 40,
-    paddingHorizontal: 20,
-  },
-  createPageContent: {
-    flexDirection: 'column',
-    alignItems: 'center',
-    borderWidth: 1,
-    borderColor: '#e5e5e5',
-    borderRadius: 8,
-    padding: 20,
-    backgroundColor: '#fff',
-    gap: 15,
-  },
-  createPageTextContainer: {
-    gap: 10,
-  },
-  createPageTitle: {
-    fontSize: 14,
-    color: '#000',
-    fontWeight: '500',
-    textAlign: 'center',
-  },
-  createPageDescription: {
-    fontSize: 14,
-    color: '#666',
-    textAlign: 'center',
-  },
-  createPageButtonContainer: {
-    alignItems: 'flex-start',
-    justifyContent: 'center',
-  },
-  createPageButton: {
-    backgroundColor: '#000',
-    paddingHorizontal: 10,
-    paddingVertical: 5,
-    borderRadius: 6,
-  },
-  createPageButtonText: {
-    color: '#fff',
-    fontSize: 14,
-    fontWeight: '500',
-  },
-
   pagesContainer: {
     width: '100%',
     alignItems: 'center',
@@ -381,7 +200,10 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
     borderWidth: 1,
     borderColor: '#e5e5e5',
-    boxShadow: '0px 1px 2px rgba(0, 0, 0, 0.05)',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.05,
+    shadowRadius: 2,
     elevation: 1,
   },
   routeName: {
@@ -389,51 +211,6 @@ const styles = StyleSheet.create({
     fontWeight: '500',
     color: '#111',
   },
-  routePath: {
-    fontSize: 14,
-    color: '#999',
-  },
-
-  routesContainer: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    justifyContent: 'center',
-    width: '100%',
-    paddingHorizontal: 20,
-    paddingBottom: 20,
-    gap: 40,
-  },
-  routeCard: {
-    width: '100%',
-    maxWidth: 300,
-    minWidth: 150,
-    alignItems: 'center',
-    marginBottom: 12,
-  },
-  routeButton: {
-    width: '100%',
-    aspectRatio: 1.4,
-    borderRadius: 8,
-    borderWidth: 1,
-    borderColor: '#e5e5e5',
-    overflow: 'hidden',
-  },
-  routePreview: {
-    flex: 1,
-    backgroundColor: '#f9f9f9',
-  },
-  routeLabel: {
-    paddingTop: 12,
-    color: '#666',
-    textAlign: 'left',
-    width: '100%',
-  },
 });
 
-export default () => {
-  return (
-    <ErrorBoundaryWrapper>
-      <NotFoundScreen />
-    </ErrorBoundaryWrapper>
-  );
-};
+export default NotFoundScreen;
