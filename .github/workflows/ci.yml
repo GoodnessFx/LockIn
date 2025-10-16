@@ -4,11 +4,11 @@ on:
   push:
     branches: [ main, develop ]
   pull_request:
-    branches: [ main, develop ]
+    branches: [ main ]
 
 jobs:
   test:
-    name: Run Tests
+    name: Test & Lint
     runs-on: ubuntu-latest
     
     steps:
@@ -23,22 +23,26 @@ jobs:
         cache-dependency-path: '_/apps/mobile/package-lock.json'
         
     - name: Install dependencies
-      working-directory: _/apps/mobile
-      run: npm ci
-      
-    - name: Run linting
-      working-directory: _/apps/mobile
-      run: npm run lint
-      
-    - name: Run type checking
-      working-directory: _/apps/mobile
-      run: npm run type-check
-      
+      run: |
+        cd _/apps/mobile
+        npm ci
+        
+    - name: Run ESLint
+      run: |
+        cd _/apps/mobile
+        npm run lint
+        
+    - name: Run TypeScript check
+      run: |
+        cd _/apps/mobile
+        npm run type-check
+        
     - name: Run tests
-      working-directory: _/apps/mobile
-      run: npm test -- --coverage --watchAll=false
-      
-    - name: Upload coverage to Codecov
+      run: |
+        cd _/apps/mobile
+        npm test -- --coverage --watchAll=false
+        
+    - name: Upload coverage reports
       uses: codecov/codecov-action@v3
       with:
         file: _/apps/mobile/coverage/lcov.info
@@ -62,22 +66,26 @@ jobs:
         cache: 'npm'
         cache-dependency-path: '_/apps/mobile/package-lock.json'
         
+    - name: Install dependencies
+      run: |
+        cd _/apps/mobile
+        npm ci
+        
     - name: Setup Expo
       uses: expo/expo-github-action@v8
       with:
         expo-version: latest
         token: ${{ secrets.EXPO_TOKEN }}
         
-    - name: Install dependencies
-      working-directory: _/apps/mobile
-      run: npm ci
-      
-    - name: Build preview
-      working-directory: _/apps/mobile
+    - name: Build Android Preview
       run: |
-        npx eas build --platform all --profile preview --non-interactive --no-wait
-      env:
-        EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
+        cd _/apps/mobile
+        eas build --platform android --profile preview --non-interactive --no-wait
+        
+    - name: Build iOS Preview
+      run: |
+        cd _/apps/mobile
+        eas build --platform ios --profile preview --non-interactive --no-wait
 
   build-production:
     name: Build Production
@@ -96,22 +104,32 @@ jobs:
         cache: 'npm'
         cache-dependency-path: '_/apps/mobile/package-lock.json'
         
+    - name: Install dependencies
+      run: |
+        cd _/apps/mobile
+        npm ci
+        
     - name: Setup Expo
       uses: expo/expo-github-action@v8
       with:
         expo-version: latest
         token: ${{ secrets.EXPO_TOKEN }}
         
-    - name: Install dependencies
-      working-directory: _/apps/mobile
-      run: npm ci
-      
-    - name: Build production
-      working-directory: _/apps/mobile
+    - name: Build Android Production
       run: |
-        npx eas build --platform all --profile production --non-interactive --no-wait
-      env:
-        EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
+        cd _/apps/mobile
+        eas build --platform android --profile production --non-interactive --no-wait
+        
+    - name: Build iOS Production
+      run: |
+        cd _/apps/mobile
+        eas build --platform ios --profile production --non-interactive --no-wait
+        
+    - name: Submit to Stores
+      run: |
+        cd _/apps/mobile
+        eas submit --platform android --profile production --non-interactive --no-wait
+        eas submit --platform ios --profile production --non-interactive --no-wait
 
   security-scan:
     name: Security Scan
@@ -121,16 +139,27 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v4
       
-    - name: Run Trivy vulnerability scanner
-      uses: aquasecurity/trivy-action@master
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
       with:
-        scan-type: 'fs'
-        scan-ref: '.'
-        format: 'sarif'
-        output: 'trivy-results.sarif'
+        node-version: '18'
+        cache: 'npm'
+        cache-dependency-path: '_/apps/mobile/package-lock.json'
         
-    - name: Upload Trivy scan results to GitHub Security tab
-      uses: github/codeql-action/upload-sarif@v2
-      if: always()
+    - name: Install dependencies
+      run: |
+        cd _/apps/mobile
+        npm ci
+        
+    - name: Run security audit
+      run: |
+        cd _/apps/mobile
+        npm audit --audit-level moderate
+        
+    - name: Check for secrets
+      uses: trufflesecurity/trufflehog@main
       with:
-        sarif_file: 'trivy-results.sarif'
+        path: ./
+        base: main
+        head: HEAD
+        extra_args: --debug --only-verified
