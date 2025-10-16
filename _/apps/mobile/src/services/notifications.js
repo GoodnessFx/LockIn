@@ -1,7 +1,7 @@
 import * as Notifications from 'expo-notifications';
 import * as Device from 'expo-device';
 import { Platform } from 'react-native';
-import { APP_CONFIG } from '../config/constants';
+import { APP_CONFIG } from '../../config/constants';
 
 // Configure notification behavior
 Notifications.setNotificationHandler({
@@ -49,7 +49,7 @@ export class NotificationService {
   }
 
   // Learning journey notifications
-  static async scheduleDailyReminder(time: string, message: string) {
+  static async scheduleDailyReminder(time, message) {
     const [hours, minutes] = time.split(':').map(Number);
     
     await Notifications.scheduleNotificationAsync({
@@ -66,7 +66,7 @@ export class NotificationService {
     });
   }
 
-  static async scheduleStreakReminder(streak: number) {
+  static async scheduleStreakReminder(streak) {
     const messages = {
       3: '🔥 3 day streak! You\'re building momentum!',
       7: '🎉 One week strong! You\'re on fire!',
@@ -87,7 +87,7 @@ export class NotificationService {
     }
   }
 
-  static async scheduleTaskReminder(taskTitle: string, estimatedTime: number) {
+  static async scheduleTaskReminder(taskTitle, estimatedTime) {
     await Notifications.scheduleNotificationAsync({
       content: {
         title: 'Task Reminder 📝',
@@ -98,7 +98,7 @@ export class NotificationService {
     });
   }
 
-  static async scheduleProgressMilestone(percentage: number, niche: string) {
+  static async scheduleProgressMilestone(percentage, niche) {
     const messages = {
       25: `🎉 You're 25% through your ${niche} journey!`,
       50: `🎊 Halfway there! 50% of your ${niche} curriculum complete!`,
@@ -119,7 +119,7 @@ export class NotificationService {
     }
   }
 
-  static async scheduleRecoveryNotification(message: string) {
+  static async scheduleRecoveryNotification(message) {
     await Notifications.scheduleNotificationAsync({
       content: {
         title: 'Time to get back on track! 🚀',
@@ -130,7 +130,7 @@ export class NotificationService {
     });
   }
 
-  static async scheduleWeeklyInsight(insight: string) {
+  static async scheduleWeeklyInsight(insight) {
     await Notifications.scheduleNotificationAsync({
       content: {
         title: 'Weekly Learning Insight 💡',
@@ -141,7 +141,7 @@ export class NotificationService {
     });
   }
 
-  static async scheduleAchievementNotification(achievement: string) {
+  static async scheduleAchievementNotification(achievement) {
     await Notifications.scheduleNotificationAsync({
       content: {
         title: 'Achievement Unlocked! 🏆',
@@ -153,7 +153,7 @@ export class NotificationService {
   }
 
   // AI-powered notifications
-  static async scheduleAIInsight(insight: string) {
+  static async scheduleAIInsight(insight) {
     await Notifications.scheduleNotificationAsync({
       content: {
         title: 'Smart Tip from LockIn AI 🤖',
@@ -164,7 +164,7 @@ export class NotificationService {
     });
   }
 
-  static async scheduleMotivationalMessage(message: string) {
+  static async scheduleMotivationalMessage(message) {
     await Notifications.scheduleNotificationAsync({
       content: {
         title: 'Daily Motivation 💪',
@@ -176,7 +176,7 @@ export class NotificationService {
   }
 
   // Social features (for future Lockmate functionality)
-  static async scheduleSocialNotification(type: string, data: any) {
+  static async scheduleSocialNotification(type, data) {
     const messages = {
       friend_joined: `${data.friendName} joined your learning group!`,
       friend_progress: `${data.friendName} just completed a ${data.taskType} task!`,
@@ -199,7 +199,7 @@ export class NotificationService {
     await Notifications.cancelAllScheduledNotificationsAsync();
   }
 
-  static async cancelNotificationById(notificationId: string) {
+  static async cancelNotificationById(notificationId) {
     await Notifications.cancelScheduledNotificationAsync(notificationId);
   }
 
@@ -212,7 +212,7 @@ export class NotificationService {
   }
 
   // Setup default notifications
-  static async setupDefaultNotifications(userSchedule: string) {
+  static async setupDefaultNotifications(userSchedule) {
     try {
       // Cancel existing notifications
       await this.cancelAllNotifications();
