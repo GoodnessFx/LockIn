@@ -6,7 +6,7 @@ const cfg: ExpoConfig = {
   version: "1.0.0",
   scheme: "lockin",
   orientation: "portrait",
-  newArchEnabled: true,
+  newArchEnabled: false, // Disable new architecture to avoid Hermes conflicts
   icon: "./assets/images/icon.png",
   userInterfaceStyle: "light",
   splash: {
@@ -42,7 +42,19 @@ const cfg: ExpoConfig = {
     "expo-splash-screen",
     "expo-notifications",
     "expo-background-fetch",
-    "expo-task-manager"
+    "expo-task-manager",
+    [
+      "expo-build-properties",
+      {
+        android: {
+          enableProguardInReleaseBuilds: false,
+          enableShrinkResourcesInReleaseBuilds: false,
+        },
+        ios: {
+          newArchEnabled: false,
+        },
+      },
+    ],
   ],
   extra: {
     eas: {

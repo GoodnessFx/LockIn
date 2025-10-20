@@ -12,6 +12,19 @@ const {
 /** @type {import('expo/metro-config').MetroConfig} */
 const config = getDefaultConfig(__dirname);
 
+// Improve Hermes compatibility
+config.transformer = {
+  ...config.transformer,
+  hermesParser: true,
+  minifierConfig: {
+    ...config.transformer.minifierConfig,
+    keep_fnames: true,
+    mangle: {
+      keep_fnames: true,
+    },
+  },
+};
+
 const NATIVE_ALIASES = {
   './Libraries/Components/TextInput/TextInput': path.resolve(
     __dirname,
