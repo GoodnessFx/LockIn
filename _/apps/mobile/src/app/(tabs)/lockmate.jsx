@@ -7,16 +7,15 @@ import {
 } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { 
-  Users, 
-  Clock, 
-  Bell, 
-  MessageCircle,
-  UserPlus,
-  Calendar,
-  Trophy,
-  Heart
-} from 'lucide-react-native';
+// Replaced lucide-react-native icons with emoji/text alternatives
+const Users = ({ size, color }: { size?: number; color?: string }) => <Text style={{ fontSize: size || 20 }}>👥</Text>;
+const Clock = ({ size, color }: { size?: number; color?: string }) => <Text style={{ fontSize: size || 20 }}>🕐</Text>;
+const Bell = ({ size, color }: { size?: number; color?: string }) => <Text style={{ fontSize: size || 20 }}>🔔</Text>;
+const MessageCircle = ({ size, color }: { size?: number; color?: string }) => <Text style={{ fontSize: size || 20 }}>💬</Text>;
+const UserPlus = ({ size, color }: { size?: number; color?: string }) => <Text style={{ fontSize: size || 20 }}>👤➕</Text>;
+const Calendar = ({ size, color }: { size?: number; color?: string }) => <Text style={{ fontSize: size || 20 }}>📅</Text>;
+const Trophy = ({ size, color }: { size?: number; color?: string }) => <Text style={{ fontSize: size || 20 }}>🏆</Text>;
+const Heart = ({ size, color }: { size?: number; color?: string }) => <Text style={{ fontSize: size || 20 }}>❤️</Text>;
 
 export default function LockmateScreen() {
   const insets = useSafeAreaInsets();
@@ -48,7 +47,7 @@ export default function LockmateScreen() {
               justifyContent: 'center',
               marginBottom: 32,
               borderWidth: 2,
-              borderColor: '#6C5CE7',
+              borderColor: '#2563eb',
               shadowColor: '#000',
               shadowOffset: { width: 0, height: 4 },
               shadowOpacity: 0.1,
@@ -56,7 +55,7 @@ export default function LockmateScreen() {
               elevation: 4,
             }}
           >
-            <Users size={60} color="#6C5CE7" />
+            <Users size={60} color="#2563eb" />
           </View>
 
           {/* Title */}
@@ -116,9 +115,9 @@ export default function LockmateScreen() {
                     justifyContent: 'center',
                     marginRight: 16,
                     borderWidth: 1,
-                    borderColor: '#6C5CE7',
+                    borderColor: '#2563eb',
                   }}>
-                    <UserPlus size={20} color="#6C5CE7" />
+                    <UserPlus size={20} color="#2563eb" />
                   </View>
                   <View style={{ flex: 1 }}>
                     <Text style={{ fontSize: 16, fontWeight: '500', color: '#0b0b0f' }}>
@@ -208,7 +207,7 @@ export default function LockmateScreen() {
           {/* Notify Me Button */}
           <TouchableOpacity
             style={{
-              backgroundColor: '#6C5CE7',
+              backgroundColor: '#2563eb',
               borderRadius: 16,
               paddingVertical: 16,
               paddingHorizontal: 32,
@@ -247,7 +246,7 @@ export default function LockmateScreen() {
             elevation: 4,
           }}>
             <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 12 }}>
-              <Clock size={20} color="#6C5CE7" />
+              <Clock size={20} color="#2563eb" />
               <Text style={{ 
                 fontSize: 16, 
                 fontWeight: '600', 

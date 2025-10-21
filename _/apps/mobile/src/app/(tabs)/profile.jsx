@@ -2,29 +2,28 @@ import React, { useState } from 'react';
 import { View, Text, ScrollView, TouchableOpacity, Switch, Alert, Image } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { 
-  Settings as SettingsIcon, 
-  User, 
-  Bell, 
-  Shield, 
-  CreditCard, 
-  HelpCircle, 
-  LogOut,
-  ChevronRight,
-  Mail,
-  Phone,
-  Lock,
-  Edit3,
-  Award,
-  Target,
-  Calendar,
-  BarChart3,
-  Crown,
-  Star,
-  Trophy,
-  Zap,
-  Clock
-} from 'lucide-react-native';
+// Replaced lucide-react-native icons with emoji/text alternatives to avoid import errors
+const SettingsIcon = () => <Text style={{ fontSize: 20 }}>⚙️</Text>;
+const User = () => <Text style={{ fontSize: 20 }}>👤</Text>;
+const Bell = () => <Text style={{ fontSize: 20 }}>🔔</Text>;
+const Shield = () => <Text style={{ fontSize: 20 }}>🛡️</Text>;
+const CreditCard = () => <Text style={{ fontSize: 20 }}>💳</Text>;
+const HelpCircle = () => <Text style={{ fontSize: 20 }}>❓</Text>;
+const LogOut = () => <Text style={{ fontSize: 20 }}>🚪</Text>;
+const ChevronRight = () => <Text style={{ fontSize: 20 }}>▶️</Text>;
+const Mail = () => <Text style={{ fontSize: 20 }}>📧</Text>;
+const Phone = () => <Text style={{ fontSize: 20 }}>📞</Text>;
+const Lock = () => <Text style={{ fontSize: 20 }}>🔒</Text>;
+const Edit3 = () => <Text style={{ fontSize: 20 }}>✏️</Text>;
+const Award = () => <Text style={{ fontSize: 20 }}>🏆</Text>;
+const Target = () => <Text style={{ fontSize: 20 }}>🎯</Text>;
+const Calendar = () => <Text style={{ fontSize: 20 }}>📅</Text>;
+const BarChart3 = () => <Text style={{ fontSize: 20 }}>📊</Text>;
+const Crown = () => <Text style={{ fontSize: 20 }}>👑</Text>;
+const Star = () => <Text style={{ fontSize: 20 }}>⭐</Text>;
+const Trophy = () => <Text style={{ fontSize: 20 }}>🏆</Text>;
+const Zap = () => <Text style={{ fontSize: 20 }}>⚡</Text>;
+const Clock = () => <Text style={{ fontSize: 20 }}>🕐</Text>;
 import { useAuth } from '@/utils/auth/useAuth';
 import useUser from '@/utils/auth/useUser';
 
@@ -165,12 +164,12 @@ export default function Profile() {
                 width: 80,
                 height: 80,
                 borderRadius: 40,
-                backgroundColor: '#6C5CE720',
+                backgroundColor: '#2563eb20',
                 alignItems: 'center',
                 justifyContent: 'center',
                 marginRight: 16,
               }}>
-                <User size={40} color="#6C5CE7" />
+                <User size={40} color="#2563eb" />
               </View>
               <View style={{ flex: 1 }}>
                 <Text style={{ fontSize: 24, fontWeight: 'bold', color: '#0b0b0f', marginBottom: 4 }}>
@@ -188,7 +187,7 @@ export default function Profile() {
                   <View style={{
                     height: '100%',
                     width: `${(userStats.xp / userStats.nextLevelXp) * 100}%`,
-                    backgroundColor: '#6C5CE7',
+                    backgroundColor: '#2563eb',
                     borderRadius: 3,
                   }} />
                 </View>
@@ -215,12 +214,12 @@ export default function Profile() {
                   width: 50,
                   height: 50,
                   borderRadius: 25,
-                  backgroundColor: '#6C5CE720',
+                  backgroundColor: '#2563eb20',
                   alignItems: 'center',
                   justifyContent: 'center',
                   marginBottom: 8,
                 }}>
-                  <Zap size={24} color="#6C5CE7" />
+                  <Zap size={24} color="#2563eb" />
                 </View>
                 <Text style={{ fontSize: 18, fontWeight: 'bold', color: '#0b0b0f' }}>
                   {userStats.streak}
@@ -286,7 +285,7 @@ export default function Profile() {
         <SectionHeader title="Account" />
         <View style={{ backgroundColor: '#f8f9fa', marginBottom: 24, borderRadius: 12, borderWidth: 1, borderColor: '#e0e0e0', shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.1, shadowRadius: 8, elevation: 4 }}>
           <SettingItem
-            icon={<User size={20} color="#6C5CE7" />}
+            icon={<User size={20} color="#2563eb" />}
             title="Personal Information"
             subtitle={user?.email || 'Update your profile details'}
             onPress={() => Alert.alert('Profile', 'Profile editing would open here')}
@@ -309,56 +308,56 @@ export default function Profile() {
         <SectionHeader title="Notifications" />
         <View style={{ backgroundColor: '#f8f9fa', marginBottom: 24, borderRadius: 12, borderWidth: 1, borderColor: '#e0e0e0', shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.1, shadowRadius: 8, elevation: 4 }}>
           <SettingItem
-            icon={<Bell size={20} color="#6C5CE7" />}
+            icon={<Bell size={20} color="#2563eb" />}
             title="Milestone Alerts"
             subtitle="Get notified when you reach goals"
             rightElement={
               <Switch
                 value={notifications.milestones}
                 onValueChange={(value) => setNotifications({...notifications, milestones: value})}
-                trackColor={{ false: '#e0e0e0', true: '#6C5CE7' }}
+                trackColor={{ false: '#e0e0e0', true: '#2563eb' }}
                 thumbColor={notifications.milestones ? '#ffffff' : '#ffffff'}
               />
             }
             showChevron={false}
           />
           <SettingItem
-            icon={<Bell size={20} color="#6C5CE7" />}
+            icon={<Bell size={20} color="#2563eb" />}
             title="Focus Reminders"
             subtitle="Get reminded to start focus sessions"
             rightElement={
               <Switch
                 value={notifications.focusReminders}
                 onValueChange={(value) => setNotifications({...notifications, focusReminders: value})}
-                trackColor={{ false: '#e0e0e0', true: '#6C5CE7' }}
+                trackColor={{ false: '#e0e0e0', true: '#2563eb' }}
                 thumbColor={notifications.focusReminders ? '#ffffff' : '#ffffff'}
               />
             }
             showChevron={false}
           />
           <SettingItem
-            icon={<Bell size={20} color="#6C5CE7" />}
+            icon={<Bell size={20} color="#2563eb" />}
             title="Weekly Reports"
             subtitle="Receive weekly progress summaries"
             rightElement={
               <Switch
                 value={notifications.weeklyReports}
                 onValueChange={(value) => setNotifications({...notifications, weeklyReports: value})}
-                trackColor={{ false: '#e0e0e0', true: '#6C5CE7' }}
+                trackColor={{ false: '#e0e0e0', true: '#2563eb' }}
                 thumbColor={notifications.weeklyReports ? '#ffffff' : '#ffffff'}
               />
             }
             showChevron={false}
           />
           <SettingItem
-            icon={<Bell size={20} color="#6C5CE7" />}
+            icon={<Bell size={20} color="#2563eb" />}
             title="Marketing Updates"
             subtitle="Receive product updates and tips"
             rightElement={
               <Switch
                 value={notifications.marketing}
                 onValueChange={(value) => setNotifications({...notifications, marketing: value})}
-                trackColor={{ false: '#e0e0e0', true: '#6C5CE7' }}
+                trackColor={{ false: '#e0e0e0', true: '#2563eb' }}
                 thumbColor={notifications.marketing ? '#ffffff' : '#ffffff'}
               />
             }
@@ -377,7 +376,7 @@ export default function Profile() {
               <Switch
                 value={security.biometric}
                 onValueChange={(value) => setSecurity({...security, biometric: value})}
-                trackColor={{ false: '#e0e0e0', true: '#6C5CE7' }}
+                trackColor={{ false: '#e0e0e0', true: '#2563eb' }}
                 thumbColor={security.biometric ? '#ffffff' : '#ffffff'}
               />
             }
@@ -391,7 +390,7 @@ export default function Profile() {
               <Switch
                 value={security.twoFactor}
                 onValueChange={(value) => setSecurity({...security, twoFactor: value})}
-                trackColor={{ false: '#e0e0e0', true: '#6C5CE7' }}
+                trackColor={{ false: '#e0e0e0', true: '#2563eb' }}
                 thumbColor={security.twoFactor ? '#ffffff' : '#ffffff'}
               />
             }
@@ -415,19 +414,19 @@ export default function Profile() {
         <SectionHeader title="App Settings" />
         <View style={{ backgroundColor: '#f8f9fa', marginBottom: 24, borderRadius: 12, borderWidth: 1, borderColor: '#e0e0e0', shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.1, shadowRadius: 8, elevation: 4 }}>
           <SettingItem
-            icon={<BarChart3 size={20} color="#6C5CE7" />}
+            icon={<BarChart3 size={20} color="#2563eb" />}
             title="Data & Analytics"
             subtitle="Manage your data and analytics"
             onPress={() => Alert.alert('Data', 'Data settings would open here')}
           />
           <SettingItem
-            icon={<Calendar size={20} color="#6C5CE7" />}
+            icon={<Calendar size={20} color="#2563eb" />}
             title="Focus Sessions"
             subtitle="Configure focus timer settings"
             onPress={() => Alert.alert('Focus', 'Focus settings would open here')}
           />
           <SettingItem
-            icon={<Target size={20} color="#6C5CE7" />}
+            icon={<Target size={20} color="#2563eb" />}
             title="Goal Settings"
             subtitle="Configure goal tracking preferences"
             onPress={() => Alert.alert('Goals', 'Goal settings would open here')}

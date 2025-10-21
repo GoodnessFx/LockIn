@@ -13,9 +13,9 @@ export const theme = {
     textSecondaryDark: "#a0a0a0",
     
     // Brand colors
-    primary: "#6C5CE7",
-    primaryDark: "#5a4fcf",
-    accent: "#E84393",
+    primary: "#2563eb",
+    primaryDark: "#1d4ed8",
+    accent: "#3b82f6",
     success: "#00b894",
     warning: "#fdcb6e",
     error: "#e17055",

@@ -1,13 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet } from 'react-native';
-import Animated, { 
-  useSharedValue, 
-  useAnimatedStyle, 
-  withTiming, 
-  withRepeat,
-  withSequence,
-  Easing 
-} from 'react-native-reanimated';
 
 interface CountdownTimerProps {
   targetDate: Date;
@@ -28,9 +20,6 @@ export default function CountdownTimer({
     minutes: 0,
     seconds: 0,
   });
-
-  const pulseAnimation = useSharedValue(1);
-  const glowAnimation = useSharedValue(0);
 
   // Size configurations
   const sizeConfig = {
@@ -63,44 +52,16 @@ export default function CountdownTimer({
     updateTimer();
     const interval = setInterval(updateTimer, 1000);
 
-    // Start pulse animation
-    pulseAnimation.value = withRepeat(
-      withSequence(
-        withTiming(1.1, { duration: 1000, easing: Easing.inOut(Easing.ease) }),
-        withTiming(1, { duration: 1000, easing: Easing.inOut(Easing.ease) })
-      ),
-      -1,
-      false
-    );
-
-    // Start glow animation
-    glowAnimation.value = withRepeat(
-      withSequence(
-        withTiming(1, { duration: 2000, easing: Easing.inOut(Easing.ease) }),
-        withTiming(0, { duration: 2000, easing: Easing.inOut(Easing.ease) })
-      ),
-      -1,
-      false
-    );
-
     return () => clearInterval(interval);
-  }, [targetDate, onComplete, pulseAnimation, glowAnimation]);
-
-  const animatedStyle = useAnimatedStyle(() => ({
-    transform: [{ scale: pulseAnimation.value }],
-  }));
-
-  const glowStyle = useAnimatedStyle(() => ({
-    opacity: glowAnimation.value * 0.3,
-  }));
+  }, [targetDate, onComplete]);
 
   const TimeUnit = ({ value, label }: { value: number; label: string }) => (
     <View style={[styles.timeUnit, { width: config.containerSize }]}>
-      <Animated.View style={[styles.timeContainer, animatedStyle]}>
+      <View style={styles.timeContainer}>
         <Text style={[styles.timeValue, { fontSize: config.fontSize }]}>
           {value.toString().padStart(2, '0')}
         </Text>
-      </Animated.View>
+      </View>
       {showLabels && (
         <Text style={styles.timeLabel}>{label}</Text>
       )}
@@ -115,9 +76,6 @@ export default function CountdownTimer({
         <TimeUnit value={timeLeft.minutes} label="Minutes" />
         <TimeUnit value={timeLeft.seconds} label="Seconds" />
       </View>
-      
-      {/* Glow effect */}
-      <Animated.View style={[styles.glowEffect, glowStyle]} />
     </View>
   );
 }
@@ -138,12 +96,12 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   timeContainer: {
-    backgroundColor: '#6C5CE7',
+    backgroundColor: '#2563eb',
     borderRadius: 12,
     paddingVertical: 8,
     paddingHorizontal: 12,
     marginBottom: 4,
-    shadowColor: '#6C5CE7',
+    shadowColor: '#2563eb',
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.3,
     shadowRadius: 8,
@@ -159,15 +117,5 @@ const styles = StyleSheet.create({
     color: '#6c757d',
     fontWeight: '500',
     textAlign: 'center',
-  },
-  glowEffect: {
-    position: 'absolute',
-    top: -10,
-    left: -10,
-    right: -10,
-    bottom: -10,
-    backgroundColor: '#6C5CE7',
-    borderRadius: 20,
-    zIndex: -1,
   },
 });

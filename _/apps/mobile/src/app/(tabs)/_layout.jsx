@@ -1,5 +1,11 @@
 import { Tabs } from 'expo-router';
-import { Home, BookOpen, Users, User, BarChart3 } from 'lucide-react-native';
+import { Text } from 'react-native';
+// Replaced lucide-react-native icons with emoji/text alternatives
+const Home = () => <Text style={{ fontSize: 20 }}>🏠</Text>;
+const BookOpen = () => <Text style={{ fontSize: 20 }}>📖</Text>;
+const Users = () => <Text style={{ fontSize: 20 }}>👥</Text>;
+const User = () => <Text style={{ fontSize: 20 }}>👤</Text>;
+const BarChart3 = () => <Text style={{ fontSize: 20 }}>📊</Text>;
 
 export default function TabLayout() {
   return (
@@ -8,26 +14,27 @@ export default function TabLayout() {
         headerShown: false,
         tabBarStyle: {
           backgroundColor: '#ffffff',
-          borderTopWidth: 1,
-          borderColor: '#e0e0e0',
-          paddingTop: 6,
-          paddingBottom: 6,
-          height: 65,
-          shadowColor: '#000',
-          shadowOffset: { width: 0, height: -1 },
-          shadowOpacity: 0.05,
-          shadowRadius: 4,
-          elevation: 4,
+          borderTopWidth: 0,
+          paddingTop: 8,
+          paddingBottom: 8,
+          height: 70,
+          shadowColor: '#2563eb',
+          shadowOffset: { width: 0, height: -4 },
+          shadowOpacity: 0.1,
+          shadowRadius: 12,
+          elevation: 8,
+          borderTopLeftRadius: 20,
+          borderTopRightRadius: 20,
         },
-        tabBarActiveTintColor: '#6C5CE7',
+        tabBarActiveTintColor: '#2563eb',
         tabBarInactiveTintColor: '#6c757d',
         tabBarLabelStyle: {
-          fontSize: 11,
-          fontWeight: '500',
-          marginTop: 2,
+          fontSize: 12,
+          fontWeight: '600',
+          marginTop: 4,
         },
         tabBarIconStyle: {
-          marginTop: 2,
+          marginTop: 4,
         },
       }}
     >

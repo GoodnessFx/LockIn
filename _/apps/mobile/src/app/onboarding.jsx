@@ -1,122 +1,234 @@
-import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Image, Dimensions } from 'react-native';
+import React, { useState, useRef } from 'react';
+import { View, Text, StyleSheet, TouchableOpacity, Alert } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useAppStore } from '@/store/appStore';
-import Animated, { FadeIn, FadeOut, withTiming, useSharedValue, useAnimatedStyle } from 'react-native-reanimated';
-import { ArrowRight, Target, Users, BookOpen, Lock, Linkedin, Twitter } from 'lucide-react-native';
-import { Linking } from 'react-native';
+import StorageService from '@/services/storage';
+import ProgressService from '@/services/progress';
+import NotificationService from '@/services/notifications';
+// Replaced lucide-react-native icons with emoji/text alternatives
+const ArrowLeft = () => <Text style={{ fontSize: 20 }}>⬅️</Text>;
+const ArrowRight = () => <Text style={{ fontSize: 20 }}>➡️</Text>;
+const Check = () => <Text style={{ fontSize: 20 }}>✅</Text>;
+const Skip = () => <Text style={{ fontSize: 20 }}>⏭️</Text>;
 
-const { width, height } = Dimensions.get('window');
+// Import onboarding components
+import StepIndicator from '@/components/onboarding/StepIndicator';
+import NicheSelection from '@/components/onboarding/NicheSelection';
+import GoalSetting from '@/components/onboarding/GoalSetting';
+import AgeVerification from '@/components/onboarding/AgeVerification';
+import SocialLinks from '@/components/onboarding/SocialLinks';
+import ProfileSetup from '@/components/onboarding/ProfileSetup';
 
 export default function Onboarding() {
   const router = useRouter();
   const insets = useSafeAreaInsets();
   const setOnboarded = useAppStore((s) => s.setOnboarded);
+  
+  const [currentStep, setCurrentStep] = useState(0);
+  const totalSteps = 5;
 
-  const handleGetStarted = async () => {
-    await setOnboarded(true);
-    router.replace('/(tabs)/dashboard');
-  };
+  // Onboarding data state
+  const [selectedNiche, setSelectedNiche] = useState(null);
+  const [selectedGoal, setSelectedGoal] = useState(null);
+  const [selectedDate, setSelectedDate] = useState(null);
+  const [parentalControlsEnabled, setParentalControlsEnabled] = useState(false);
+  const [socialLinks, setSocialLinks] = useState({});
+  const [profileData, setProfileData] = useState({});
 
-  const handleSocialLink = (url) => {
-    Linking.openURL(url).catch(err => console.error('Failed to open URL:', err));
-  };
-
-  const features = [
-    {
-      icon: <Target size={32} color="#6C5CE7" />,
-      title: "97-Day Commitment",
-      description: "Transform your life with a proven 97-day sprint system"
-    },
-    {
-      icon: <BookOpen size={32} color="#6C5CE7" />,
-      title: "AI Learning Coach",
-      description: "Personalized curriculum and motivational guidance"
-    },
-    {
-      icon: <Users size={32} color="#6C5CE7" />,
-      title: "Lockmate Community",
-      description: "Connect with accountability partners and mentors"
-    },
-    {
-      icon: <Lock size={32} color="#6C5CE7" />,
-      title: "Commitment Battery",
-      description: "Track your energy and stay locked in to your goals"
-    }
+  const stepTitles = [
+    "Choose Your Niche",
+    "Set Your Goal",
+    "Age Verification",
+    "Connect Social Accounts",
+    "Complete Profile"
   ];
 
-  const opacity = useSharedValue(0);
-  const scale = useSharedValue(0.9);
-  React.useEffect(() => {
-    opacity.value = withTiming(1, { duration: 600 });
-    scale.value = withTiming(1, { duration: 600 });
-  }, []);
-  const animatedStyle = useAnimatedStyle(() => ({
-    opacity: opacity.value,
-    transform: [{ scale: scale.value }],
-  }));
+  const canContinue = () => {
+    switch (currentStep) {
+      case 0:
+        return selectedNiche !== null;
+      case 1:
+        return selectedGoal !== null && selectedGoal.trim() !== '';
+      case 2:
+        return selectedDate !== null;
+      case 3:
+        return true; // Social links are optional
+      case 4:
+        return profileData.firstName && profileData.firstName.trim() !== '' &&
+               profileData.lastName && profileData.lastName.trim() !== '' &&
+               profileData.username && profileData.username.trim() !== '';
+      default:
+        return false;
+    }
+  };
+
+  const nextStep = () => {
+    if (currentStep < totalSteps - 1) {
+      setCurrentStep(currentStep + 1);
+    } else {
+      completeOnboarding();
+    }
+  };
+
+  const previousStep = () => {
+    if (currentStep > 0) {
+      setCurrentStep(currentStep - 1);
+    }
+  };
+
+  const skipOnboarding = () => {
+    Alert.alert(
+      "Skip Onboarding?",
+      "You can complete your profile setup later in settings. Are you sure you want to skip?",
+      [
+        { text: "Cancel", style: "cancel" },
+        { 
+          text: "Skip", 
+          style: "destructive",
+          onPress: completeOnboarding
+        }
+      ]
+    );
+  };
+
+  const completeOnboarding = async () => {
+    try {
+      // Save onboarding data
+      const onboardingData = {
+        niche: selectedNiche,
+        goal: selectedGoal,
+        dateOfBirth: selectedDate?.toISOString(),
+        parentalControls: parentalControlsEnabled,
+        socialLinks: socialLinks,
+        profile: profileData,
+        onboardingCompleted: true,
+        completedAt: new Date().toISOString(),
+      };
+
+      console.log('Onboarding completed successfully:', onboardingData);
+      
+      // Mark as onboarded and navigate to main app
+      await setOnboarded(true);
+      router.replace('/(tabs)/dashboard');
+    } catch (error) {
+      console.error('Error completing onboarding:', error);
+      Alert.alert(
+        'Error',
+        'There was an error completing your setup. Please try again.',
+        [{ text: 'OK' }]
+      );
+    }
+  };
+
+  const renderCurrentStep = () => {
+    switch (currentStep) {
+      case 0:
+        return (
+          <NicheSelection
+            selectedNiche={selectedNiche}
+            onNicheSelected={setSelectedNiche}
+          />
+        );
+      case 1:
+        return (
+          <GoalSetting
+            selectedGoal={selectedGoal}
+            onGoalSelected={setSelectedGoal}
+          />
+        );
+      case 2:
+        return (
+          <AgeVerification
+            selectedDate={selectedDate}
+            parentalControlsEnabled={parentalControlsEnabled}
+            onAgeVerified={(date, parentalControls) => {
+              setSelectedDate(date);
+              setParentalControlsEnabled(parentalControls);
+            }}
+          />
+        );
+      case 3:
+        return (
+          <SocialLinks
+            socialLinks={socialLinks}
+            onSocialLinksUpdated={setSocialLinks}
+          />
+        );
+      case 4:
+        return (
+          <ProfileSetup
+            profileData={profileData}
+            onProfileUpdated={setProfileData}
+          />
+        );
+      default:
+        return null;
+    }
+  };
 
   return (
-    <View style={[styles.container, { paddingTop: insets.top, backgroundColor: '#ffffff' }]}>
-      <View style={styles.content}>
-        {/* Logo Section */}
-        <View style={styles.logoSection}>
-          <Animated.View entering={FadeIn.duration(600)} style={styles.logoContainer}>
-            <Lock size={48} color="#6C5CE7" />
-          </Animated.View>
-          <Animated.Text entering={FadeIn.duration(600)} style={styles.title}>LockIn</Animated.Text>
-          <Text style={styles.subtitle}>Dial in. Build relentlessly. Win together.</Text>
+    <View style={[styles.container, { paddingTop: insets.top }]}>
+      {/* Header with navigation */}
+      <View style={styles.header}>
+        <View style={styles.headerLeft}>
+          {currentStep > 0 ? (
+            <TouchableOpacity
+              style={styles.backButton}
+              onPress={previousStep}
+            >
+              <ArrowLeft size={20} color="#0b0b0f" />
+            </TouchableOpacity>
+          ) : (
+            <View style={styles.placeholder} />
+          )}
         </View>
 
-        {/* Features Section */}
-        <View style={styles.featuresSection}>
-          {features.map((feature, index) => (
-            <Animated.View key={index} style={[styles.featureCard, animatedStyle]}>
-              <View style={styles.featureIcon}>
-                {feature.icon}
-              </View>
-              <View style={styles.featureContent}>
-                <Text style={styles.featureTitle}>{feature.title}</Text>
-                <Text style={styles.featureDescription}>{feature.description}</Text>
-              </View>
-            </Animated.View>
-          ))}
-        </View>
-
-        {/* CTA Section */}
-        <View style={styles.ctaSection}>
+        <View style={styles.headerRight}>
           <TouchableOpacity
-            style={styles.ctaButton}
-            onPress={handleGetStarted}
-            activeOpacity={0.7}
+            style={styles.skipButton}
+            onPress={skipOnboarding}
           >
-            <Text style={styles.ctaText}>Get Started</Text>
-            <ArrowRight size={20} color="#ffffff" />
+            <Skip size={16} color="#6c757d" />
+            <Text style={styles.skipText}>Skip</Text>
           </TouchableOpacity>
-          
-          <Text style={styles.ctaSubtext}>
-            Join thousands building their dreams
-          </Text>
-          
-          {/* Social Media Links */}
-          <View style={styles.socialLinks}>
-            <TouchableOpacity
-              onPress={() => handleSocialLink('https://linkedin.com/company/lockin')}
-              style={styles.socialButton}
-              activeOpacity={0.7}
-            >
-              <Linkedin size={24} color="#6C5CE7" />
-            </TouchableOpacity>
-            <TouchableOpacity
-              onPress={() => handleSocialLink('https://twitter.com/lockin')}
-              style={styles.socialButton}
-              activeOpacity={0.7}
-            >
-              <Twitter size={24} color="#6C5CE7" />
-            </TouchableOpacity>
-          </View>
         </View>
+      </View>
+
+      {/* Step Indicator */}
+      <StepIndicator
+        currentStep={currentStep}
+        totalSteps={totalSteps}
+        stepTitles={stepTitles}
+      />
+
+      {/* Step Content */}
+      <View style={styles.content}>
+        {renderCurrentStep()}
+      </View>
+
+      {/* Continue Button */}
+      <View style={styles.footer}>
+        <TouchableOpacity
+          style={[
+            styles.continueButton,
+            !canContinue() && styles.continueButtonDisabled
+          ]}
+          onPress={nextStep}
+          disabled={!canContinue()}
+        >
+          <Text style={[
+            styles.continueButtonText,
+            !canContinue() && styles.continueButtonTextDisabled
+          ]}>
+            {currentStep === totalSteps - 1 ? "Complete Setup" : "Continue"}
+          </Text>
+          {currentStep === totalSteps - 1 ? (
+            <Check size={20} color={canContinue() ? "#ffffff" : "#9ca3af"} />
+          ) : (
+            <ArrowRight size={20} color={canContinue() ? "#ffffff" : "#9ca3af"} />
+          )}
+        </TouchableOpacity>
       </View>
     </View>
   );
@@ -125,131 +237,84 @@ export default function Onboarding() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    backgroundColor: '#ffffff',
+  },
+  header: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingHorizontal: 24,
+    paddingVertical: 16,
+  },
+  headerLeft: {
+    width: 48,
+  },
+  headerRight: {
+    width: 48,
+    alignItems: 'flex-end',
+  },
+  backButton: {
+    width: 40,
+    height: 40,
+    borderRadius: 12,
+    backgroundColor: '#f8f9fa',
+    borderWidth: 1,
+    borderColor: '#e0e0e0',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  skipButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: 16,
+    paddingVertical: 8,
+    borderRadius: 20,
+    backgroundColor: '#f8f9fa',
+    borderWidth: 1,
+    borderColor: '#e0e0e0',
+  },
+  skipText: {
+    fontSize: 14,
+    fontWeight: '500',
+    color: '#6c757d',
+    marginLeft: 4,
+  },
+  placeholder: {
+    width: 48,
   },
   content: {
     flex: 1,
     paddingHorizontal: 24,
-    justifyContent: 'space-between',
   },
-  logoSection: {
-    alignItems: 'center',
-    marginTop: 60,
+  footer: {
+    paddingHorizontal: 24,
+    paddingVertical: 24,
   },
-  logoContainer: {
-    width: 80,
-    height: 80,
-    borderRadius: 40,
-    backgroundColor: '#6C5CE710',
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginBottom: 24,
-  },
-  title: {
-    fontSize: 36,
-    fontWeight: 'bold',
-    color: '#0b0b0f',
-    marginBottom: 8,
-    textAlign: 'center',
-  },
-  subtitle: {
-    fontSize: 16,
-    color: '#6b7280',
-    textAlign: 'center',
-    lineHeight: 24,
-  },
-  featuresSection: {
-    flex: 1,
-    justifyContent: 'center',
-    marginVertical: 40,
-  },
-  featureCard: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: '#f8f9fa',
-    borderRadius: 16,
-    padding: 20,
-    marginBottom: 16,
-    borderWidth: 1,
-    borderColor: '#e0e0e0',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 8,
-    elevation: 4,
-  },
-  featureIcon: {
-    width: 60,
-    height: 60,
-    borderRadius: 30,
-    backgroundColor: '#6C5CE710',
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginRight: 16,
-  },
-  featureContent: {
-    flex: 1,
-  },
-  featureTitle: {
-    fontSize: 18,
-    fontWeight: '600',
-    color: '#0b0b0f',
-    marginBottom: 4,
-  },
-  featureDescription: {
-    fontSize: 14,
-    color: '#6c757d',
-    lineHeight: 20,
-  },
-  ctaSection: {
-    alignItems: 'center',
-    marginBottom: 40,
-  },
-  ctaButton: {
-    backgroundColor: '#6C5CE7',
+  continueButton: {
+    backgroundColor: '#2563eb',
     borderRadius: 16,
     paddingVertical: 16,
-    paddingHorizontal: 32,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    width: '100%',
-    marginBottom: 16,
-    shadowColor: '#000',
+    shadowColor: '#2563eb',
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.2,
     shadowRadius: 8,
     elevation: 5,
   },
-  ctaText: {
+  continueButtonDisabled: {
+    backgroundColor: '#e9ecef',
+    shadowOpacity: 0,
+    elevation: 0,
+  },
+  continueButtonText: {
     fontSize: 18,
     fontWeight: '600',
     color: '#ffffff',
     marginRight: 8,
   },
-  ctaSubtext: {
-    fontSize: 14,
-    color: '#6c757d',
-    textAlign: 'center',
-  },
-  socialLinks: {
-    flexDirection: 'row',
-    justifyContent: 'center',
-    gap: 16,
-    marginTop: 20,
-  },
-  socialButton: {
-    width: 48,
-    height: 48,
-    borderRadius: 24,
-    backgroundColor: '#f8f9fa',
-    alignItems: 'center',
-    justifyContent: 'center',
-    borderWidth: 1,
-    borderColor: '#e0e0e0',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 3,
+  continueButtonTextDisabled: {
+    color: '#9ca3af',
   },
 });

@@ -1,0 +1,56 @@
+diff --git a/node_modules/lucide-react-native/dist/esm/icons/infinity.js b/node_modules/lucide-react-native/dist/esm/icons/infinity.js
+index 8f9453d..7eecbfd 100644
+--- a/node_modules/lucide-react-native/dist/esm/icons/infinity.js
++++ b/node_modules/lucide-react-native/dist/esm/icons/infinity.js
+@@ -7,9 +7,9 @@
+ 
+ import createLucideIcon from '../createLucideIcon.js';
+ 
+-const Infinity = createLucideIcon("Infinity", [
++const LucideInfinity = createLucideIcon("Infinity", [
+   ["path", { d: "M6 16c5 0 7-8 12-8a4 4 0 0 1 0 8c-5 0-7-8-12-8a4 4 0 1 0 0 8", key: "18ogeb" }]
+ ]);
+ 
+-export { Infinity as default };
++export { LucideInfinity as default };
+ //# sourceMappingURL=infinity.js.map
+diff --git a/node_modules/lucide-react-native/dist/esm/icons/map.js b/node_modules/lucide-react-native/dist/esm/icons/map.js
+index 0c7c7a0..13a1949 100644
+--- a/node_modules/lucide-react-native/dist/esm/icons/map.js
++++ b/node_modules/lucide-react-native/dist/esm/icons/map.js
+@@ -7,7 +7,7 @@
+ 
+ import createLucideIcon from '../createLucideIcon.js';
+ 
+-const Map = createLucideIcon("Map", [
++const LucideMap = createLucideIcon("Map", [
+   [
+     "path",
+     {
+@@ -19,5 +19,5 @@ const Map = createLucideIcon("Map", [
+   ["path", { d: "M9 3.236v15", key: "1uimfh" }]
+ ]);
+ 
+-export { Map as default };
++export { LucideMap as default };
+ //# sourceMappingURL=map.js.map
+diff --git a/node_modules/lucide-react-native/dist/esm/icons/settings.js b/node_modules/lucide-react-native/dist/esm/icons/settings.js
+index 27ab0d9..d266d42 100644
+--- a/node_modules/lucide-react-native/dist/esm/icons/settings.js
++++ b/node_modules/lucide-react-native/dist/esm/icons/settings.js
+@@ -7,7 +7,7 @@
+ 
+ import createLucideIcon from '../createLucideIcon.js';
+ 
+-const Settings = createLucideIcon("Settings", [
++const LucideSettings = createLucideIcon("Settings", [
+   [
+     "path",
+     {
+@@ -18,5 +18,5 @@ const Settings = createLucideIcon("Settings", [
+   ["circle", { cx: "12", cy: "12", r: "3", key: "1v7zrd" }]
+ ]);
+ 
+-export { Settings as default };
++export { LucideSettings as default };
+ //# sourceMappingURL=settings.js.map

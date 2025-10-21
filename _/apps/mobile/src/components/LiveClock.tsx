@@ -1,13 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet } from 'react-native';
-import Animated, { 
-  useSharedValue, 
-  useAnimatedStyle, 
-  withTiming,
-  withRepeat,
-  withSequence,
-  Easing 
-} from 'react-native-reanimated';
 
 interface LiveClockProps {
   showDate?: boolean;
@@ -26,9 +18,6 @@ export default function LiveClock({
 }: LiveClockProps) {
   const [time, setTime] = useState(new Date());
   const [date, setDate] = useState(new Date());
-
-  const pulseAnimation = useSharedValue(1);
-  const glowAnimation = useSharedValue(0);
 
   // Size configurations
   const sizeConfig = {
@@ -64,36 +53,9 @@ export default function LiveClock({
     updateTime();
     const interval = setInterval(updateTime, 1000);
 
-    // Start subtle pulse animation
-    pulseAnimation.value = withRepeat(
-      withSequence(
-        withTiming(1.02, { duration: 2000, easing: Easing.inOut(Easing.ease) }),
-        withTiming(1, { duration: 2000, easing: Easing.inOut(Easing.ease) })
-      ),
-      -1,
-      false
-    );
-
-    // Start glow animation
-    glowAnimation.value = withRepeat(
-      withSequence(
-        withTiming(1, { duration: 3000, easing: Easing.inOut(Easing.ease) }),
-        withTiming(0, { duration: 3000, easing: Easing.inOut(Easing.ease) })
-      ),
-      -1,
-      false
-    );
-
     return () => clearInterval(interval);
-  }, [pulseAnimation, glowAnimation]);
+  }, []);
 
-  const animatedStyle = useAnimatedStyle(() => ({
-    transform: [{ scale: pulseAnimation.value }],
-  }));
-
-  const glowStyle = useAnimatedStyle(() => ({
-    opacity: glowAnimation.value * 0.1,
-  }));
 
   const formatTime = (date: Date) => {
     const hours = format === '12h' 
@@ -121,7 +83,7 @@ export default function LiveClock({
 
   return (
     <View style={styles.container}>
-      <Animated.View style={[styles.clockContainer, animatedStyle]}>
+      <View style={styles.clockContainer}>
         <Text style={[
           styles.timeText, 
           { 
@@ -144,10 +106,7 @@ export default function LiveClock({
             {formatDate(date)}
           </Text>
         )}
-      </Animated.View>
-      
-      {/* Subtle glow effect */}
-      <Animated.View style={[styles.glowEffect, glowStyle]} />
+      </View>
     </View>
   );
 }
@@ -172,15 +131,5 @@ const styles = StyleSheet.create({
     fontWeight: '500',
     textAlign: 'center',
     opacity: 0.8,
-  },
-  glowEffect: {
-    position: 'absolute',
-    top: -5,
-    left: -5,
-    right: -5,
-    bottom: -5,
-    backgroundColor: '#6C5CE7',
-    borderRadius: 15,
-    zIndex: -1,
   },
 });

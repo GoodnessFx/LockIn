@@ -10,22 +10,21 @@ import {
 } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { 
-  Plus, 
-  Camera, 
-  FileText, 
-  BookOpen, 
-  Search,
-  Calendar,
-  Tag,
-  ChevronRight,
-  Image as ImageIcon,
-  File,
-  Trash2,
-  MessageCircle,
-  Lightbulb,
-  TrendingUp
-} from 'lucide-react-native';
+// Replaced lucide-react-native icons with emoji/text alternatives
+const Plus = ({ size, color }: { size?: number; color?: string }) => <Text style={{ fontSize: size || 20 }}>➕</Text>;
+const Camera = ({ size, color }: { size?: number; color?: string }) => <Text style={{ fontSize: size || 20 }}>📷</Text>;
+const FileText = ({ size, color }: { size?: number; color?: string }) => <Text style={{ fontSize: size || 20 }}>📄</Text>;
+const BookOpen = ({ size, color }: { size?: number; color?: string }) => <Text style={{ fontSize: size || 20 }}>📖</Text>;
+const Search = ({ size, color }: { size?: number; color?: string }) => <Text style={{ fontSize: size || 20 }}>🔍</Text>;
+const Calendar = ({ size, color }: { size?: number; color?: string }) => <Text style={{ fontSize: size || 20 }}>📅</Text>;
+const Tag = ({ size, color }: { size?: number; color?: string }) => <Text style={{ fontSize: size || 20 }}>🏷️</Text>;
+const ChevronRight = ({ size, color }: { size?: number; color?: string }) => <Text style={{ fontSize: size || 20 }}>▶️</Text>;
+const ImageIcon = ({ size, color }: { size?: number; color?: string }) => <Text style={{ fontSize: size || 20 }}>🖼️</Text>;
+const File = ({ size, color }: { size?: number; color?: string }) => <Text style={{ fontSize: size || 20 }}>📁</Text>;
+const Trash2 = ({ size, color }: { size?: number; color?: string }) => <Text style={{ fontSize: size || 20 }}>🗑️</Text>;
+const MessageCircle = ({ size, color }: { size?: number; color?: string }) => <Text style={{ fontSize: size || 20 }}>💬</Text>;
+const Lightbulb = ({ size, color }: { size?: number; color?: string }) => <Text style={{ fontSize: size || 20 }}>💡</Text>;
+const TrendingUp = ({ size, color }: { size?: number; color?: string }) => <Text style={{ fontSize: size || 20 }}>📈</Text>;
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useAppStore } from '@/store/appStore';
 
@@ -167,11 +166,11 @@ export default function LAIScreen() {
             padding: 16,
             marginBottom: 24,
             borderLeftWidth: 4,
-            borderLeftColor: '#6C5CE7',
+            borderLeftColor: '#2563eb',
             flexDirection: 'row',
             alignItems: 'center',
           }}>
-            <MessageCircle size={24} color="#6C5CE7" style={{ marginRight: 12 }} />
+            <MessageCircle size={24} color="#2563eb" style={{ marginRight: 12 }} />
             <Text style={{ flex: 1, fontSize: 14, color: '#0b0b0f', lineHeight: 20 }}>
               {assistantMessage}
             </Text>
@@ -193,7 +192,7 @@ export default function LAIScreen() {
           elevation: 4,
         }}>
           <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 16 }}>
-            <MessageCircle size={24} color="#6C5CE7" />
+            <MessageCircle size={24} color="#2563eb" />
             <Text style={{ fontSize: 18, fontWeight: '600', color: '#0b0b0f', marginLeft: 8 }}>
               Ask Your AI Coach
             </Text>
@@ -219,7 +218,7 @@ export default function LAIScreen() {
           
           <TouchableOpacity
             style={{
-              backgroundColor: '#6C5CE7',
+              backgroundColor: '#2563eb',
               borderRadius: 12,
               paddingVertical: 12,
               paddingHorizontal: 24,
@@ -288,7 +287,7 @@ export default function LAIScreen() {
         {/* Progress Notes Section */}
         <View style={{ marginTop: 24 }}>
           <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 16 }}>
-            <Lightbulb size={20} color="#6C5CE7" />
+            <Lightbulb size={20} color="#2563eb" />
             <Text style={{ fontSize: 20, fontWeight: '600', color: '#0b0b0f', marginLeft: 8 }}>
               Progress Notes
             </Text>

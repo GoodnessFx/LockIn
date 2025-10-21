@@ -1,6 +1,8 @@
 import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
-import { AlertTriangle, RefreshCw } from 'lucide-react-native';
+// Replaced lucide-react-native icons with emoji/text alternatives
+const AlertTriangle = ({ size, color }: { size?: number; color?: string }) => <Text style={{ fontSize: size || 20 }}>⚠️</Text>;
+const RefreshCw = ({ size, color }: { size?: number; color?: string }) => <Text style={{ fontSize: size || 20 }}>🔄</Text>;
 
 interface ErrorBoundaryState {
   hasError: boolean;
@@ -95,7 +97,7 @@ const styles = StyleSheet.create({
     lineHeight: 24,
   },
   button: {
-    backgroundColor: '#6C5CE7',
+    backgroundColor: '#2563eb',
     borderRadius: 12,
     paddingVertical: 12,
     paddingHorizontal: 24,

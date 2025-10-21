@@ -1,90 +1,185 @@
 import React from "react";
-import { Stack } from "expo-router";
-import * as SplashScreen from "expo-splash-screen";
-import { useEffect } from "react";
-import { GestureHandlerRootView } from "react-native-gesture-handler";
-import { View, Text } from 'react-native';
-import Animated, { FadeIn, withTiming, useSharedValue, useAnimatedStyle } from 'react-native-reanimated';
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { useAppStore, hydrateAppStore } from "@/store/appStore";
-import { ErrorBoundary } from "@/components/ErrorBoundary";
-
-SplashScreen.preventAutoHideAsync();
-
-const queryClient = new QueryClient({
-  defaultOptions: {
-    queries: {
-      staleTime: 1000 * 60 * 5, // 5 minutes
-      cacheTime: 1000 * 60 * 30, // 30 minutes
-      retry: 1,
-      refetchOnWindowFocus: false,
-    },
-  },
-});
+import { View, Text, StyleSheet, StatusBar } from 'react-native';
+import { LinearGradient } from 'expo-linear-gradient';
 
 export default function RootLayout() {
-  const hasOnboarded = useAppStore((s) => s.hasOnboarded);
-  const [isReady, setIsReady] = React.useState(false);
-  const [showSplash, setShowSplash] = React.useState(true);
-
-  useEffect(() => {
-    const initialize = async () => {
-      await hydrateAppStore();
-      
-      // Show splash screen for 3 seconds
-      setTimeout(() => {
-        setShowSplash(false);
-        setIsReady(true);
-        SplashScreen.hideAsync();
-      }, 3000);
-    };
-    initialize();
-  }, []);
-
-  if (!isReady || showSplash) {
-    const opacity = useSharedValue(0);
-    const scale = useSharedValue(0.9);
-    useEffect(() => {
-      opacity.value = withTiming(1, { duration: 600 });
-      scale.value = withTiming(1, { duration: 600 });
-    }, []);
-    const animatedStyle = useAnimatedStyle(() => ({
-      opacity: opacity.value,
-      transform: [{ scale: scale.value }],
-    }));
-    return (
-      <View style={{ flex: 1, backgroundColor: '#ffffff', alignItems: 'center', justifyContent: 'center' }}>
-        <Animated.View entering={FadeIn.duration(300)} style={{ alignItems: 'center' }}>
-          <Animated.View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 8 }}>
-            <Animated.Text style={{ fontSize: 48, fontWeight: '800', color: '#6C5CE7' }}>
-              LockIn
-            </Animated.Text>
-            <Animated.View style={{ marginLeft: 8 }}>
-              <Animated.Text style={{ fontSize: 32, color: '#000000' }}>🔒</Animated.Text>
-            </Animated.View>
-          </Animated.View>
-          <Animated.Text style={{ fontSize: 18, fontWeight: '600', color: '#0b0b0f', marginBottom: 4 }}>
-            Dial In. Build Relentlessly.
-          </Animated.Text>
-          <Animated.Text style={{ fontSize: 14, color: '#6c757d', textAlign: 'center' }}>
-            Your 97-day transformation starts now
-          </Animated.Text>
-        </Animated.View>
-      </View>
-    );
-  }
-
   return (
-    <ErrorBoundary>
-      <QueryClientProvider client={queryClient}>
-        <GestureHandlerRootView style={{ flex: 1 }}>
-          <Stack screenOptions={{ headerShown: false }}>
-            <Stack.Screen name="index" />
-            <Stack.Screen name="onboarding" />
-            <Stack.Screen name="(tabs)" />
-          </Stack>
-        </GestureHandlerRootView>
-      </QueryClientProvider>
-    </ErrorBoundary>
+    <View style={styles.container}>
+      <StatusBar barStyle="dark-content" backgroundColor="#ffffff" />
+      <LinearGradient
+        colors={['#2563eb', '#3b82f6', '#FFFFFF']}
+        locations={[0.0, 0.5, 1.0]}
+        style={styles.gradient}
+      >
+        <View style={styles.content}>
+          {/* App Logo/Icon */}
+          <View style={styles.logoContainer}>
+            <View style={styles.logo}>
+              <Text style={styles.logoText}>🔒</Text>
+            </View>
+          </View>
+
+          {/* App Name */}
+          <Text style={styles.appName}>LockIn</Text>
+
+          {/* Tagline */}
+          <Text style={styles.tagline}>Accelerate Your Growth</Text>
+
+          {/* Feature Cards */}
+          <View style={styles.featuresContainer}>
+            <View style={styles.featureCard}>
+              <Text style={styles.featureIcon}>📚</Text>
+              <Text style={styles.featureTitle}>Learning</Text>
+              <Text style={styles.featureDescription}>Structured curriculum for your growth</Text>
+            </View>
+
+            <View style={styles.featureCard}>
+              <Text style={styles.featureIcon}>🎯</Text>
+              <Text style={styles.featureTitle}>Progress</Text>
+              <Text style={styles.featureDescription}>Track your 97-day journey</Text>
+            </View>
+
+            <View style={styles.featureCard}>
+              <Text style={styles.featureIcon}>🤖</Text>
+              <Text style={styles.featureTitle}>AI Coach</Text>
+              <Text style={styles.featureDescription}>Personalized guidance and support</Text>
+            </View>
+          </View>
+
+          {/* Status */}
+          <View style={styles.statusContainer}>
+            <View style={styles.statusBar}>
+              <View style={styles.statusProgress} />
+            </View>
+            <Text style={styles.statusText}>Ready to launch...</Text>
+          </View>
+        </View>
+      </LinearGradient>
+    </View>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#ffffff',
+  },
+  gradient: {
+    flex: 1,
+  },
+  content: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingHorizontal: 24,
+  },
+  logoContainer: {
+    alignItems: 'center',
+    marginBottom: 24,
+  },
+  logo: {
+    width: 100,
+    height: 100,
+    backgroundColor: '#2563eb',
+    borderRadius: 24,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: 16,
+    shadowColor: '#2563eb',
+    shadowOffset: { width: 0, height: 12 },
+    shadowOpacity: 0.4,
+    shadowRadius: 20,
+    elevation: 20,
+    borderWidth: 3,
+    borderColor: '#ffffff',
+  },
+  logoText: {
+    fontSize: 48,
+    color: '#ffffff',
+  },
+  appName: {
+    fontSize: 42,
+    fontWeight: '800',
+    color: '#0b0b0f',
+    letterSpacing: 3.0,
+    marginBottom: 8,
+    textShadowColor: 'rgba(0, 0, 0, 0.1)',
+    textShadowOffset: { width: 0, height: 2 },
+    textShadowRadius: 4,
+  },
+  tagline: {
+    fontSize: 20,
+    color: '#6c757d',
+    letterSpacing: 1.0,
+    fontWeight: '500',
+    textAlign: 'center',
+    lineHeight: 28,
+    marginBottom: 48,
+  },
+  featuresContainer: {
+    width: '100%',
+    marginBottom: 48,
+  },
+  featureCard: {
+    backgroundColor: 'rgba(255, 255, 255, 0.9)',
+    borderRadius: 16,
+    padding: 20,
+    marginBottom: 16,
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.1,
+    shadowRadius: 8,
+    elevation: 4,
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.3)',
+  },
+  featureIcon: {
+    fontSize: 32,
+    marginBottom: 12,
+  },
+  featureTitle: {
+    fontSize: 18,
+    fontWeight: '600',
+    color: '#0b0b0f',
+    marginBottom: 8,
+  },
+  featureDescription: {
+    fontSize: 14,
+    color: '#6c757d',
+    textAlign: 'center',
+    lineHeight: 20,
+  },
+  statusContainer: {
+    alignItems: 'center',
+    width: '100%',
+  },
+  statusBar: {
+    width: 280,
+    height: 6,
+    backgroundColor: 'rgba(255, 255, 255, 0.3)',
+    borderRadius: 3,
+    marginBottom: 12,
+    overflow: 'hidden',
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.2)',
+  },
+  statusProgress: {
+    width: '70%',
+    height: '100%',
+    backgroundColor: '#ffffff',
+    borderRadius: 3,
+    shadowColor: '#ffffff',
+    shadowOffset: { width: 0, height: 0 },
+    shadowOpacity: 0.5,
+    shadowRadius: 4,
+  },
+  statusText: {
+    fontSize: 16,
+    color: '#ffffff',
+    fontWeight: '500',
+    textShadowColor: 'rgba(0, 0, 0, 0.3)',
+    textShadowOffset: { width: 0, height: 1 },
+    textShadowRadius: 2,
+  },
+});
