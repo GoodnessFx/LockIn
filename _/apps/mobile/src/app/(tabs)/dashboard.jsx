@@ -27,7 +27,6 @@ import { useAppStore } from "@/store/appStore";
 import BatteryProgressIndicator from "@/components/BatteryProgressIndicator";
 import CountdownTimer from "@/components/CountdownTimer";
 import LiveClock from "@/components/LiveClock";
-import ProgressTracker from "@/components/ProgressTracker";
 import ProgressService from "@/services/progress";
 import StorageService from "@/services/storage";
 
@@ -36,7 +35,6 @@ export default function Dashboard() {
   const { isAuthenticated, signIn } = useAuth();
   const { data: user, loading } = useUser();
   const { progress, updateProgress } = useAppStore();
-  const [currentView, setCurrentView] = useState('dashboard'); // 'dashboard' or 'progress'
   const [userProfile, setUserProfile] = useState(null);
 
   // Load user profile
@@ -52,42 +50,6 @@ export default function Dashboard() {
     loadUserProfile();
   }, []);
 
-  // Handle loading state
-  if (loading) {
-    return (
-      <View style={{ 
-        flex: 1, 
-        justifyContent: "center", 
-        alignItems: "center", 
-        backgroundColor: "#ffffff" 
-      }}>
-        <View style={{
-          width: 60,
-          height: 60,
-          borderRadius: 30,
-          backgroundColor: '#2563eb',
-          alignItems: 'center',
-          justifyContent: 'center',
-          marginBottom: 16,
-          shadowColor: '#2563eb',
-          shadowOffset: { width: 0, height: 4 },
-          shadowOpacity: 0.3,
-          shadowRadius: 8,
-          elevation: 8,
-        }}>
-          <Activity size={30} color="#ffffff" />
-        </View>
-        <Text style={{ 
-          color: "#0b0b0f", 
-          fontSize: 18, 
-          fontWeight: '600',
-          marginTop: 8 
-        }}>
-          Loading your dashboard...
-        </Text>
-      </View>
-    );
-  }
 
   // Countdown timer state
   const [timeLeft, setTimeLeft] = useState({
@@ -165,10 +127,39 @@ export default function Dashboard() {
     setFocusTime(25 * 60);
   };
 
+  // Handle loading state
   if (loading) {
     return (
-      <View style={{ flex: 1, justifyContent: "center", alignItems: "center", backgroundColor: "#0b0b0f" }}>
-        <Text style={{ color: "#ffffff" }}>Loading...</Text>
+      <View style={{ 
+        flex: 1, 
+        justifyContent: "center", 
+        alignItems: "center", 
+        backgroundColor: "#ffffff" 
+      }}>
+        <View style={{
+          width: 60,
+          height: 60,
+          borderRadius: 30,
+          backgroundColor: '#2563eb',
+          alignItems: 'center',
+          justifyContent: 'center',
+          marginBottom: 16,
+          shadowColor: '#2563eb',
+          shadowOffset: { width: 0, height: 4 },
+          shadowOpacity: 0.3,
+          shadowRadius: 8,
+          elevation: 8,
+        }}>
+          <Activity size={30} color="#ffffff" />
+        </View>
+        <Text style={{ 
+          color: "#0b0b0f", 
+          fontSize: 18, 
+          fontWeight: '600',
+          marginTop: 8 
+        }}>
+          Loading your dashboard...
+        </Text>
       </View>
     );
   }
@@ -188,90 +179,30 @@ export default function Dashboard() {
       >
         {/* Header */}
         <View style={{ marginBottom: 32 }}>
-          <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12 }}>
-            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-              <Text style={{ 
-                fontSize: 36, 
-                fontWeight: "800", 
-                color: "#0b0b0f",
-                letterSpacing: 1.0,
-              }}>
-                LockIn
-              </Text>
-              <View style={{
-                width: 40,
-                height: 40,
-                borderRadius: 20,
-                backgroundColor: '#2563eb',
-                alignItems: 'center',
-                justifyContent: 'center',
-                marginLeft: 12,
-                shadowColor: '#2563eb',
-                shadowOffset: { width: 0, height: 4 },
-                shadowOpacity: 0.3,
-                shadowRadius: 8,
-                elevation: 8,
-              }}>
-                <Text style={{ fontSize: 20 }}>🔒</Text>
-              </View>
-            </View>
-            <View style={{ 
-              flexDirection: 'row', 
-              backgroundColor: '#f8f9fa', 
-              borderRadius: 16, 
-              padding: 6,
-              borderWidth: 1,
-              borderColor: '#e0e0e0',
-              shadowColor: '#000',
-              shadowOffset: { width: 0, height: 2 },
-              shadowOpacity: 0.1,
-              shadowRadius: 4,
-              elevation: 2,
+          <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 12 }}>
+            <Text style={{ 
+              fontSize: 36, 
+              fontWeight: "800", 
+              color: "#0b0b0f",
+              letterSpacing: 1.0,
             }}>
-              <TouchableOpacity
-                style={{
-                  paddingHorizontal: 20,
-                  paddingVertical: 10,
-                  borderRadius: 12,
-                  backgroundColor: currentView === 'dashboard' ? '#2563eb' : 'transparent',
-                  shadowColor: currentView === 'dashboard' ? '#2563eb' : 'transparent',
-                  shadowOffset: { width: 0, height: 2 },
-                  shadowOpacity: 0.3,
-                  shadowRadius: 4,
-                  elevation: currentView === 'dashboard' ? 4 : 0,
-                }}
-                onPress={() => setCurrentView('dashboard')}
-              >
-                <Text style={{
-                  fontSize: 15,
-                  fontWeight: '700',
-                  color: currentView === 'dashboard' ? '#ffffff' : '#6c757d'
-                }}>
-                  Dashboard
-                </Text>
-              </TouchableOpacity>
-              <TouchableOpacity
-                style={{
-                  paddingHorizontal: 20,
-                  paddingVertical: 10,
-                  borderRadius: 12,
-                  backgroundColor: currentView === 'progress' ? '#2563eb' : 'transparent',
-                  shadowColor: currentView === 'progress' ? '#2563eb' : 'transparent',
-                  shadowOffset: { width: 0, height: 2 },
-                  shadowOpacity: 0.3,
-                  shadowRadius: 4,
-                  elevation: currentView === 'progress' ? 4 : 0,
-                }}
-                onPress={() => setCurrentView('progress')}
-              >
-                <Text style={{
-                  fontSize: 15,
-                  fontWeight: '700',
-                  color: currentView === 'progress' ? '#ffffff' : '#6c757d'
-                }}>
-                  Progress
-                </Text>
-              </TouchableOpacity>
+              LockIn
+            </Text>
+            <View style={{
+              width: 40,
+              height: 40,
+              borderRadius: 20,
+              backgroundColor: '#2563eb',
+              alignItems: 'center',
+              justifyContent: 'center',
+              marginLeft: 12,
+              shadowColor: '#2563eb',
+              shadowOffset: { width: 0, height: 4 },
+              shadowOpacity: 0.3,
+              shadowRadius: 8,
+              elevation: 8,
+            }}>
+              <Text style={{ fontSize: 20 }}>🔒</Text>
             </View>
           </View>
           <Text style={{ 
@@ -284,13 +215,10 @@ export default function Dashboard() {
           </Text>
         </View>
 
-        {/* Conditional Content */}
-        {currentView === 'dashboard' ? (
-          <>
-            {/* Live Clock */}
-            <View style={{ marginBottom: 24, alignItems: 'center' }}>
-              <LiveClock size="medium" color="#2563eb" />
-            </View>
+        {/* Live Clock */}
+        <View style={{ marginBottom: 24, alignItems: 'center' }}>
+          <LiveClock size="medium" color="#2563eb" />
+        </View>
 
         {/* 97-Day Commitment Countdown */}
         <View style={{ marginBottom: 32 }}>
@@ -699,10 +627,6 @@ export default function Dashboard() {
             </TouchableOpacity>
           </View>
         </View>
-          </>
-        ) : (
-          <ProgressTracker />
-        )}
       </ScrollView>
     </View>
   );

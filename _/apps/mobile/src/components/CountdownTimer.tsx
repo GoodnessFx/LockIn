@@ -23,9 +23,9 @@ export default function CountdownTimer({
 
   // Size configurations
   const sizeConfig = {
-    small: { fontSize: 24, containerSize: 60, spacing: 8 },
-    medium: { fontSize: 32, containerSize: 80, spacing: 12 },
-    large: { fontSize: 48, containerSize: 100, spacing: 16 }
+    small: { fontSize: 24, containerSize: 50, spacing: 6 },
+    medium: { fontSize: 32, containerSize: 70, spacing: 8 },
+    large: { fontSize: 48, containerSize: 90, spacing: 12 }
   };
 
   const config = sizeConfig[size];
@@ -97,10 +97,13 @@ const styles = StyleSheet.create({
   },
   timeContainer: {
     backgroundColor: '#2563eb',
-    borderRadius: 12,
+    borderRadius: 10,
     paddingVertical: 8,
     paddingHorizontal: 12,
     marginBottom: 4,
+    minWidth: 50,
+    alignItems: 'center',
+    justifyContent: 'center',
     shadowColor: '#2563eb',
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.3,

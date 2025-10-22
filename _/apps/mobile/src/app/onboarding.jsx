@@ -16,7 +16,6 @@ const Skip = () => <Text style={{ fontSize: 20 }}>⏭️</Text>;
 import StepIndicator from '@/components/onboarding/StepIndicator';
 import NicheSelection from '@/components/onboarding/NicheSelection';
 import GoalSetting from '@/components/onboarding/GoalSetting';
-import AgeVerification from '@/components/onboarding/AgeVerification';
 import SocialLinks from '@/components/onboarding/SocialLinks';
 import ProfileSetup from '@/components/onboarding/ProfileSetup';
 
@@ -26,20 +25,17 @@ export default function Onboarding() {
   const setOnboarded = useAppStore((s) => s.setOnboarded);
   
   const [currentStep, setCurrentStep] = useState(0);
-  const totalSteps = 5;
+  const totalSteps = 4;
 
   // Onboarding data state
   const [selectedNiche, setSelectedNiche] = useState(null);
   const [selectedGoal, setSelectedGoal] = useState(null);
-  const [selectedDate, setSelectedDate] = useState(null);
-  const [parentalControlsEnabled, setParentalControlsEnabled] = useState(false);
   const [socialLinks, setSocialLinks] = useState({});
   const [profileData, setProfileData] = useState({});
 
   const stepTitles = [
     "Choose Your Niche",
     "Set Your Goal",
-    "Age Verification",
     "Connect Social Accounts",
     "Complete Profile"
   ];
@@ -51,10 +47,8 @@ export default function Onboarding() {
       case 1:
         return selectedGoal !== null && selectedGoal.trim() !== '';
       case 2:
-        return selectedDate !== null;
-      case 3:
         return true; // Social links are optional
-      case 4:
+      case 3:
         return profileData.firstName && profileData.firstName.trim() !== '' &&
                profileData.lastName && profileData.lastName.trim() !== '' &&
                profileData.username && profileData.username.trim() !== '';
@@ -98,8 +92,6 @@ export default function Onboarding() {
       const onboardingData = {
         niche: selectedNiche,
         goal: selectedGoal,
-        dateOfBirth: selectedDate?.toISOString(),
-        parentalControls: parentalControlsEnabled,
         socialLinks: socialLinks,
         profile: profileData,
         onboardingCompleted: true,
@@ -110,6 +102,7 @@ export default function Onboarding() {
       
       // Mark as onboarded and navigate to main app
       await setOnboarded(true);
+      console.log('Onboarding state set to true, navigating to dashboard');
       router.replace('/(tabs)/dashboard');
     } catch (error) {
       console.error('Error completing onboarding:', error);
@@ -139,23 +132,12 @@ export default function Onboarding() {
         );
       case 2:
         return (
-          <AgeVerification
-            selectedDate={selectedDate}
-            parentalControlsEnabled={parentalControlsEnabled}
-            onAgeVerified={(date, parentalControls) => {
-              setSelectedDate(date);
-              setParentalControlsEnabled(parentalControls);
-            }}
-          />
-        );
-      case 3:
-        return (
           <SocialLinks
             socialLinks={socialLinks}
             onSocialLinksUpdated={setSocialLinks}
           />
         );
-      case 4:
+      case 3:
         return (
           <ProfileSetup
             profileData={profileData}

@@ -1,91 +1,96 @@
-import React from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { View, Text, StyleSheet, StatusBar } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
+import { useRouter } from 'expo-router';
+import { useAppStore } from '@/store/appStore';
+import { hydrateAppStore } from '@/store/appStore';
 
 export default function Index() {
-  return (
-    <ScrollView style={styles.container} contentContainerStyle={styles.contentContainer}>
-      <LinearGradient
-        colors={['#2563eb', '#3b82f6', '#FFFFFF']}
-        locations={[0.0, 0.3, 1.0]}
-        style={styles.gradient}
-      >
-        <View style={styles.header}>
-          <Text style={styles.title}>Welcome to LockIn</Text>
-          <Text style={styles.subtitle}>Your 97-day growth journey starts here</Text>
-        </View>
+  const router = useRouter();
+  const { hasOnboarded } = useAppStore();
+  const [isLoading, setIsLoading] = useState(true);
+  const [showSplash, setShowSplash] = useState(true);
 
-        <View style={styles.mainContent}>
-          {/* Dashboard Card */}
-          <View style={styles.card}>
-            <Text style={styles.cardIcon}>📊</Text>
-            <Text style={styles.cardTitle}>Dashboard</Text>
-            <Text style={styles.cardDescription}>
-              Track your progress, view statistics, and monitor your growth journey.
-            </Text>
-            <TouchableOpacity style={styles.cardButton}>
-              <Text style={styles.cardButtonText}>View Dashboard</Text>
-            </TouchableOpacity>
+  useEffect(() => {
+    const initializeApp = async () => {
+      try {
+        console.log('Initializing app...');
+        // Hydrate the app store with persisted data
+        await hydrateAppStore();
+        console.log('App store hydrated');
+        
+        // Show splash screen for 4 seconds
+        setTimeout(() => {
+          console.log('Splash screen timeout reached');
+          setShowSplash(false);
+          setIsLoading(false);
+        }, 4000);
+      } catch (error) {
+        console.error('Error initializing app:', error);
+        setShowSplash(false);
+        setIsLoading(false);
+      }
+    };
+
+    initializeApp();
+  }, []);
+
+  useEffect(() => {
+    if (!isLoading && !showSplash) {
+      // Navigate based on onboarding status
+      console.log('Navigation check - hasOnboarded:', hasOnboarded);
+      try {
+        if (hasOnboarded) {
+          console.log('Navigating to dashboard');
+          router.replace('/(tabs)/dashboard');
+        } else {
+          console.log('Navigating to onboarding');
+          router.replace('/onboarding');
+        }
+      } catch (error) {
+        console.error('Navigation error:', error);
+        // Fallback to onboarding if navigation fails
+        router.replace('/onboarding');
+      }
+    }
+  }, [isLoading, showSplash, hasOnboarded, router]);
+
+  if (showSplash) {
+    return (
+      <View style={styles.container}>
+        <StatusBar barStyle="dark-content" backgroundColor="#ffffff" />
+        <LinearGradient
+          colors={['#2563eb', '#3b82f6', '#FFFFFF']}
+          locations={[0.0, 0.5, 1.0]}
+          style={styles.gradient}
+        >
+          <View style={styles.content}>
+            {/* App Logo */}
+            <View style={styles.logoContainer}>
+              <View style={styles.logo}>
+                <Text style={styles.logoText}>🔒</Text>
+              </View>
+            </View>
+
+            {/* App Name */}
+            <Text style={styles.appName}>LockIn</Text>
+            <Text style={styles.tagline}>Accelerate Your Growth</Text>
+
+            {/* Loading Status */}
+            <View style={styles.statusContainer}>
+              <View style={styles.statusBar}>
+                <View style={styles.statusProgress} />
+              </View>
+              <Text style={styles.statusText}>Loading your journey...</Text>
+            </View>
           </View>
+        </LinearGradient>
+      </View>
+    );
+  }
 
-          {/* Learning Card */}
-          <View style={styles.card}>
-            <Text style={styles.cardIcon}>📚</Text>
-            <Text style={styles.cardTitle}>Learning Hub</Text>
-            <Text style={styles.cardDescription}>
-              Access your personalized curriculum and learning materials.
-            </Text>
-            <TouchableOpacity style={styles.cardButton}>
-              <Text style={styles.cardButtonText}>Start Learning</Text>
-            </TouchableOpacity>
-          </View>
-
-          {/* Progress Card */}
-          <View style={styles.card}>
-            <Text style={styles.cardIcon}>🎯</Text>
-            <Text style={styles.cardTitle}>Progress Tracker</Text>
-            <Text style={styles.cardDescription}>
-              Monitor your daily progress and maintain your streak.
-            </Text>
-            <TouchableOpacity style={styles.cardButton}>
-              <Text style={styles.cardButtonText}>Track Progress</Text>
-            </TouchableOpacity>
-          </View>
-
-          {/* AI Coach Card */}
-          <View style={styles.card}>
-            <Text style={styles.cardIcon}>🤖</Text>
-            <Text style={styles.cardTitle}>AI Coach</Text>
-            <Text style={styles.cardDescription}>
-              Get personalized guidance and support from your AI assistant.
-            </Text>
-            <TouchableOpacity style={styles.cardButton}>
-              <Text style={styles.cardButtonText}>Chat with AI</Text>
-            </TouchableOpacity>
-          </View>
-
-          {/* Community Card */}
-          <View style={styles.card}>
-            <Text style={styles.cardIcon}>👥</Text>
-            <Text style={styles.cardTitle}>Community</Text>
-            <Text style={styles.cardDescription}>
-              Connect with like-minded individuals on similar journeys.
-            </Text>
-            <TouchableOpacity style={styles.cardButton}>
-              <Text style={styles.cardButtonText}>Join Community</Text>
-            </TouchableOpacity>
-          </View>
-        </View>
-
-        <View style={styles.footer}>
-          <Text style={styles.footerText}>Ready to accelerate your growth?</Text>
-          <TouchableOpacity style={styles.primaryButton}>
-            <Text style={styles.primaryButtonText}>Get Started</Text>
-          </TouchableOpacity>
-        </View>
-      </LinearGradient>
-    </ScrollView>
-  );
+  // Return null while navigating
+  return null;
 }
 
 const styles = StyleSheet.create({
@@ -93,114 +98,88 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#ffffff',
   },
-  contentContainer: {
-    flexGrow: 1,
-  },
   gradient: {
     flex: 1,
-    minHeight: '100%',
   },
-  header: {
+  content: {
+    flex: 1,
     alignItems: 'center',
-    paddingTop: 60,
-    paddingBottom: 40,
+    justifyContent: 'center',
     paddingHorizontal: 24,
   },
-  title: {
-    fontSize: 32,
+  logoContainer: {
+    alignItems: 'center',
+    marginBottom: 24,
+  },
+  logo: {
+    width: 100,
+    height: 100,
+    backgroundColor: '#2563eb',
+    borderRadius: 24,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: 16,
+    shadowColor: '#2563eb',
+    shadowOffset: { width: 0, height: 12 },
+    shadowOpacity: 0.4,
+    shadowRadius: 20,
+    elevation: 20,
+    borderWidth: 3,
+    borderColor: '#ffffff',
+  },
+  logoText: {
+    fontSize: 48,
+    color: '#ffffff',
+  },
+  appName: {
+    fontSize: 42,
     fontWeight: '800',
     color: '#0b0b0f',
-    textAlign: 'center',
+    letterSpacing: 3.0,
     marginBottom: 8,
+    textShadowColor: 'rgba(0, 0, 0, 0.1)',
+    textShadowOffset: { width: 0, height: 2 },
+    textShadowRadius: 4,
   },
-  subtitle: {
-    fontSize: 18,
-    color: '#6c757d',
-    textAlign: 'center',
-    lineHeight: 24,
-  },
-  mainContent: {
-    paddingHorizontal: 24,
-    paddingBottom: 40,
-  },
-  card: {
-    backgroundColor: 'rgba(255, 255, 255, 0.95)',
-    borderRadius: 16,
-    padding: 24,
-    marginBottom: 20,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.1,
-    shadowRadius: 12,
-    elevation: 6,
-    borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.3)',
-  },
-  cardIcon: {
-    fontSize: 32,
-    marginBottom: 16,
-    textAlign: 'center',
-  },
-  cardTitle: {
+  tagline: {
     fontSize: 20,
-    fontWeight: '600',
-    color: '#0b0b0f',
-    marginBottom: 8,
-    textAlign: 'center',
-  },
-  cardDescription: {
-    fontSize: 16,
     color: '#6c757d',
+    letterSpacing: 1.0,
+    fontWeight: '500',
     textAlign: 'center',
-    lineHeight: 22,
-    marginBottom: 20,
+    lineHeight: 28,
+    marginBottom: 48,
   },
-  cardButton: {
-    backgroundColor: '#2563eb',
-    borderRadius: 12,
-    paddingVertical: 12,
-    paddingHorizontal: 24,
-    alignSelf: 'center',
-    shadowColor: '#2563eb',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.3,
-    shadowRadius: 8,
-    elevation: 4,
-  },
-  cardButtonText: {
-    color: '#ffffff',
-    fontSize: 16,
-    fontWeight: '600',
-  },
-  footer: {
+  statusContainer: {
     alignItems: 'center',
-    paddingHorizontal: 24,
-    paddingBottom: 40,
+    width: '100%',
   },
-  footerText: {
-    fontSize: 18,
+  statusBar: {
+    width: 280,
+    height: 6,
+    backgroundColor: 'rgba(255, 255, 255, 0.3)',
+    borderRadius: 3,
+    marginBottom: 12,
+    overflow: 'hidden',
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.2)',
+  },
+  statusProgress: {
+    width: '100%',
+    height: '100%',
+    backgroundColor: '#ffffff',
+    borderRadius: 3,
+    shadowColor: '#ffffff',
+    shadowOffset: { width: 0, height: 0 },
+    shadowOpacity: 0.5,
+    shadowRadius: 4,
+  },
+  statusText: {
+    fontSize: 16,
     color: '#ffffff',
-    textAlign: 'center',
-    marginBottom: 24,
     fontWeight: '500',
     textShadowColor: 'rgba(0, 0, 0, 0.3)',
     textShadowOffset: { width: 0, height: 1 },
     textShadowRadius: 2,
-  },
-  primaryButton: {
-    backgroundColor: '#ffffff',
-    borderRadius: 16,
-    paddingVertical: 16,
-    paddingHorizontal: 32,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.2,
-    shadowRadius: 8,
-    elevation: 6,
-  },
-  primaryButtonText: {
-    color: '#2563eb',
-    fontSize: 18,
-    fontWeight: '700',
   },
 });

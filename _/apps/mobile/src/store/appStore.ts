@@ -81,8 +81,10 @@ export const useAppStore = create<AppState>()(
       // Onboarding
       hasOnboarded: false,
       async setOnboarded(v) {
+        console.log('Setting onboarded state to:', v);
         await AsyncStorage.setItem('lockin:onboarded', v ? '1' : '0');
         set({ hasOnboarded: v });
+        console.log('Onboarded state updated in store');
       },
       
       // Theme
@@ -171,20 +173,32 @@ export const useAppStore = create<AppState>()(
 );
 
 export async function hydrateAppStore() {
-  // Load critical data from AsyncStorage
-  const onboarded = await AsyncStorage.getItem('lockin:onboarded');
-  const theme = await AsyncStorage.getItem('lockin:theme');
-  const userProfile = await AsyncStorage.getItem('lockin:userProfile');
-  const progress = await AsyncStorage.getItem('lockin:progress');
-  const curriculum = await AsyncStorage.getItem('lockin:curriculum');
-  const aiAssistant = await AsyncStorage.getItem('lockin:aiAssistant');
-  
-  // Update store state
-  if (onboarded === '1') useAppStore.setState({ hasOnboarded: true });
-  if (theme) useAppStore.setState({ theme: theme as 'light' | 'dark' });
-  if (userProfile) useAppStore.setState({ userProfile: JSON.parse(userProfile) });
-  if (progress) useAppStore.setState({ progress: JSON.parse(progress) });
-  if (curriculum) useAppStore.setState({ curriculum: JSON.parse(curriculum) });
-  if (aiAssistant) useAppStore.setState({ aiAssistant: JSON.parse(aiAssistant) });
+  try {
+    console.log('Hydrating app store...');
+    // Load critical data from AsyncStorage
+    const onboarded = await AsyncStorage.getItem('lockin:onboarded');
+    const theme = await AsyncStorage.getItem('lockin:theme');
+    const userProfile = await AsyncStorage.getItem('lockin:userProfile');
+    const progress = await AsyncStorage.getItem('lockin:progress');
+    const curriculum = await AsyncStorage.getItem('lockin:curriculum');
+    const aiAssistant = await AsyncStorage.getItem('lockin:aiAssistant');
+    
+    console.log('Loaded from storage - onboarded:', onboarded);
+    
+    // Update store state
+    if (onboarded === '1') {
+      console.log('Setting hasOnboarded to true');
+      useAppStore.setState({ hasOnboarded: true });
+    }
+    if (theme) useAppStore.setState({ theme: theme as 'light' | 'dark' });
+    if (userProfile) useAppStore.setState({ userProfile: JSON.parse(userProfile) });
+    if (progress) useAppStore.setState({ progress: JSON.parse(progress) });
+    if (curriculum) useAppStore.setState({ curriculum: JSON.parse(curriculum) });
+    if (aiAssistant) useAppStore.setState({ aiAssistant: JSON.parse(aiAssistant) });
+    
+    console.log('App store hydration complete');
+  } catch (error) {
+    console.error('Error hydrating app store:', error);
+  }
 }
 
