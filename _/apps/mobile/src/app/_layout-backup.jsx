@@ -12,7 +12,7 @@ export default function RootLayout() {
         style={styles.gradient}
       >
         <View style={styles.content}>
-          {/* App Logo */}
+          {/* App Logo/Icon */}
           <View style={styles.logoContainer}>
             <View style={styles.logo}>
               <Text style={styles.logoText}>🔒</Text>
@@ -21,14 +21,37 @@ export default function RootLayout() {
 
           {/* App Name */}
           <Text style={styles.appName}>LockIn</Text>
+
+          {/* Tagline */}
           <Text style={styles.tagline}>Accelerate Your Growth</Text>
+
+          {/* Feature Cards */}
+          <View style={styles.featuresContainer}>
+            <View style={styles.featureCard}>
+              <Text style={styles.featureIcon}>📚</Text>
+              <Text style={styles.featureTitle}>Learning</Text>
+              <Text style={styles.featureDescription}>Structured curriculum for your growth</Text>
+            </View>
+
+            <View style={styles.featureCard}>
+              <Text style={styles.featureIcon}>🎯</Text>
+              <Text style={styles.featureTitle}>Progress</Text>
+              <Text style={styles.featureDescription}>Track your 97-day journey</Text>
+            </View>
+
+            <View style={styles.featureCard}>
+              <Text style={styles.featureIcon}>🤖</Text>
+              <Text style={styles.featureTitle}>AI Coach</Text>
+              <Text style={styles.featureDescription}>Personalized guidance and support</Text>
+            </View>
+          </View>
 
           {/* Status */}
           <View style={styles.statusContainer}>
             <View style={styles.statusBar}>
               <View style={styles.statusProgress} />
             </View>
-            <Text style={styles.statusText}>App is running successfully! 🎉</Text>
+            <Text style={styles.statusText}>Ready to launch...</Text>
           </View>
         </View>
       </LinearGradient>
@@ -93,6 +116,40 @@ const styles = StyleSheet.create({
     lineHeight: 28,
     marginBottom: 48,
   },
+  featuresContainer: {
+    width: '100%',
+    marginBottom: 48,
+  },
+  featureCard: {
+    backgroundColor: 'rgba(255, 255, 255, 0.9)',
+    borderRadius: 16,
+    padding: 20,
+    marginBottom: 16,
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.1,
+    shadowRadius: 8,
+    elevation: 4,
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.3)',
+  },
+  featureIcon: {
+    fontSize: 32,
+    marginBottom: 12,
+  },
+  featureTitle: {
+    fontSize: 18,
+    fontWeight: '600',
+    color: '#0b0b0f',
+    marginBottom: 8,
+  },
+  featureDescription: {
+    fontSize: 14,
+    color: '#6c757d',
+    textAlign: 'center',
+    lineHeight: 20,
+  },
   statusContainer: {
     alignItems: 'center',
     width: '100%',
@@ -108,7 +165,7 @@ const styles = StyleSheet.create({
     borderColor: 'rgba(255, 255, 255, 0.2)',
   },
   statusProgress: {
-    width: '100%',
+    width: '70%',
     height: '100%',
     backgroundColor: '#ffffff',
     borderRadius: 3,
