@@ -9,10 +9,10 @@
     "ios": "expo run:ios"
   },
   "dependencies": {
-"@react-native-async-storage/async-storage": "~1.17.11",
+    "@react-native-async-storage/async-storage": "~1.17.11",
     "expo": "~54.0.0",
-    "expo-constants": "~18.2.0",
-    "expo-linear-gradient": "~15.0.0",
+    "expo-constants": "~16.0.2",
+    "expo-linear-gradient": "~13.0.2",
     "expo-linking": "~8.0.0",
     "expo-router": "~6.0.0",
     "expo-splash-screen": "~31.0.0",
