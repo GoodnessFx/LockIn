@@ -10,8 +10,8 @@ export const colors = {
   backgroundColor: '#FFFFFF',
   
   // Accent Colors
-  accentColor: '#2563eb',
-  accentLight: '#3b82f6',
+  accentColor: '#000000FF',
+  accentLight: '#000000FF',
   
   // Text Colors
   textPrimary: '#0b0b0f',

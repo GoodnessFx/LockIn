@@ -7,7 +7,7 @@ export default function RootLayout() {
     <View style={styles.container}>
       <StatusBar barStyle="dark-content" backgroundColor="#ffffff" />
       <LinearGradient
-        colors={['#2563eb', '#3b82f6', '#FFFFFF']}
+        colors={['#0A0A0AFF', '#000000FF', '#FFFFFF']}
         locations={[0.0, 0.5, 1.0]}
         style={styles.gradient}
       >

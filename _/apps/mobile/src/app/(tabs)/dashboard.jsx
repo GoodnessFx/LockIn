@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { Ionicons } from '@expo/vector-icons';
 import {
   View,
   Text,
@@ -140,11 +141,11 @@ export default function Dashboard() {
           width: 60,
           height: 60,
           borderRadius: 30,
-          backgroundColor: '#2563eb',
+          backgroundColor: '#000000FF',
           alignItems: 'center',
           justifyContent: 'center',
           marginBottom: 16,
-          shadowColor: '#2563eb',
+          shadowColor: '#000000FF',
           shadowOffset: { width: 0, height: 4 },
           shadowOpacity: 0.3,
           shadowRadius: 8,
@@ -186,23 +187,23 @@ export default function Dashboard() {
               color: "#0b0b0f",
               letterSpacing: 1.0,
             }}>
-              LockIn
+              LockIn<Ionicons name="lock-closed" size={40} color="black" />
             </Text>
             <View style={{
               width: 40,
               height: 40,
               borderRadius: 20,
-              backgroundColor: '#2563eb',
+            
               alignItems: 'center',
               justifyContent: 'center',
               marginLeft: 12,
-              shadowColor: '#2563eb',
-              shadowOffset: { width: 0, height: 4 },
+           
+              shadowOffset: { width: 0, he000000FFight: 4 },
               shadowOpacity: 0.3,
               shadowRadius: 8,
               elevation: 8,
             }}>
-              <Text style={{ fontSize: 20 }}>🔒</Text>
+              <Text style={{ fontSize: 20 }}>  </Text>
             </View>
           </View>
           <Text style={{ 
@@ -217,7 +218,7 @@ export default function Dashboard() {
 
         {/* Live Clock */}
         <View style={{ marginBottom: 24, alignItems: 'center' }}>
-          <LiveClock size="medium" color="#2563eb" />
+          <LiveClock size="medium" color="#" />
         </View>
 
         {/* 97-Day Commitment Countdown */}
@@ -225,7 +226,7 @@ export default function Dashboard() {
           <Text style={{ 
             fontSize: 24, 
             fontWeight: "700", 
-            color: "#0b0b0f", 
+            color: "", 
             marginBottom: 20, 
             textAlign: 'center',
             letterSpacing: 0.5,
@@ -237,8 +238,8 @@ export default function Dashboard() {
             borderRadius: 20,
             padding: 28,
             borderWidth: 2,
-            borderColor: "#2563eb",
-            shadowColor: '#2563eb',
+            borderColor: "#000000FF",
+            shadowColor: '#000000FF',
             shadowOffset: { width: 0, height: 8 },
             shadowOpacity: 0.2,
             shadowRadius: 16,
@@ -297,7 +298,7 @@ export default function Dashboard() {
             borderColor: "#e0e0e0",
           }}>
             <View style={{ alignItems: "center", marginBottom: 20 }}>
-              <Text style={{ fontSize: 48, fontWeight: "bold", color: "#2563eb", marginBottom: 8 }}>
+              <Text style={{ fontSize: 48, fontWeight: "bold", color: "#000000FF", marginBottom: 8 }}>
                 {formatTime(focusTime)}
               </Text>
               <Text style={{ fontSize: 16, color: "#6c757d", textTransform: "capitalize" }}>
@@ -309,7 +310,7 @@ export default function Dashboard() {
                 onPress={toggleFocusTimer}
                 activeOpacity={0.7}
                 style={{
-                  backgroundColor: isFocusRunning ? "#ef4444" : "#2563eb",
+                  backgroundColor: isFocusRunning ? "#ef4444" : "#000000FF",
                   borderRadius: 12,
                   paddingVertical: 12,
                   paddingHorizontal: 24,

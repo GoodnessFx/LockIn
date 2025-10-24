@@ -4,6 +4,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from 'expo-router';
 import { useAppStore } from '@/store/appStore';
 import { hydrateAppStore } from '@/store/appStore';
+import { Ionicons } from '@expo/vector-icons';
 
 export default function Index() {
   const router = useRouter();
@@ -60,7 +61,7 @@ export default function Index() {
       <View style={styles.container}>
         <StatusBar barStyle="dark-content" backgroundColor="#ffffff" />
         <LinearGradient
-          colors={['#2563eb', '#3b82f6', '#FFFFFF']}
+          colors={['#000000FF', '#000000FF', '#FFFFFF']}
           locations={[0.0, 0.5, 1.0]}
           style={styles.gradient}
         >
@@ -68,20 +69,20 @@ export default function Index() {
             {/* App Logo */}
             <View style={styles.logoContainer}>
               <View style={styles.logo}>
-                <Text style={styles.logoText}>🔒</Text>
+                <Text style={styles.logoText}> <Ionicons name="lock-closed" size={60} color="black" /></Text>
               </View>
             </View>
 
             {/* App Name */}
             <Text style={styles.appName}>LockIn</Text>
-            <Text style={styles.tagline}>Accelerate Your Growth</Text>
+            <Text style={styles.tagline}>Accelerate Your Growth... </Text>
 
             {/* Loading Status */}
             <View style={styles.statusContainer}>
               <View style={styles.statusBar}>
                 <View style={styles.statusProgress} />
               </View>
-              <Text style={styles.statusText}>Loading your journey...</Text>
+              <Text style={styles.statusText}>Loading your journey...  </Text>
             </View>
           </View>
         </LinearGradient>
@@ -96,7 +97,7 @@ export default function Index() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#ffffff',
+    backgroundColor: '#000000FF',
   },
   gradient: {
     flex: 1,
@@ -114,12 +115,12 @@ const styles = StyleSheet.create({
   logo: {
     width: 100,
     height: 100,
-    backgroundColor: '#2563eb',
+    backgroundColor: '#FFFFFFFF',
     borderRadius: 24,
     alignItems: 'center',
     justifyContent: 'center',
     marginBottom: 16,
-    shadowColor: '#2563eb',
+    shadowColor: '#020202FF',
     shadowOffset: { width: 0, height: 12 },
     shadowOpacity: 0.4,
     shadowRadius: 20,
@@ -134,7 +135,7 @@ const styles = StyleSheet.create({
   appName: {
     fontSize: 42,
     fontWeight: '800',
-    color: '#0b0b0f',
+    color: '#FAFAFFFF',
     letterSpacing: 3.0,
     marginBottom: 8,
     textShadowColor: 'rgba(0, 0, 0, 0.1)',
@@ -143,7 +144,7 @@ const styles = StyleSheet.create({
   },
   tagline: {
     fontSize: 20,
-    color: '#6c757d',
+    color: '#9CA6AEFF',
     letterSpacing: 1.0,
     fontWeight: '500',
     textAlign: 'center',
@@ -152,7 +153,7 @@ const styles = StyleSheet.create({
   },
   statusContainer: {
     alignItems: 'center',
-    width: '100%',
+    width: '150%',
   },
   statusBar: {
     width: 280,
