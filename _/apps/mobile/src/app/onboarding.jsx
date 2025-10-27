@@ -23,6 +23,7 @@ export default function Onboarding() {
   const router = useRouter();
   const insets = useSafeAreaInsets();
   const setOnboarded = useAppStore((s) => s.setOnboarded);
+  const setUserProfile = useAppStore((s) => s.setUserProfile);
   
   const [currentStep, setCurrentStep] = useState(0);
   const totalSteps = 4;
@@ -99,6 +100,23 @@ export default function Onboarding() {
       };
 
       console.log('Onboarding completed successfully:', onboardingData);
+      
+      // Persist basic user profile to the app store
+      const fullName = `${profileData?.firstName || ''} ${profileData?.lastName || ''}`.trim();
+      await setUserProfile({
+        id: `local-${Date.now()}`,
+        name: fullName || (profileData?.username || 'User'),
+        email: '',
+        niche: selectedNiche || '',
+        goal: selectedGoal || '',
+        preferredSchedule: '',
+        voicePreference: 'enabled',
+        timezone: 'UTC',
+      });
+      
+      // Also persist onboarding status via StorageService for redundancy
+      await StorageService.set('lockin_onboarding_status', { completed: true, completedAt: new Date().toISOString() });
+      await StorageService.set('lockin_onboarding_data', onboardingData);
       
       // Mark as onboarded and navigate to main app
       await setOnboarded(true);

@@ -99,54 +99,59 @@ const ProfileSetup = ({ profileData, onProfileUpdated }) => {
     }
   };
 
-  const renderCameraView = () => (
-    <Modal
-      visible={showCamera}
-      attached
-      presentationStyle="fullScreen"
-    >
-      <View style={styles.cameraContainer}>
-        <View style={styles.cameraHeader}>
-          <TouchableOpacity
-            style={styles.cameraButton}
-            onPress={() => setShowCamera(false)}
-          >
-            <Text style={styles.cameraButtonText}>Cancel</Text>
-          </TouchableOpacity>
-          <Text style={styles.cameraTitle}>Take Profile Photo</Text>
-          <View style={styles.placeholder} />
-        </View>
+  const renderCameraView = () => {
+    // Avoid rendering Camera unless explicitly opened to prevent API errors
+    if (!showCamera) return null;
 
-        <Camera
-          style={styles.camera}
-          type={Camera.Constants.Type.front}
-          ref={cameraRef}
-        >
-          <View style={styles.cameraOverlay}>
-            <View style={styles.cameraFrame} />
+    return (
+      <Modal
+        visible={true}
+        presentationStyle="fullScreen"
+      >
+        <View style={styles.cameraContainer}>
+          <View style={styles.cameraHeader}>
+            <TouchableOpacity
+              style={styles.cameraButton}
+              onPress={() => setShowCamera(false)}
+            >
+              <Text style={styles.cameraButtonText}>Cancel</Text>
+            </TouchableOpacity>
+            <Text style={styles.cameraTitle}>Take Profile Photo</Text>
+            <View style={styles.placeholder} />
           </View>
-        </Camera>
 
-        <View style={styles.cameraControls}>
-          <TouchableOpacity
-            style={styles.galleryButton}
-            onPress={pickFromGallery}
+          <Camera
+            style={styles.camera}
+            // Use compatible string prop to avoid deprecated Constants API
+            type="front"
+            ref={cameraRef}
           >
-            <Photo size={24} color="#ffffff" />
-          </TouchableOpacity>
+            <View style={styles.cameraOverlay}>
+              <View style={styles.cameraFrame} />
+            </View>
+          </Camera>
 
-          <TouchableOpacity
-            style={styles.captureButton}
-            onPress={takePhoto}
-          >
-            <CameraIcon size={32} color="#ffffff" />
-          </TouchableOpacity>
+          <View style={styles.cameraControls}>
+            <TouchableOpacity
+              style={styles.galleryButton}
+              onPress={pickFromGallery}
+            >
+              <Photo size={24} color="#ffffff" />
+            </TouchableOpacity>
 
-          <View style={styles.placeholder} />
+            <TouchableOpacity
+              style={styles.captureButton}
+              onPress={takePhoto}
+            >
+              <CameraIcon size={32} color="#ffffff" />
+            </TouchableOpacity>
+
+            <View style={styles.placeholder} />
+          </View>
         </View>
-      </View>
-    </Modal>
-  );
+      </Modal>
+    );
+  };
 
   return (
     <View style={styles.container}>

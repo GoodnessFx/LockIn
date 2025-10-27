@@ -27,6 +27,7 @@ const Lightbulb = ({ size, color }: { size?: number; color?: string }) => <Text 
 const TrendingUp = ({ size, color }: { size?: number; color?: string }) => <Text style={{ fontSize: size || 20 }}>📈</Text>;
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useAppStore } from '@/store/appStore';
+import StorageService from '@/services/storage';
 
 export default function LAIScreen() {
   const insets = useSafeAreaInsets();
@@ -34,34 +35,44 @@ export default function LAIScreen() {
   const [documents, setDocuments] = useState([]);
   const [assistantMessage, setAssistantMessage] = useState('');
   const [progressNotes, setProgressNotes] = useState([]);
-  const { progress } = useAppStore();
+  const { progress, userProfile } = useAppStore();
+  const userNiche = (userProfile?.niche || '').trim();
+  const userGoal = (userProfile?.goal || '').trim();
+  const displayName = (userProfile?.name || '').trim();
+  const [profileExtras, setProfileExtras] = useState({ username: '', bio: '' });
 
-  const [learningJourney, setLearningJourney] = useState([
-    {
-      id: '1',
-      title: 'React Native Fundamentals',
-      progress: 75,
-      totalLessons: 20,
-      completedLessons: 15,
-      lastAccessed: '2024-01-15',
-    },
-    {
-      id: '2',
-      title: 'Advanced JavaScript',
-      progress: 45,
-      totalLessons: 30,
-      completedLessons: 13,
-      lastAccessed: '2024-01-14',
-    },
-    {
-      id: '3',
-      title: 'UI/UX Design Principles',
-      progress: 90,
-      totalLessons: 15,
-      completedLessons: 14,
-      lastAccessed: '2024-01-15',
-    },
-  ]);
+  const [learningJourney, setLearningJourney] = useState([]);
+
+  const getCoursesForNiche = (niche) => {
+    const n = (niche || '').toLowerCase();
+    if (n.includes('photo')) {
+      return [
+        { id: 'p1', title: 'Photography Basics: Exposure, Aperture, ISO', progress: 30, totalLessons: 12, completedLessons: 4, lastAccessed: '2025-01-01' },
+        { id: 'p2', title: 'Composition Mastery: Rule of Thirds & Leading Lines', progress: 60, totalLessons: 10, completedLessons: 6, lastAccessed: '2025-01-02' },
+        { id: 'p3', title: 'Portrait Lighting: Natural vs. Studio', progress: 10, totalLessons: 8, completedLessons: 1, lastAccessed: '2025-01-03' },
+      ];
+    }
+    if (n.includes('design')) {
+      return [
+        { id: 'd1', title: 'UI Foundations: Color, Typography, Spacing', progress: 40, totalLessons: 15, completedLessons: 6, lastAccessed: '2025-01-01' },
+        { id: 'd2', title: 'Figma Workflow: Components & Auto Layout', progress: 25, totalLessons: 20, completedLessons: 5, lastAccessed: '2025-01-03' },
+        { id: 'd3', title: 'UX Research: Personas & User Interviews', progress: 80, totalLessons: 12, completedLessons: 10, lastAccessed: '2025-01-02' },
+      ];
+    }
+    if (n.includes('coding') || n.includes('developer') || n.includes('program')) {
+      return [
+        { id: 'c1', title: 'JavaScript Essentials', progress: 55, totalLessons: 25, completedLessons: 14, lastAccessed: '2025-01-04' },
+        { id: 'c2', title: 'React Native Fundamentals', progress: 75, totalLessons: 20, completedLessons: 15, lastAccessed: '2025-01-05' },
+        { id: 'c3', title: 'State Management: Zustand & Patterns', progress: 35, totalLessons: 10, completedLessons: 3, lastAccessed: '2025-01-06' },
+      ];
+    }
+    // Default general journey
+    return [
+      { id: 'g1', title: 'Focus & Deep Work Routines', progress: 70, totalLessons: 10, completedLessons: 7, lastAccessed: '2025-01-01' },
+      { id: 'g2', title: 'Personal Growth: Habits & Systems', progress: 20, totalLessons: 8, completedLessons: 2, lastAccessed: '2025-01-02' },
+      { id: 'g3', title: 'Creativity Warmups & Idea Generation', progress: 50, totalLessons: 12, completedLessons: 6, lastAccessed: '2025-01-03' },
+    ];
+  };
 
   // Growth mindset motivational messages
   const motivationalMessages = [
@@ -78,8 +89,14 @@ export default function LAIScreen() {
   // Load progress notes from AsyncStorage
   useEffect(() => {
     loadProgressNotes();
+    loadOnboardingExtras();
     generateMotivationalMessage();
   }, []);
+
+  useEffect(() => {
+    // Tailor courses when user niche changes
+    setLearningJourney(getCoursesForNiche(userNiche));
+  }, [userNiche]);
 
   const loadProgressNotes = async () => {
     try {
@@ -89,6 +106,31 @@ export default function LAIScreen() {
       }
     } catch (error) {
       console.error('Error loading progress notes:', error);
+    }
+  };
+
+  const loadOnboardingExtras = async () => {
+    try {
+      // Prefer stored user profile for niche and goal, but fetch onboarding data for username/bio
+      const onboardingDataRaw = await AsyncStorage.getItem('lockin_onboarding_data');
+      if (onboardingDataRaw) {
+        const onboardingData = JSON.parse(onboardingDataRaw);
+        const profile = onboardingData?.profile || {};
+        setProfileExtras({
+          username: (profile.username || '').trim(),
+          bio: (profile.bio || '').trim(),
+        });
+      } else {
+        // Fallback: try StorageService if a different key was used
+        const maybeProfile = await StorageService.get('lockin_onboarding_data');
+        const profile = maybeProfile?.profile || {};
+        setProfileExtras({
+          username: (profile.username || '').trim(),
+          bio: (profile.bio || '').trim(),
+        });
+      }
+    } catch (error) {
+      console.error('Error loading onboarding extras:', error);
     }
   };
 
@@ -110,7 +152,9 @@ export default function LAIScreen() {
 
   const generateMotivationalMessage = () => {
     const randomMessage = motivationalMessages[Math.floor(Math.random() * motivationalMessages.length)];
-    setAssistantMessage(randomMessage);
+    const nicheHint = userNiche ? ` Focus today on ${userNiche}.` : '';
+    const goalHint = userGoal ? ` Aim toward: ${userGoal}.` : '';
+    setAssistantMessage(randomMessage + nicheHint + goalHint);
   };
 
   const handleAddPhoto = () => Alert.alert('Moved', 'Add Photo is now in Progress tab.');
@@ -149,13 +193,19 @@ export default function LAIScreen() {
         showsVerticalScrollIndicator={false}
       >
         {/* Header */}
-        <View style={{ marginBottom: 24 }}>
-          <Text style={{ fontSize: 32, fontWeight: 'bold', color: '#0b0b0f' }}>
-            LAI
+        <View style={{ marginBottom: 20 }}>
+          <Text style={{ fontSize: 24, fontWeight: '700', color: '#0b0b0f' }}>
+            LAI {userNiche ? `— ${userNiche}` : ''}
           </Text>
-          <Text style={{ fontSize: 16, color: '#6c757d', marginTop: 4 }}>
-            A warm space to grow in your niche
+          <Text style={{ fontSize: 12, color: '#6c757d', marginTop: 6 }}>
+            {`Welcome${profileExtras.username ? `, ${profileExtras.username}` : displayName ? `, ${displayName}` : ''}.`}
+            {userNiche ? ` Tailored for ${userNiche}.` : ' Personalized guidance based on your onboarding selections.'}
           </Text>
+          {profileExtras.bio ? (
+            <Text style={{ fontSize: 12, color: '#6c757d', marginTop: 4 }} numberOfLines={2}>
+              {`Bio: ${profileExtras.bio}`}
+            </Text>
+          ) : null}
         </View>
 
         {/* Assistant Message */}

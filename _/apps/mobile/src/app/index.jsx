@@ -38,23 +38,19 @@ export default function Index() {
 
   useEffect(() => {
     if (!isLoading && !showSplash) {
-      // Navigate based on onboarding status
-      console.log('Navigation check - hasOnboarded:', hasOnboarded);
+      // Always navigate to onboarding screen first
+      console.log('Always navigating to onboarding screen first');
       try {
-        if (hasOnboarded) {
-          console.log('Navigating to dashboard');
-          router.replace('/(tabs)/dashboard');
-        } else {
-          console.log('Navigating to onboarding');
-          router.replace('/onboarding');
-        }
+        // Force navigation to onboarding screen regardless of hasOnboarded status
+        console.log('Navigating to onboarding');
+        router.replace('onboarding');
       } catch (error) {
         console.error('Navigation error:', error);
         // Fallback to onboarding if navigation fails
-        router.replace('/onboarding');
+        router.replace('onboarding');
       }
     }
-  }, [isLoading, showSplash, hasOnboarded, router]);
+  }, [isLoading, showSplash, router]);
 
   if (showSplash) {
     return (

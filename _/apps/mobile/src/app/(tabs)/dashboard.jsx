@@ -35,20 +35,20 @@ export default function Dashboard() {
   const insets = useSafeAreaInsets();
   const { isAuthenticated, signIn } = useAuth();
   const { data: user, loading } = useUser();
-  const { progress, updateProgress } = useAppStore();
-  const [userProfile, setUserProfile] = useState(null);
+  const { progress, updateProgress, userProfile: storeUserProfile } = useAppStore();
+  const [onboardProfile, setOnboardProfile] = useState(null);
 
-  // Load user profile
+  // Load onboarding data for additional bio/username details
   useEffect(() => {
-    const loadUserProfile = async () => {
+    const loadOnboarding = async () => {
       try {
-        const profile = await StorageService.getUserProfile();
-        setUserProfile(profile);
+        const data = await StorageService.get('lockin_onboarding_data');
+        setOnboardProfile(data?.profile || null);
       } catch (error) {
-        console.error('Error loading user profile:', error);
+        console.error('Error loading onboarding data:', error);
       }
     };
-    loadUserProfile();
+    loadOnboarding();
   }, []);
 
 
@@ -212,7 +212,14 @@ export default function Dashboard() {
             fontWeight: '500',
             lineHeight: 24,
           }}>
-            Welcome back, {userProfile?.firstName || user?.name || user?.email || "there"}! 👋
+            {`Welcome back, ${
+              (storeUserProfile?.name && storeUserProfile.name.trim()) ||
+              (onboardProfile?.firstName && onboardProfile.firstName.trim()) ||
+              (onboardProfile?.username && onboardProfile.username.trim()) ||
+              user?.name ||
+              user?.email ||
+              'there'
+            }! 👋`}
           </Text>
         </View>
 

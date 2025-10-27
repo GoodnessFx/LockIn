@@ -188,15 +188,15 @@ const styles = StyleSheet.create({
     paddingHorizontal: 24,
   },
   title: {
-    fontSize: 28,
+    fontSize: 24,
     fontWeight: '700',
     color: '#0b0b0f',
     marginBottom: 8,
   },
   subtitle: {
-    fontSize: 16,
+    fontSize: 14,
     color: '#6c757d',
-    marginBottom: 32,
+    marginBottom: 24,
     lineHeight: 24,
   },
   searchContainer: {
@@ -230,8 +230,8 @@ const styles = StyleSheet.create({
   nicheCard: {
     width: '48%',
     backgroundColor: '#f8f9fa',
-    borderRadius: 16,
-    padding: 16,
+    borderRadius: 14,
+    padding: 14,
     borderWidth: 1,
     borderColor: '#e0e0e0',
     alignItems: 'center',
@@ -242,8 +242,8 @@ const styles = StyleSheet.create({
     borderWidth: 2,
   },
   nicheIcon: {
-    width: 48,
-    height: 48,
+    width: 44,
+    height: 44,
     borderRadius: 12,
     backgroundColor: '#e9ecef',
     alignItems: 'center',
@@ -260,7 +260,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   nicheTitle: {
-    fontSize: 14,
+    fontSize: 13,
     fontWeight: '600',
     color: '#0b0b0f',
     textAlign: 'center',
@@ -270,7 +270,7 @@ const styles = StyleSheet.create({
     color: '#2563eb',
   },
   nicheDescription: {
-    fontSize: 12,
+    fontSize: 11,
     color: '#6c757d',
     textAlign: 'center',
     lineHeight: 16,

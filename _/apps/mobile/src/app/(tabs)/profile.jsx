@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Text, ScrollView, TouchableOpacity, Switch, Alert, Image } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -26,11 +26,27 @@ const Zap = () => <Text style={{ fontSize: 20 }}>⚡</Text>;
 const Clock = () => <Text style={{ fontSize: 20 }}>🕐</Text>;
 import { useAuth } from '@/utils/auth/useAuth';
 import useUser from '@/utils/auth/useUser';
+import { useAppStore } from '@/store/appStore';
+import StorageService from '@/services/storage';
 
 export default function Profile() {
   const insets = useSafeAreaInsets();
   const { signOut } = useAuth();
   const { data: user } = useUser();
+  const { userProfile: storeUserProfile } = useAppStore();
+  const [onboardProfile, setOnboardProfile] = useState(null);
+
+  useEffect(() => {
+    const loadOnboarding = async () => {
+      try {
+        const data = await StorageService.get('lockin_onboarding_data');
+        setOnboardProfile(data?.profile || null);
+      } catch (error) {
+        console.error('Error loading onboarding data:', error);
+      }
+    };
+    loadOnboarding();
+  }, []);
   
   const [notifications, setNotifications] = useState({
     milestones: true,
@@ -173,7 +189,14 @@ export default function Profile() {
               </View>
               <View style={{ flex: 1 }}>
                 <Text style={{ fontSize: 24, fontWeight: 'bold', color: '#0b0b0f', marginBottom: 4 }}>
-                  {user?.name || user?.email || 'LockIn User'}
+                  {(
+                    (storeUserProfile?.name && storeUserProfile.name.trim()) ||
+                    (onboardProfile?.firstName && onboardProfile.firstName.trim()) ||
+                    (onboardProfile?.username && onboardProfile.username.trim()) ||
+                    user?.name ||
+                    user?.email ||
+                    'LockIn User'
+                  )}
                 </Text>
                 <Text style={{ fontSize: 16, color: '#6c757d', marginBottom: 8 }}>
                   Level {userStats.level} • {userStats.xp} XP
