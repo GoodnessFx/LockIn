@@ -1,12 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, TextInput, TouchableOpacity, Linking, Alert } from 'react-native';
-// Replaced lucide-react-native icons with emoji/text alternatives
-const Linkedin = ({ size, color }: { size?: number; color?: string }) => <Text style={{ fontSize: size || 20 }}>💼</Text>;
-const Github = ({ size, color }: { size?: number; color?: string }) => <Text style={{ fontSize: size || 20 }}>🐙</Text>;
-const Twitter = ({ size, color }: { size?: number; color?: string }) => <Text style={{ fontSize: size || 20 }}>🐦</Text>;
-const Instagram = ({ size, color }: { size?: number; color?: string }) => <Text style={{ fontSize: size || 20 }}>📷</Text>;
-const Youtube = ({ size, color }: { size?: number; color?: string }) => <Text style={{ fontSize: size || 20 }}>📺</Text>;
-const Palette = ({ size, color }: { size?: number; color?: string }) => <Text style={{ fontSize: size || 20 }}>🎨</Text>;
 
 const SocialLinks = ({ socialLinks, onSocialLinksUpdated }) => {
   const [links, setLinks] = useState(socialLinks || {});
@@ -19,7 +12,6 @@ const SocialLinks = ({ socialLinks, onSocialLinksUpdated }) => {
     {
       id: "linkedin",
       name: "LinkedIn",
-      icon: Linkedin,
       color: "#0077B5",
       placeholder: "linkedin.com/in/username",
       description: "Professional networking"
@@ -27,7 +19,6 @@ const SocialLinks = ({ socialLinks, onSocialLinksUpdated }) => {
     {
       id: "github",
       name: "GitHub",
-      icon: Github,
       color: "#333333",
       placeholder: "github.com/username",
       description: "Code repositories"
@@ -35,7 +26,6 @@ const SocialLinks = ({ socialLinks, onSocialLinksUpdated }) => {
     {
       id: "twitter",
       name: "Twitter/X",
-      icon: Twitter,
       color: "#1DA1F2",
       placeholder: "twitter.com/username",
       description: "Social updates"
@@ -43,7 +33,6 @@ const SocialLinks = ({ socialLinks, onSocialLinksUpdated }) => {
     {
       id: "instagram",
       name: "Instagram",
-      icon: Instagram,
       color: "#E4405F",
       placeholder: "instagram.com/username",
       description: "Visual content"
@@ -51,7 +40,6 @@ const SocialLinks = ({ socialLinks, onSocialLinksUpdated }) => {
     {
       id: "youtube",
       name: "YouTube",
-      icon: Youtube,
       color: "#FF0000",
       placeholder: "youtube.com/channel/username",
       description: "Video content"
@@ -59,7 +47,6 @@ const SocialLinks = ({ socialLinks, onSocialLinksUpdated }) => {
     {
       id: "behance",
       name: "Behance",
-      icon: Palette,
       color: "#1769FF",
       placeholder: "behance.net/username",
       description: "Creative portfolio"
@@ -108,15 +95,11 @@ const SocialLinks = ({ socialLinks, onSocialLinksUpdated }) => {
       </Text>
 
       {socialPlatforms.map((platform) => {
-        const IconComponent = platform.icon;
         const hasConnection = links[platform.id];
         
         return (
           <View key={platform.id} style={styles.platformCard}>
             <View style={styles.platformHeader}>
-              <View style={styles.platformIcon}>
-                <IconComponent size={24} color={platform.color} />
-              </View>
               <View style={styles.platformInfo}>
                 <Text style={styles.platformName}>{platform.name}</Text>
                 <Text style={styles.platformDescription}>{platform.description}</Text>
@@ -198,20 +181,6 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     marginBottom: 12,
-  },
-  platformIcon: {
-    width: 48,
-    height: 48,
-    borderRadius: 12,
-    backgroundColor: '#ffffff',
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginRight: 16,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 2,
   },
   platformInfo: {
     flex: 1,

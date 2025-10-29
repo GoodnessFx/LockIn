@@ -35,20 +35,20 @@ export default function Dashboard() {
   const insets = useSafeAreaInsets();
   const { isAuthenticated, signIn } = useAuth();
   const { data: user, loading } = useUser();
-  const { progress, updateProgress, userProfile: storeUserProfile } = useAppStore();
-  const [onboardProfile, setOnboardProfile] = useState(null);
+  const { progress, updateProgress } = useAppStore();
+  const [userProfile, setUserProfile] = useState(null);
 
-  // Load onboarding data for additional bio/username details
+  // Load user profile
   useEffect(() => {
-    const loadOnboarding = async () => {
+    const loadUserProfile = async () => {
       try {
-        const data = await StorageService.get('lockin_onboarding_data');
-        setOnboardProfile(data?.profile || null);
+        const profile = await StorageService.getUserProfile();
+        setUserProfile(profile);
       } catch (error) {
-        console.error('Error loading onboarding data:', error);
+        console.error('Error loading user profile:', error);
       }
     };
-    loadOnboarding();
+    loadUserProfile();
   }, []);
 
 
@@ -212,14 +212,7 @@ export default function Dashboard() {
             fontWeight: '500',
             lineHeight: 24,
           }}>
-            {`Welcome back, ${
-              (storeUserProfile?.name && storeUserProfile.name.trim()) ||
-              (onboardProfile?.firstName && onboardProfile.firstName.trim()) ||
-              (onboardProfile?.username && onboardProfile.username.trim()) ||
-              user?.name ||
-              user?.email ||
-              'there'
-            }! 👋`}
+            Welcome back, {userProfile?.firstName || user?.name || user?.email || "there"}! 👋
           </Text>
         </View>
 

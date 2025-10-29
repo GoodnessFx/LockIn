@@ -57,8 +57,8 @@ const StepIndicator = ({ currentStep, totalSteps, stepTitles }) => {
 
 const styles = StyleSheet.create({
   container: {
-    paddingHorizontal: 20,
-    paddingVertical: 16,
+    paddingHorizontal: 24,
+    paddingVertical: 20,
     backgroundColor: '#ffffff',
   },
   progressContainer: {
@@ -114,9 +114,9 @@ const styles = StyleSheet.create({
     color: '#9ca3af',
   },
   stepTitle: {
-    fontSize: 11,
+    fontSize: 12,
     textAlign: 'center',
-    maxWidth: 72,
+    maxWidth: 80,
   },
   stepTitleActive: {
     color: '#0b0b0f',

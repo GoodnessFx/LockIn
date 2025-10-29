@@ -8,16 +8,13 @@ import {
   Image, 
   Alert,
   Modal,
-  Dimensions
+  Dimensions,
+  ScrollView,
+  KeyboardAvoidingView,
+  Platform
 } from 'react-native';
 import { Camera } from 'expo-camera';
 import * as ImagePicker from 'expo-image-picker';
-// Replaced lucide-react-native icons with emoji/text alternatives
-const CameraIcon = ({ size, color }: { size?: number; color?: string }) => <Text style={{ fontSize: size || 20 }}>📷</Text>;
-const Photo = ({ size, color }: { size?: number; color?: string }) => <Text style={{ fontSize: size || 20 }}>📸</Text>;
-const User = ({ size, color }: { size?: number; color?: string }) => <Text style={{ fontSize: size || 20 }}>👤</Text>;
-const Mail = ({ size, color }: { size?: number; color?: string }) => <Text style={{ fontSize: size || 20 }}>📧</Text>;
-const Edit3 = ({ size, color }: { size?: number; color?: string }) => <Text style={{ fontSize: size || 20 }}>✏️</Text>;
 
 const { width, height } = Dimensions.get('window');
 
@@ -136,14 +133,14 @@ const ProfileSetup = ({ profileData, onProfileUpdated }) => {
               style={styles.galleryButton}
               onPress={pickFromGallery}
             >
-              <Photo size={24} color="#ffffff" />
+              <Text style={styles.cameraButtonText}>Gallery</Text>
             </TouchableOpacity>
 
             <TouchableOpacity
               style={styles.captureButton}
               onPress={takePhoto}
             >
-              <CameraIcon size={32} color="#ffffff" />
+              <Text style={styles.captureButtonText}>Capture</Text>
             </TouchableOpacity>
 
             <View style={styles.placeholder} />
@@ -154,34 +151,39 @@ const ProfileSetup = ({ profileData, onProfileUpdated }) => {
   };
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Complete Your Profile</Text>
-      <Text style={styles.subtitle}>
-        Add your details to personalize your LockIn experience
-      </Text>
+    <KeyboardAvoidingView 
+      behavior={Platform.OS === "ios" ? "padding" : "height"}
+      style={{ flex: 1 }}
+      keyboardVerticalOffset={100}
+    >
+      <ScrollView style={styles.container} contentContainerStyle={{ paddingBottom: 50 }}>
+        <Text style={styles.title}>Complete Your Profile</Text>
+        <Text style={styles.subtitle}>
+          Add your details to personalize your LockIn experience
+        </Text>
 
-      {/* Profile Photo Section */}
-      <View style={styles.photoSection}>
-        <TouchableOpacity
-          style={[
-            styles.photoContainer,
-            profile.avatar && styles.photoContainerSelected
-          ]}
-          onPress={showImageSourceDialog}
-        >
-          {profile.avatar ? (
-            <Image source={{ uri: profile.avatar }} style={styles.photo} />
-          ) : (
-            <View style={styles.photoPlaceholder}>
-              <CameraIcon size={40} color="#9ca3af" />
+        {/* Profile Photo Section */}
+        <View style={styles.photoSection}>
+          <TouchableOpacity
+            style={[
+              styles.photoContainer,
+              profile.avatar && styles.photoContainerSelected
+            ]}
+            onPress={showImageSourceDialog}
+          >
+            {profile.avatar ? (
+              <Image source={{ uri: profile.avatar }} style={styles.photo} />
+            ) : (
+              <View style={styles.photoPlaceholder}>
+                <Text style={styles.photoPlaceholderText}>Add Photo</Text>
+              </View>
+            )}
+            <View style={styles.photoOverlay}>
+              <Text style={styles.photoOverlayText}>Edit</Text>
             </View>
-          )}
-          <View style={styles.photoOverlay}>
-            <Edit3 size={16} color="#ffffff" />
-          </View>
-        </TouchableOpacity>
-        <Text style={styles.photoHint}>Tap to add profile photo</Text>
-      </View>
+          </TouchableOpacity>
+          <Text style={styles.photoHint}>Tap to add profile photo</Text>
+        </View>
 
       {/* Form Fields */}
       <View style={styles.form}>
@@ -189,7 +191,6 @@ const ProfileSetup = ({ profileData, onProfileUpdated }) => {
           <View style={styles.halfWidth}>
             <Text style={styles.label}>First Name</Text>
             <View style={styles.inputContainer}>
-              <User size={20} color="#9ca3af" style={styles.inputIcon} />
               <TextInput
                 style={styles.input}
                 placeholder="Enter your first name"
@@ -203,7 +204,6 @@ const ProfileSetup = ({ profileData, onProfileUpdated }) => {
           <View style={styles.halfWidth}>
             <Text style={styles.label}>Last Name</Text>
             <View style={styles.inputContainer}>
-              <User size={20} color="#9ca3af" style={styles.inputIcon} />
               <TextInput
                 style={styles.input}
                 placeholder="Enter your last name"
@@ -218,7 +218,6 @@ const ProfileSetup = ({ profileData, onProfileUpdated }) => {
         <View style={styles.field}>
           <Text style={styles.label}>Username</Text>
           <View style={styles.inputContainer}>
-            <Mail size={20} color="#9ca3af" style={styles.inputIcon} />
             <TextInput
               style={styles.input}
               placeholder="Choose a unique username"
@@ -234,7 +233,6 @@ const ProfileSetup = ({ profileData, onProfileUpdated }) => {
         <View style={styles.field}>
           <Text style={styles.label}>Bio (Optional)</Text>
           <View style={styles.inputContainer}>
-            <Edit3 size={20} color="#9ca3af" style={styles.inputIcon} />
             <TextInput
               style={[styles.input, styles.bioInput]}
               placeholder="Tell others about yourself and your goals..."
@@ -242,7 +240,7 @@ const ProfileSetup = ({ profileData, onProfileUpdated }) => {
               value={profile.bio}
               onChangeText={(value) => updateProfile('bio', value)}
               multiline
-              numberOfLines={4}
+              numberOfLines={3}
               textAlignVertical="top"
             />
           </View>
@@ -250,7 +248,8 @@ const ProfileSetup = ({ profileData, onProfileUpdated }) => {
       </View>
 
       {renderCameraView()}
-    </View>
+      </ScrollView>
+    </KeyboardAvoidingView>
   );
 };
 
@@ -300,6 +299,11 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
+  photoPlaceholderText: {
+    fontSize: 16,
+    color: '#9ca3af',
+    fontWeight: '500',
+  },
   photoOverlay: {
     position: 'absolute',
     bottom: 0,
@@ -310,6 +314,11 @@ const styles = StyleSheet.create({
     borderRadius: 16,
     alignItems: 'center',
     justifyContent: 'center',
+  },
+  photoOverlayText: {
+    color: '#ffffff',
+    fontSize: 10,
+    fontWeight: '600',
   },
   photoHint: {
     fontSize: 14,
@@ -345,17 +354,15 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     paddingVertical: 12,
   },
-  inputIcon: {
-    marginRight: 12,
-  },
   input: {
     flex: 1,
     fontSize: 16,
     color: '#0b0b0f',
   },
   bioInput: {
-    minHeight: 100,
+    minHeight: 80,
     textAlignVertical: 'top',
+    maxHeight: 80,
   },
   cameraContainer: {
     flex: 1,
@@ -376,6 +383,11 @@ const styles = StyleSheet.create({
   cameraButtonText: {
     color: '#ffffff',
     fontSize: 16,
+  },
+  captureButtonText: {
+    color: '#ffffff',
+    fontSize: 18,
+    fontWeight: '600',
   },
   cameraTitle: {
     color: '#ffffff',

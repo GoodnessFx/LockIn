@@ -14,7 +14,7 @@ const ChevronRight = () => <Text style={{ fontSize: 20 }}>▶️</Text>;
 const Mail = () => <Text style={{ fontSize: 20 }}>📧</Text>;
 const Phone = () => <Text style={{ fontSize: 20 }}>📞</Text>;
 const Lock = () => <Text style={{ fontSize: 20 }}>🔒</Text>;
-const Edit3 = () => <Text style={{ fontSize: 20 }}>✏️</Text>;
+const BlackCoin = ({ size, color }: { size?: number; color?: string }) => <Text style={{ fontSize: size || 20, color: color || '#000000' }}>⚫</Text>;
 const Award = () => <Text style={{ fontSize: 20 }}>🏆</Text>;
 const Target = () => <Text style={{ fontSize: 20 }}>🎯</Text>;
 const Calendar = () => <Text style={{ fontSize: 20 }}>📅</Text>;
@@ -26,26 +26,24 @@ const Zap = () => <Text style={{ fontSize: 20 }}>⚡</Text>;
 const Clock = () => <Text style={{ fontSize: 20 }}>🕐</Text>;
 import { useAuth } from '@/utils/auth/useAuth';
 import useUser from '@/utils/auth/useUser';
-import { useAppStore } from '@/store/appStore';
 import StorageService from '@/services/storage';
 
 export default function Profile() {
   const insets = useSafeAreaInsets();
   const { signOut } = useAuth();
   const { data: user } = useUser();
-  const { userProfile: storeUserProfile } = useAppStore();
-  const [onboardProfile, setOnboardProfile] = useState(null);
+  const [userProfile, setUserProfile] = useState(null);
 
   useEffect(() => {
-    const loadOnboarding = async () => {
+    const loadUserProfile = async () => {
       try {
-        const data = await StorageService.get('lockin_onboarding_data');
-        setOnboardProfile(data?.profile || null);
-      } catch (error) {
-        console.error('Error loading onboarding data:', error);
+        const profile = await StorageService.getUserProfile();
+        setUserProfile(profile);
+      } catch (e) {
+        console.error('Failed to load user profile', e);
       }
     };
-    loadOnboarding();
+    loadUserProfile();
   }, []);
   
   const [notifications, setNotifications] = useState({
@@ -176,27 +174,34 @@ export default function Profile() {
             elevation: 4,
           }}>
             <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 20 }}>
-              <View style={{
-                width: 80,
-                height: 80,
-                borderRadius: 40,
-                backgroundColor: '#2563eb20',
-                alignItems: 'center',
-                justifyContent: 'center',
-                marginRight: 16,
-              }}>
-                <User size={40} color="#2563eb" />
-              </View>
+              {userProfile?.avatar ? (
+                <Image
+                  source={{ uri: userProfile.avatar }}
+                  style={{
+                    width: 80,
+                    height: 80,
+                    borderRadius: 40,
+                    borderWidth: 2,
+                    borderColor: '#e0e0e0',
+                    marginRight: 16,
+                  }}
+                />
+              ) : (
+                <View style={{
+                  width: 80,
+                  height: 80,
+                  borderRadius: 40,
+                  backgroundColor: '#2563eb20',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  marginRight: 16,
+                }}>
+                  <User size={40} color="#2563eb" />
+                </View>
+              )}
               <View style={{ flex: 1 }}>
                 <Text style={{ fontSize: 24, fontWeight: 'bold', color: '#0b0b0f', marginBottom: 4 }}>
-                  {(
-                    (storeUserProfile?.name && storeUserProfile.name.trim()) ||
-                    (onboardProfile?.firstName && onboardProfile.firstName.trim()) ||
-                    (onboardProfile?.username && onboardProfile.username.trim()) ||
-                    user?.name ||
-                    user?.email ||
-                    'LockIn User'
-                  )}
+                  {(((userProfile?.firstName || '') + ' ' + (userProfile?.lastName || '')).trim()) || userProfile?.username || user?.name || user?.email || 'LockIn User'}
                 </Text>
                 <Text style={{ fontSize: 16, color: '#6c757d', marginBottom: 8 }}>
                   Level {userStats.level} • {userStats.xp} XP
@@ -217,6 +222,11 @@ export default function Profile() {
                 <Text style={{ fontSize: 12, color: '#6c757d', marginTop: 4 }}>
                   {userStats.nextLevelXp - userStats.xp} XP to next level
                 </Text>
+                {userProfile?.bio ? (
+                  <Text style={{ fontSize: 14, color: '#6c757d', marginTop: 6 }} numberOfLines={2}>
+                    {userProfile.bio}
+                  </Text>
+                ) : null}
               </View>
               <TouchableOpacity 
                 activeOpacity={0.7}
@@ -226,7 +236,7 @@ export default function Profile() {
                   padding: 8,
                 }}
               >
-                <Edit3 size={20} color="#6c757d" />
+                <BlackCoin size={20} color="#0b0b0f" />
               </TouchableOpacity>
             </View>
 

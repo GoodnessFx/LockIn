@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, TextInput } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, TextInput, ScrollView } from 'react-native';
 
 const GoalSetting = ({ selectedGoal, onGoalSelected }) => {
   const [isCustomGoal, setIsCustomGoal] = useState(false);
@@ -9,38 +9,132 @@ const GoalSetting = ({ selectedGoal, onGoalSelected }) => {
     {
       id: "career_switch",
       title: "Career Switch",
-      description: "Transition to a new career field",
-      icon: "🔄"
+      description: "Transition to a new career field"
     },
     {
       id: "skill_upgrade",
       title: "Skill Upgrade",
-      description: "Enhance existing professional skills",
-      icon: "📈"
+      description: "Enhance existing professional skills"
     },
     {
       id: "freelance_ready",
       title: "Freelance Ready",
-      description: "Build skills for freelance work",
-      icon: "💼"
+      description: "Build skills for freelance work"
     },
     {
       id: "startup_founder",
       title: "Startup Founder",
-      description: "Develop entrepreneurial skills",
-      icon: "🚀"
+      description: "Develop entrepreneurial skills"
     },
     {
       id: "side_hustle",
       title: "Side Hustle",
-      description: "Create additional income stream",
-      icon: "💰"
+      description: "Create additional income stream"
     },
     {
       id: "personal_growth",
       title: "Personal Growth",
-      description: "Learn for personal development",
-      icon: "🌱"
+      description: "Learn for personal development"
+    },
+    {
+      id: "certification",
+      title: "Certification",
+      description: "Obtain professional certification"
+    },
+    {
+      id: "job_promotion",
+      title: "Job Promotion",
+      description: "Qualify for a higher position"
+    },
+    {
+      id: "portfolio_building",
+      title: "Portfolio Building",
+      description: "Create impressive work samples"
+    },
+    {
+      id: "industry_expert",
+      title: "Industry Expert",
+      description: "Become recognized in your field"
+    },
+    {
+      id: "remote_work",
+      title: "Remote Work",
+      description: "Develop skills for remote jobs"
+    },
+    {
+      id: "leadership",
+      title: "Leadership",
+      description: "Develop management abilities"
+    },
+    {
+      id: "public_speaking",
+      title: "Public Speaking",
+      description: "Improve presentation skills"
+    },
+    {
+      id: "technical_mastery",
+      title: "Technical Mastery",
+      description: "Deep expertise in specific tech"
+    },
+    {
+      id: "content_creator",
+      title: "Content Creator",
+      description: "Build audience through content"
+    },
+    {
+      id: "consulting",
+      title: "Consulting",
+      description: "Offer expert advice to clients"
+    },
+    {
+      id: "agency_founder",
+      title: "Agency Founder",
+      description: "Start a service-based business"
+    },
+    {
+      id: "digital_nomad",
+      title: "Digital Nomad",
+      description: "Work while traveling globally"
+    },
+    {
+      id: "passive_income",
+      title: "Passive Income",
+      description: "Create automated revenue streams"
+    },
+    {
+      id: "career_pivot",
+      title: "Career Pivot",
+      description: "Shift to adjacent industry"
+    },
+    {
+      id: "teaching",
+      title: "Teaching",
+      description: "Educate others in your field"
+    },
+    {
+      id: "mentorship",
+      title: "Mentorship",
+      description: "Guide others professionally"
+    },
+    {
+      id: "thought_leadership",
+      title: "Thought Leadership",
+      description: "Influence industry direction"
+    },
+    {
+      id: "product_launch",
+      title: "Product Launch",
+      description: "Create and launch digital products"
+    },
+    {
+      id: "open_source",
+      title: "Open Source",
+      description: "Contribute to community projects"
+    },
+    {
+      id: "research",
+      title: "Research",
+      description: "Advance knowledge in your field"
     }
   ];
 
@@ -65,10 +159,10 @@ const GoalSetting = ({ selectedGoal, onGoalSelected }) => {
   };
 
   return (
-    <View style={styles.container}>
+    <ScrollView style={styles.container} showsVerticalScrollIndicator={true}>
       <Text style={styles.title}>What's Your Goal?</Text>
       <Text style={styles.subtitle}>
-        Tell us what you want to achieve in the next 97 days 🎯
+        Tell us what you want to achieve in the next 97 days
       </Text>
 
       {/* Predefined Goals */}
@@ -85,12 +179,6 @@ const GoalSetting = ({ selectedGoal, onGoalSelected }) => {
             onPress={() => handleGoalSelect(goal.id)}
             activeOpacity={0.7}
           >
-            <View style={[
-              styles.goalIcon,
-              isSelected && styles.goalIconSelected
-            ]}>
-              <Text style={styles.goalEmoji}>{goal.icon}</Text>
-            </View>
             <View style={styles.goalContent}>
               <Text style={[
                 styles.goalTitle,
@@ -115,12 +203,6 @@ const GoalSetting = ({ selectedGoal, onGoalSelected }) => {
         onPress={handleCustomGoalSelect}
         activeOpacity={0.7}
       >
-        <View style={[
-          styles.goalIcon,
-          isCustomGoal && styles.goalIconSelected
-        ]}>
-          <Text style={styles.goalEmoji}>✏️</Text>
-        </View>
         <View style={styles.goalContent}>
           <Text style={[
             styles.goalTitle,
@@ -149,7 +231,7 @@ const GoalSetting = ({ selectedGoal, onGoalSelected }) => {
           />
         </View>
       )}
-    </View>
+    </ScrollView>
   );
 };
 
@@ -159,23 +241,23 @@ const styles = StyleSheet.create({
     paddingHorizontal: 24,
   },
   title: {
-    fontSize: 24,
+    fontSize: 28,
     fontWeight: '700',
     color: '#0b0b0f',
     marginBottom: 8,
   },
   subtitle: {
-    fontSize: 14,
+    fontSize: 16,
     color: '#6c757d',
-    marginBottom: 24,
+    marginBottom: 32,
     lineHeight: 24,
   },
   goalCard: {
     flexDirection: 'row',
     alignItems: 'center',
     backgroundColor: '#f8f9fa',
-    borderRadius: 14,
-    padding: 14,
+    borderRadius: 16,
+    padding: 16,
     marginBottom: 16,
     borderWidth: 1,
     borderColor: '#e0e0e0',
@@ -185,26 +267,11 @@ const styles = StyleSheet.create({
     borderColor: '#2563eb',
     borderWidth: 2,
   },
-  goalIcon: {
-    width: 44,
-    height: 44,
-    borderRadius: 12,
-    backgroundColor: '#e9ecef',
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginRight: 16,
-  },
-  goalIconSelected: {
-    backgroundColor: '#2563eb',
-  },
-  goalEmoji: {
-    fontSize: 22,
-  },
   goalContent: {
     flex: 1,
   },
   goalTitle: {
-    fontSize: 15,
+    fontSize: 16,
     fontWeight: '600',
     color: '#0b0b0f',
     marginBottom: 4,
@@ -213,7 +280,7 @@ const styles = StyleSheet.create({
     color: '#2563eb',
   },
   goalDescription: {
-    fontSize: 13,
+    fontSize: 14,
     color: '#6c757d',
     lineHeight: 20,
   },
@@ -227,7 +294,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: '#2563eb',
     padding: 16,
-    fontSize: 14,
+    fontSize: 16,
     color: '#0b0b0f',
     minHeight: 100,
   },

@@ -99,24 +99,30 @@ export default function Onboarding() {
         completedAt: new Date().toISOString(),
       };
 
-      console.log('Onboarding completed successfully:', onboardingData);
-      
-      // Persist basic user profile to the app store
-      const fullName = `${profileData?.firstName || ''} ${profileData?.lastName || ''}`.trim();
+      // Save to storage service
+      await StorageService.setUserProfile({
+        ...profileData,
+        niche: selectedNiche,
+        goal: selectedGoal,
+        socialLinks: socialLinks
+      });
+
+      // Also sync to app store for LAI tab awareness
       await setUserProfile({
-        id: `local-${Date.now()}`,
-        name: fullName || (profileData?.username || 'User'),
-        email: '',
+        id: (profileData.username || 'local').toString(),
+        name: `${(profileData.firstName || '').trim()} ${(profileData.lastName || '').trim()}`.trim() || profileData.username || 'LockIn User',
+        email: profileData.email || '',
         niche: selectedNiche || '',
         goal: selectedGoal || '',
         preferredSchedule: '',
         voicePreference: 'enabled',
-        timezone: 'UTC',
+        timezone: Intl.DateTimeFormat().resolvedOptions().timeZone || 'UTC',
       });
       
-      // Also persist onboarding status via StorageService for redundancy
-      await StorageService.set('lockin_onboarding_status', { completed: true, completedAt: new Date().toISOString() });
-      await StorageService.set('lockin_onboarding_data', onboardingData);
+      // Save onboarding status
+      await StorageService.setOnboardingStatus(onboardingData);
+      
+      console.log('Onboarding completed successfully:', onboardingData);
       
       // Mark as onboarded and navigate to main app
       await setOnboarded(true);
@@ -169,32 +175,6 @@ export default function Onboarding() {
 
   return (
     <View style={[styles.container, { paddingTop: insets.top }]}>
-      {/* Header with navigation */}
-      <View style={styles.header}>
-        <View style={styles.headerLeft}>
-          {currentStep > 0 ? (
-            <TouchableOpacity
-              style={styles.backButton}
-              onPress={previousStep}
-            >
-              <ArrowLeft size={20} color="#0b0b0f" />
-            </TouchableOpacity>
-          ) : (
-            <View style={styles.placeholder} />
-          )}
-        </View>
-
-        <View style={styles.headerRight}>
-          <TouchableOpacity
-            style={styles.skipButton}
-            onPress={skipOnboarding}
-          >
-            <Skip size={16} color="#6c757d" />
-            <Text style={styles.skipText}>Skip</Text>
-          </TouchableOpacity>
-        </View>
-      </View>
-
       {/* Step Indicator */}
       <StepIndicator
         currentStep={currentStep}
@@ -217,6 +197,14 @@ export default function Onboarding() {
           onPress={nextStep}
           disabled={!canContinue()}
         >
+          {currentStep > 0 && (
+            <TouchableOpacity 
+              style={styles.backArrowContainer} 
+              onPress={previousStep}
+            >
+              <ArrowLeft />
+            </TouchableOpacity>
+          )}
           <Text style={[
             styles.continueButtonText,
             !canContinue() && styles.continueButtonTextDisabled
@@ -316,5 +304,10 @@ const styles = StyleSheet.create({
   },
   continueButtonTextDisabled: {
     color: '#9ca3af',
+  },
+  backArrowContainer: {
+    position: 'absolute',
+    left: 16,
+    zIndex: 1,
   },
 });
