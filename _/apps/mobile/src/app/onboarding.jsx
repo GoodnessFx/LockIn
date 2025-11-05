@@ -89,45 +89,10 @@ export default function Onboarding() {
 
   const completeOnboarding = async () => {
     try {
-      // Save onboarding data
-      const onboardingData = {
-        niche: selectedNiche,
-        goal: selectedGoal,
-        socialLinks: socialLinks,
-        profile: profileData,
-        onboardingCompleted: true,
-        completedAt: new Date().toISOString(),
-      };
-
-      // Save to storage service
-      await StorageService.setUserProfile({
-        ...profileData,
-        niche: selectedNiche,
-        goal: selectedGoal,
-        socialLinks: socialLinks
-      });
-
-      // Also sync to app store for LAI tab awareness
-      await setUserProfile({
-        id: (profileData.username || 'local').toString(),
-        name: `${(profileData.firstName || '').trim()} ${(profileData.lastName || '').trim()}`.trim() || profileData.username || 'LockIn User',
-        email: profileData.email || '',
-        niche: selectedNiche || '',
-        goal: selectedGoal || '',
-        preferredSchedule: '',
-        voicePreference: 'enabled',
-        timezone: Intl.DateTimeFormat().resolvedOptions().timeZone || 'UTC',
-      });
-      
-      // Save onboarding status
-      await StorageService.setOnboardingStatus(onboardingData);
-      
-      console.log('Onboarding completed successfully:', onboardingData);
-      
       // Mark as onboarded and navigate to main app
       await setOnboarded(true);
-      console.log('Onboarding state set to true, navigating to dashboard');
-      router.replace('/(tabs)/dashboard');
+      console.log('Onboarding state set to true, navigating to sign-up');
+      router.replace('/sign-up');
     } catch (error) {
       console.error('Error completing onboarding:', error);
       Alert.alert(

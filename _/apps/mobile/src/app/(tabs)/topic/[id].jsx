@@ -78,7 +78,11 @@ export default function TopicDetailScreen() {
       await updateProgress({ batteryLevel, lastActiveDate: new Date().toISOString() });
 
       Alert.alert('Marked as Read', 'Great job! This topic is now completed.');
-      router.back();
+      if (router.canGoBack()) {
+        router.back();
+      } else {
+        router.replace('/(tabs)/dashboard');
+      }
     } catch (e) {
       console.error('Error marking topic as read:', e);
       Alert.alert('Error', 'Could not mark this topic as read.');
@@ -105,7 +109,13 @@ export default function TopicDetailScreen() {
         <Text style={{ fontSize: 18, fontWeight: '700', color: '#0b0b0f' }} numberOfLines={1}>
           {task ? `Day ${task.day}: ${task.title}` : 'Topic'}
         </Text>
-        <TouchableOpacity onPress={() => router.back()} style={{ paddingHorizontal: 10, paddingVertical: 6, borderWidth: 1, borderColor: '#e0e0e0', borderRadius: 8 }}>
+        <TouchableOpacity onPress={() => {
+          if (router.canGoBack()) {
+            router.back();
+          } else {
+            router.replace('/(tabs)/dashboard');
+          }
+        }} style={{ paddingHorizontal: 10, paddingVertical: 6, borderWidth: 1, borderColor: '#e0e0e0', borderRadius: 8 }}>
           <Text style={{ color: '#2563eb', fontWeight: '600' }}>Back</Text>
         </TouchableOpacity>
       </View>

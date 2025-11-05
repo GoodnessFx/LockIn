@@ -1,12 +1,5 @@
 import { Tabs } from 'expo-router';
-import { Text } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-// Replaced lucide-react-native icons with emoji/text alternatives
-const Home = () => <Text style={{ fontSize: 20 }}><Ionicons name="lock-closed" size={36} color="black" /></Text>;
-const BookOpen = () => <Text style={{ fontSize: 20 }}><Ionicons name="chatbubbles" size={24} color="black" /></Text>;
-const Users = () => <Text style={{ fontSize: 20 }}><Ionicons name="people" size={36} color="black" /></Text>;
-const User = () => <Text style={{ fontSize: 20 }}><Ionicons name="person-circle" size={36} color="black" /></Text>;
-const BarChart3 = () => <Text style={{ fontSize: 20 }}><Ionicons name="speedometer" size={34} color="black" /></Text>;
 
 export default function TabLayout() {
   return (
@@ -47,7 +40,7 @@ export default function TabLayout() {
         options={{
           title: 'LockIn',
           tabBarIcon: ({ color, size }) => (
-            <Home color={color} size={20.4} />
+            <Ionicons name="lock-closed" size={size} color={color} />
           ),
         }}
       />
@@ -56,7 +49,7 @@ export default function TabLayout() {
         options={{
           title: 'LAI',
           tabBarIcon: ({ color, size }) => (
-            <BookOpen color={color} size={20.4} />
+            <Ionicons name="chatbubbles" size={size} color={color} />
           ),
         }}
       />
@@ -65,7 +58,7 @@ export default function TabLayout() {
         options={{
           title: 'Lockmate',
           tabBarIcon: ({ color, size }) => (
-            <Users color={color} size={20.4} />
+            <Ionicons name="people" size={size} color={color} />
           ),
         }}
       />
@@ -74,7 +67,7 @@ export default function TabLayout() {
         options={{
           title: 'Progress',
           tabBarIcon: ({ color, size }) => (
-            <BarChart3 color={color} size={20.4} />
+            <Ionicons name="speedometer" size={size} color={color} />
           ),
         }}
       />
@@ -83,7 +76,7 @@ export default function TabLayout() {
         options={{
           title: 'Profile',
           tabBarIcon: ({ color, size }) => (
-            <User color={color} size={20.4} />
+            <Ionicons name="person-circle" size={size} color={color} />
           ),
         }}
       />

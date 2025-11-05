@@ -13,7 +13,7 @@ import {
   KeyboardAvoidingView,
   Platform
 } from 'react-native';
-import { Camera } from 'expo-camera';
+import { CameraView, useCameraPermissions } from 'expo-camera';
 import * as ImagePicker from 'expo-image-picker';
 
 const { width, height } = Dimensions.get('window');
@@ -30,6 +30,7 @@ const ProfileSetup = ({ profileData, onProfileUpdated }) => {
   const [showCamera, setShowCamera] = useState(false);
   const [cameraPermission, setCameraPermission] = useState(null);
   const cameraRef = useRef(null);
+  const [permission, requestPermission] = useCameraPermissions();
 
   const updateProfile = (field, value) => {
     const updatedProfile = { ...profile, [field]: value };
@@ -38,9 +39,10 @@ const ProfileSetup = ({ profileData, onProfileUpdated }) => {
   };
 
   const requestCameraPermission = async () => {
-    const { status } = await Camera.requestCameraPermissionsAsync();
-    setCameraPermission(status === 'granted');
-    return status === 'granted';
+    const perm = await requestPermission();
+    const granted = perm?.granted === true;
+    setCameraPermission(granted);
+    return granted;
   };
 
   const showImageSourceDialog = () => {
@@ -69,12 +71,22 @@ const ProfileSetup = ({ profileData, onProfileUpdated }) => {
   };
 
   const pickFromGallery = async () => {
-    const result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+    const options = {
       allowsEditing: true,
       aspect: [1, 1],
       quality: 0.8,
-    });
+    };
+
+    // Version-safe media type: prefer new API, fallback to deprecated
+    const mediaTypeImages =
+      (ImagePicker.MediaType && ImagePicker.MediaType.Images) ||
+      (ImagePicker.MediaTypeOptions && ImagePicker.MediaTypeOptions.Images);
+
+    if (mediaTypeImages) {
+      options.mediaTypes = mediaTypeImages;
+    }
+
+    const result = await ImagePicker.launchImageLibraryAsync(options);
 
     if (!result.canceled) {
       updateProfile('avatar', result.assets[0].uri);
@@ -117,16 +129,16 @@ const ProfileSetup = ({ profileData, onProfileUpdated }) => {
             <View style={styles.placeholder} />
           </View>
 
-          <Camera
-            style={styles.camera}
-            // Use compatible string prop to avoid deprecated Constants API
-            type="front"
-            ref={cameraRef}
-          >
+          <View style={{flex: 1}}>
+            <CameraView
+              style={styles.camera}
+              facing="front"
+              ref={cameraRef}
+            />
             <View style={styles.cameraOverlay}>
               <View style={styles.cameraFrame} />
             </View>
-          </Camera>
+          </View>
 
           <View style={styles.cameraControls}>
             <TouchableOpacity
@@ -401,7 +413,11 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   cameraOverlay: {
-    flex: 1,
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
     alignItems: 'center',
     justifyContent: 'center',
   },

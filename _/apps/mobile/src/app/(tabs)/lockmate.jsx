@@ -103,7 +103,7 @@ export default function LockmateScreen() {
   const [users, setUsers] = useState([
     {
       id: 1,
-      name: 'Sarah Chen',
+      name: 'Goodness Iyamah',
       avatar: 'https://images.unsplash.com/photo-1494790108755-2616b612b786?w=150',
       bio: 'Full-stack developer learning AI/ML. Looking for coding accountability partners!',
       goals: ['Programming', 'AI/ML', 'Reading'],
@@ -121,7 +121,7 @@ export default function LockmateScreen() {
     },
     {
       id: 2,
-      name: 'Marcus Johnson',
+      name: 'Oluwatobi Onatade',
       avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150',
       bio: 'Medical student preparing for MCAT. Early bird study sessions preferred.',
       goals: ['Academic Study', 'Fitness', 'Meditation'],
@@ -138,7 +138,7 @@ export default function LockmateScreen() {
     },
     {
       id: 3,
-      name: 'Elena Rodriguez',
+      name: 'Gold Iniobong',
       avatar: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=150',
       bio: 'UX Designer learning Japanese. Love morning study sessions with coffee!',
       goals: ['Language Learning', 'Design', 'Writing'],
@@ -152,6 +152,22 @@ export default function LockmateScreen() {
         { id: 'a6', title: 'Consistency King', icon: 'trophy', color: '#FDCB6E', description: '60+ day streak' },
         { id: 'a7', title: 'Polyglot', icon: 'language', color: '#6C5CE7', description: 'Learning multiple languages' },
         { id: 'a8', title: 'Creative Genius', icon: 'brush', color: '#FF7675', description: 'Completed 20+ design projects' }
+      ]
+    },
+    {
+      id: 4,
+      name: 'Joel Ilhogo',
+      avatar: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=150',
+      bio: 'Aspiring data scientist. Let\'s connect and learn together!',
+      goals: ['Data Science', 'Python', 'Machine Learning'],
+      streak: 12,
+      isOnline: true,
+      mutualConnections: 2,
+      studyHours: 5,
+      location: 'New York, NY',
+      progress: 40,
+      achievements: [
+        { id: 'a9', title: 'Data Dabbler', icon: 'analytics', color: '#A29BFE', description: 'Started data science journey' }
       ]
     }
   ]);
