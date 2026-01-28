@@ -29,6 +29,7 @@ const CheckCircle = ({ size, color }: { size?: number; color?: string }) => <Ion
 const Circle = ({ size, color }: { size?: number; color?: string }) => <Ionicons name="ellipse-outline" size={size || 24} color={color || '#0b0b0f'} />;
 const Clock = ({ size, color }: { size?: number; color?: string }) => <Ionicons name="time-outline" size={size || 24} color={color || '#0b0b0f'} />;
 const Target = ({ size, color }: { size?: number; color?: string }) => <Ionicons name="rocket-outline" size={size || 24} color={color || '#0b0b0f'} />;
+const Close = ({ size, color }: { size?: number; color?: string }) => <Ionicons name="close-outline" size={size || 24} color={color || '#0b0b0f'} />;
 
 export default function LAIScreen() {
   const insets = useSafeAreaInsets();
@@ -46,6 +47,7 @@ export default function LAIScreen() {
   } = useAppStore();
 
   const userNiche = (userProfile?.niche || '').trim();
+  const displayName = (((userProfile?.name || '')).trim().split(' ')[0]) || 'You';
 
   // Local state
   const [searchQuery, setSearchQuery] = useState('');
@@ -227,7 +229,7 @@ export default function LAIScreen() {
         {/* Header */}
         <View style={{ marginBottom: 24 }}>
           <Text style={{ fontSize: 28, fontWeight: '700', color: '#0b0b0f' }}>
-            LAI {userNiche ? `— ${userNiche}` : ''}
+            LAI — Your LockIn AI
           </Text>
           <Text style={{ fontSize: 14, color: '#6c757d', marginTop: 6 }}>
             Personalized guidance based on your onboarding selections
@@ -261,175 +263,26 @@ export default function LAIScreen() {
 
         {activeTab === 'overview' && (
           <>
-            {/* Assistant Message */}
-            {assistantMessage && (
-              <View style={{
-                backgroundColor: '#f0f8ff',
-                borderRadius: 12,
-                padding: 16,
-                marginBottom: 24,
-                borderLeftWidth: 4,
-                borderLeftColor: '#2563eb',
-                flexDirection: 'row',
-                alignItems: 'center',
-              }}>
-                <MessageCircle size={24} color="#2563eb" style={{ marginRight: 12 }} />
-                <Text style={{ flex: 1, fontSize: 14, color: '#0b0b0f', lineHeight: 20 }}>
-                  {assistantMessage}
-                </Text>
-              </View>
-            )}
-
-            {/* ChatGPT-like Prompt Interface */}
-            <View style={{
-              backgroundColor: '#f8f9fa',
-              borderRadius: 16,
-              padding: 20,
-              marginBottom: 24,
-              borderWidth: 1,
-              borderColor: '#e0e0e0',
-              shadowColor: '#000',
-              shadowOffset: { width: 0, height: 2 },
-              shadowOpacity: 0.1,
-              shadowRadius: 8,
-              elevation: 4,
-            }}>
-              <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 16 }}>
-                <MessageCircle size={24} color="#2563eb" />
-                <Text style={{ fontSize: 18, fontWeight: '600', color: '#0b0b0f', marginLeft: 8 }}>
-                  Ask Your AI Coach
-                </Text>
-              </View>
-              
-              <TextInput
-                style={{
-                  backgroundColor: '#ffffff',
-                  borderRadius: 12,
-                  paddingHorizontal: 16,
-                  paddingVertical: 12,
-                  fontSize: 16,
-                  color: '#0b0b0f',
-                  borderWidth: 1,
-                  borderColor: '#e0e0e0',
-                  marginBottom: 12,
-                }}
-                placeholder="Ask me anything about your learning journey..."
-                placeholderTextColor="#6c757d"
-                multiline
-                numberOfLines={3}
-              />
-              
-              <TouchableOpacity
-                style={{
-                  backgroundColor: '#2563eb',
-                  borderRadius: 12,
-                  paddingVertical: 12,
-                  paddingHorizontal: 24,
-                  alignItems: 'center',
-                }}
-              >
-                <Text style={{ color: '#ffffff', fontSize: 16, fontWeight: '600' }}>
-                  Send Message
-                </Text>
-              </TouchableOpacity>
-            </View>
-
-            {/* Learning Progress */}
             <View style={{ marginBottom: 24 }}>
-              <Text style={{ fontSize: 20, fontWeight: '600', color: '#0b0b0f', marginBottom: 16 }}>
+              <Text style={{ fontSize: 20, fontWeight: '600', color: '#0b0b0f', marginBottom: 12 }}>
                 Learning Progress
               </Text>
-              {learningJourney.map((course) => (
-                <TouchableOpacity
-                  key={course.id}
-                  style={{
-                    backgroundColor: '#f8f9fa',
-                    borderRadius: 12,
-                    padding: 16,
-                    marginBottom: 12,
-                    borderWidth: 1,
-                    borderColor: '#e0e0e0',
-                  }}
-                >
-                  <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
-                    <Text style={{ fontSize: 16, fontWeight: '600', color: '#0b0b0f', flex: 1 }}>
-                      {course.title}
-                    </Text>
-                    <ChevronRight size={20} color="#64748b" />
-                  </View>
-                  <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 8 }}>
-                    <Text style={{ fontSize: 14, color: '#6b7280' }}>
-                      {course.completedLessons}/{course.totalLessons} lessons
-                    </Text>
-                    <Text style={{ fontSize: 14, color: '#0b0b0f', fontWeight: '600' }}>
-                      {course.progress}%
-                    </Text>
-                  </View>
-                  <View
-                    style={{
-                      height: 6,
-                      backgroundColor: '#e5e7eb',
-                      borderRadius: 3,
-                      overflow: 'hidden',
-                    }}
-                  >
-                    <View
-                      style={{
-                        height: '100%',
-                        width: `${course.progress}%`,
-                        backgroundColor: '#0b0b0f',
-                        borderRadius: 3,
-                      }}
-                    />
-                  </View>
-                </TouchableOpacity>
-              ))}
-            </View>
-
-            {/* Progress Notes Section */}
-            <View style={{ marginTop: 24 }}>
-              <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 16 }}>
-                <Lightbulb size={20} color="#2563eb" />
-                <Text style={{ fontSize: 20, fontWeight: '600', color: '#0b0b0f', marginLeft: 8 }}>
-                  Progress Notes
-                </Text>
-              </View>
-              
-              {(!progress.notes || progress.notes.length === 0) ? (
-                <View style={{
-                  backgroundColor: '#f8f9fa',
-                  borderRadius: 12,
-                  padding: 24,
-                  alignItems: 'center',
-                  borderWidth: 1,
-                  borderColor: '#e0e0e0',
-                }}>
-                  <TrendingUp size={32} color="#6b7280" />
-                  <Text style={{ fontSize: 16, color: '#6b7280', marginTop: 12, textAlign: 'center' }}>
-                    Start documenting your learning journey
+              {curriculumProgress ? (
+                <View style={{ backgroundColor: '#f8f9fa', borderRadius: 12, padding: 16, borderWidth: 1, borderColor: '#e0e0e0' }}>
+                  <Text style={{ fontSize: 14, color: '#6b7280', marginBottom: 8 }}>
+                    {curriculumProgress.completedTasks}/{curriculumProgress.totalTasks} tasks completed
                   </Text>
-                  <Text style={{ fontSize: 14, color: '#6b7280', marginTop: 4, textAlign: 'center' }}>
-                    Add notes about your progress and insights
+                  <View style={{ height: 8, backgroundColor: '#e5e7eb', borderRadius: 4, overflow: 'hidden' }}>
+                    <View style={{ height: '100%', width: `${curriculumProgress.progressPercentage}%`, backgroundColor: '#0b0b0f' }} />
+                  </View>
+                  <Text style={{ fontSize: 12, color: '#6b7280', marginTop: 4, textAlign: 'right' }}>
+                    {curriculumProgress.progressPercentage.toFixed(0)}% Complete
                   </Text>
                 </View>
               ) : (
-                progress.notes.slice(-3).map((note) => (
-                  <View key={note.id} style={{
-                    backgroundColor: '#f8f9fa',
-                    borderRadius: 12,
-                    padding: 16,
-                    marginBottom: 12,
-                    borderWidth: 1,
-                    borderColor: '#e0e0e0',
-                  }}>
-                    <Text style={{ fontSize: 14, color: '#0b0b0f', lineHeight: 20 }}>
-                      {note.text}
-                    </Text>
-                    <Text style={{ fontSize: 12, color: '#6b7280', marginTop: 8 }}>
-                      {new Date(note.date).toLocaleDateString()}
-                    </Text>
-                  </View>
-                ))
+                <Text style={{ fontSize: 14, color: '#6b7280' }}>
+                  Your curriculum will be ready shortly.
+                </Text>
               )}
             </View>
           </>
@@ -533,7 +386,7 @@ export default function LAIScreen() {
             <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 16 }}>
               <User size={20} color="#2563eb" />
               <Text style={{ fontSize: 20, fontWeight: '600', color: '#0b0b0f', marginLeft: 8 }}>
-                AI Mentor Chat
+                Mentor — {displayName}
               </Text>
             </View>
             
@@ -636,7 +489,7 @@ export default function LAIScreen() {
                   {selectedTask ? `Day ${selectedTask.day}: ${selectedTask.title}` : 'Lesson'}
                 </Text>
                 <TouchableOpacity onPress={closeTaskDetail}>
-                  <Text style={{ fontSize: 18 }}>✖️</Text>
+                  <Close size={24} color="#0b0b0f" />
                 </TouchableOpacity>
               </View>
               <ScrollView style={{ maxHeight: 520 }} contentContainerStyle={{ padding: 16 }}>

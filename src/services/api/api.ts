@@ -1,4 +1,3 @@
-import axios, { AxiosInstance, AxiosResponse } from 'axios';
 import { API_CONFIG } from '@/config/constants';
 import { UserProfile, ProgressData, CurriculumItem, useAppStore } from '@/store/appStore';
 
@@ -22,195 +21,225 @@ export interface ProgressResponse {
 
 // API Service Class
 class ApiService {
-  private client: AxiosInstance;
+  private baseURL: string = API_CONFIG.BASE_URL;
+  private timeout: number = API_CONFIG.TIMEOUT;
+  private lastRequestTimes: number[] = [];
+  private maxRps = 8;
 
-  constructor() {
-    this.client = axios.create({
-      baseURL: API_CONFIG.BASE_URL,
-      timeout: API_CONFIG.TIMEOUT,
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    });
-
-    // Request interceptor for auth token
-    this.client.interceptors.request.use(
-      (config) => {
-        // Add auth token if available
-        const token = this.getAuthToken();
-        if (token) {
-          config.headers.Authorization = `Bearer ${token}`;
-        }
-        return config;
-      },
-      (error) => Promise.reject(error)
-    );
-
-    // Response interceptor for error handling
-    this.client.interceptors.response.use(
-      (response: AxiosResponse) => response,
-      (error) => {
-        console.error('API Error:', error.response?.data || error.message);
-        return Promise.reject(this.handleError(error));
-      }
-    );
-  }
+  constructor() {}
 
   private getAuthToken(): string | null {
     return useAppStore.getState().authToken;
   }
 
   private handleError(error: any): Error {
-    if (error.response) {
-      // Server responded with error status
-      const message = error.response.data?.message || error.response.data?.error || 'Server error';
-      return new Error(message);
-    } else if (error.request) {
-      // Request was made but no response received
-      return new Error('Network error - please check your connection');
-    } else {
-      // Something else happened
-      return new Error(error.message || 'An unexpected error occurred');
+    if (typeof error === 'string') return new Error(error);
+    if (error?.message) return new Error(error.message);
+    return new Error('An unexpected error occurred');
+  }
+
+  private async acquireSlot(): Promise<void> {
+    const now = Date.now();
+    this.lastRequestTimes = this.lastRequestTimes.filter((t) => now - t < 1000);
+    if (this.lastRequestTimes.length < this.maxRps) {
+      this.lastRequestTimes.push(now);
+      return;
+    }
+    const earliest = this.lastRequestTimes[0];
+    const wait = Math.max(0, 1000 - (now - earliest));
+    await new Promise((r) => setTimeout(r, wait));
+    this.lastRequestTimes.push(Date.now());
+  }
+
+  private async request<T>(path: string, options: RequestInit, retries = 3): Promise<T> {
+    let attempt = 0;
+    let delay = 300;
+    while (true) {
+      try {
+        await this.acquireSlot();
+        const controller = new AbortController();
+        const timer = setTimeout(() => controller.abort(), this.timeout);
+        const headers: Record<string, string> = {
+          'Content-Type': 'application/json',
+        };
+        const token = this.getAuthToken();
+        if (token) headers['Authorization'] = `Bearer ${token}`;
+        const res = await fetch(this.baseURL + path, {
+          ...options,
+          headers: { ...headers, ...(options.headers as any) },
+          signal: controller.signal,
+        });
+        clearTimeout(timer);
+        if (!res.ok) {
+          const bodyText = await res.text().catch(() => '');
+          const msg = bodyText || `HTTP ${res.status}`;
+          throw new Error(msg);
+        }
+        const data = (await res.json()) as T;
+        return data;
+      } catch (error: any) {
+        const transient = error?.message?.includes('abort') || error?.message?.includes('HTTP 429') || error?.message?.includes('Network');
+        if (!transient || attempt >= retries) {
+          throw error;
+        }
+        await new Promise((r) => setTimeout(r, delay));
+        delay = Math.min(delay * 2, 5000);
+        attempt += 1;
+      }
     }
   }
 
   // Authentication endpoints
   async login(email: string, password: string): Promise<ApiResponse<AuthResponse>> {
     try {
-      const response = await this.client.post(API_CONFIG.ENDPOINTS.AUTH + '/login', {
-        email,
-        password,
+      const data = await this.request<AuthResponse>(API_CONFIG.ENDPOINTS.AUTH + '/login', {
+        method: 'POST',
+        body: JSON.stringify({ email, password }),
       });
-      return { success: true, data: response.data };
-    } catch (error) {
-      return { success: false, error: error.message };
+      return { success: true, data };
+    } catch (error: any) {
+      return { success: false, error: this.handleError(error).message };
     }
   }
 
   async register(userData: Partial<UserProfile>): Promise<ApiResponse<AuthResponse>> {
     try {
-      const response = await this.client.post(API_CONFIG.ENDPOINTS.AUTH + '/register', userData);
-      return { success: true, data: response.data };
-    } catch (error) {
-      return { success: false, error: error.message };
+      const data = await this.request<AuthResponse>(API_CONFIG.ENDPOINTS.AUTH + '/register', {
+        method: 'POST',
+        body: JSON.stringify(userData),
+      });
+      return { success: true, data };
+    } catch (error: any) {
+      return { success: false, error: this.handleError(error).message };
     }
   }
 
   async logout(): Promise<ApiResponse> {
     try {
-      await this.client.post(API_CONFIG.ENDPOINTS.AUTH + '/logout');
+      await this.request(API_CONFIG.ENDPOINTS.AUTH + '/logout', { method: 'POST' });
       return { success: true };
-    } catch (error) {
-      return { success: false, error: error.message };
+    } catch (error: any) {
+      return { success: false, error: this.handleError(error).message };
     }
   }
 
   // User endpoints
   async getUserProfile(): Promise<ApiResponse<UserProfile>> {
     try {
-      const response = await this.client.get(API_CONFIG.ENDPOINTS.USER + '/profile');
-      return { success: true, data: response.data };
-    } catch (error) {
-      return { success: false, error: error.message };
+      const data = await this.request<UserProfile>(API_CONFIG.ENDPOINTS.USER + '/profile', { method: 'GET' });
+      return { success: true, data };
+    } catch (error: any) {
+      return { success: false, error: this.handleError(error).message };
     }
   }
 
   async updateUserProfile(profile: Partial<UserProfile>): Promise<ApiResponse<UserProfile>> {
     try {
-      const response = await this.client.put(API_CONFIG.ENDPOINTS.USER + '/profile', profile);
-      return { success: true, data: response.data };
-    } catch (error) {
-      return { success: false, error: error.message };
+      const data = await this.request<UserProfile>(API_CONFIG.ENDPOINTS.USER + '/profile', {
+        method: 'PUT',
+        body: JSON.stringify(profile),
+      });
+      return { success: true, data };
+    } catch (error: any) {
+      return { success: false, error: this.handleError(error).message };
     }
   }
 
   // Progress endpoints
   async getProgress(): Promise<ApiResponse<ProgressResponse>> {
     try {
-      const response = await this.client.get(API_CONFIG.ENDPOINTS.PROGRESS);
-      return { success: true, data: response.data };
-    } catch (error) {
-      return { success: false, error: error.message };
+      const data = await this.request<ProgressResponse>(API_CONFIG.ENDPOINTS.PROGRESS, { method: 'GET' });
+      return { success: true, data };
+    } catch (error: any) {
+      return { success: false, error: this.handleError(error).message };
     }
   }
 
   async updateProgress(progress: Partial<ProgressData>): Promise<ApiResponse<ProgressData>> {
     try {
-      const response = await this.client.put(API_CONFIG.ENDPOINTS.PROGRESS, progress);
-      return { success: true, data: response.data };
-    } catch (error) {
-      return { success: false, error: error.message };
+      const data = await this.request<ProgressData>(API_CONFIG.ENDPOINTS.PROGRESS, {
+        method: 'PUT',
+        body: JSON.stringify(progress),
+      });
+      return { success: true, data };
+    } catch (error: any) {
+      return { success: false, error: this.handleError(error).message };
     }
   }
 
   async markTaskComplete(taskId: string): Promise<ApiResponse> {
     try {
-      const response = await this.client.post(API_CONFIG.ENDPOINTS.PROGRESS + '/complete', {
-        taskId,
+      const data = await this.request(API_CONFIG.ENDPOINTS.PROGRESS + '/complete', {
+        method: 'POST',
+        body: JSON.stringify({ taskId }),
       });
-      return { success: true, data: response.data };
-    } catch (error) {
-      return { success: false, error: error.message };
+      return { success: true, data };
+    } catch (error: any) {
+      return { success: false, error: this.handleError(error).message };
     }
   }
 
   // Curriculum endpoints
   async getCurriculum(): Promise<ApiResponse<CurriculumItem[]>> {
     try {
-      const response = await this.client.get(API_CONFIG.ENDPOINTS.CURRICULUM);
-      return { success: true, data: response.data };
-    } catch (error) {
-      return { success: false, error: error.message };
+      const data = await this.request<CurriculumItem[]>(API_CONFIG.ENDPOINTS.CURRICULUM, { method: 'GET' });
+      return { success: true, data };
+    } catch (error: any) {
+      return { success: false, error: this.handleError(error).message };
     }
   }
 
   async generateCurriculum(niche: string): Promise<ApiResponse<CurriculumItem[]>> {
     try {
-      const response = await this.client.post(API_CONFIG.ENDPOINTS.CURRICULUM + '/generate', {
-        niche,
+      const data = await this.request<CurriculumItem[]>(API_CONFIG.ENDPOINTS.CURRICULUM + '/generate', {
+        method: 'POST',
+        body: JSON.stringify({ niche }),
       });
-      return { success: true, data: response.data };
-    } catch (error) {
-      return { success: false, error: error.message };
+      return { success: true, data };
+    } catch (error: any) {
+      return { success: false, error: this.handleError(error).message };
     }
   }
 
   // AI endpoints
   async askAI(prompt: string, context?: any): Promise<ApiResponse<string>> {
     try {
-      const response = await this.client.post(API_CONFIG.ENDPOINTS.AI_CHAT, {
-        prompt,
-        context,
+      const data = await this.request<string>(API_CONFIG.ENDPOINTS.AI_CHAT, {
+        method: 'POST',
+        body: JSON.stringify({ prompt, context }),
       });
-      return { success: true, data: response.data };
-    } catch (error) {
-      return { success: false, error: error.message };
+      return { success: true, data };
+    } catch (error: any) {
+      return { success: false, error: this.handleError(error).message };
     }
   }
 
   // Notifications endpoints
   async getNotifications(): Promise<ApiResponse<any[]>> {
     try {
-      const response = await this.client.get(API_CONFIG.ENDPOINTS.NOTIFICATIONS);
-      return { success: true, data: response.data };
-    } catch (error) {
-      return { success: false, error: error.message };
+      const data = await this.request<any[]>(API_CONFIG.ENDPOINTS.NOTIFICATIONS, { method: 'GET' });
+      return { success: true, data };
+    } catch (error: any) {
+      return { success: false, error: this.handleError(error).message };
     }
   }
 
   async updateNotificationSettings(settings: any): Promise<ApiResponse> {
     try {
-      const response = await this.client.put(API_CONFIG.ENDPOINTS.NOTIFICATIONS + '/settings', settings);
-      return { success: true, data: response.data };
-    } catch (error) {
-      return { success: false, error: error.message };
+      const data = await this.request(API_CONFIG.ENDPOINTS.NOTIFICATIONS + '/settings', {
+        method: 'PUT',
+        body: JSON.stringify(settings),
+      });
+      return { success: true, data };
+    } catch (error: any) {
+      return { success: false, error: this.handleError(error).message };
     }
   }
 
   // Utility methods
   async healthCheck(): Promise<boolean> {
     try {
-      await this.client.get('/health');
+      await this.request('/health', { method: 'GET' });
       return true;
     } catch {
       return false;
@@ -218,15 +247,15 @@ class ApiService {
   }
 
   setBaseURL(url: string): void {
-    this.client.defaults.baseURL = url;
+    this.baseURL = url;
   }
 
   setAuthToken(token: string): void {
-    this.client.defaults.headers.Authorization = `Bearer ${token}`;
+    useAppStore.setState({ authToken: token });
   }
 
   removeAuthToken(): void {
-    delete this.client.defaults.headers.Authorization;
+    useAppStore.setState({ authToken: null });
   }
 }
 

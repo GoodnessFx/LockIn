@@ -103,10 +103,6 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   logo: {
-    width: 100,
-    height: 100,
-    borderRadius: 30,
-    backgroundColor: '#FFFFFF',
     alignItems: 'center',
     justifyContent: 'center',
   },

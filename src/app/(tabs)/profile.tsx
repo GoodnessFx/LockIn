@@ -1,12 +1,12 @@
 import React, { useState } from 'react';
-import { View, Text, ScrollView, TouchableOpacity, Switch, Alert, Image, StyleSheet } from 'react-native';
+import { View, Text, ScrollView, TouchableOpacity, Switch, Alert, Image, StyleSheet, Modal, TextInput, Linking } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { colors, typography, spacing } from '@/theme/theme';
 import { useAuth } from '@/utils/auth/useAuth';
-import useUser from '@/utils/auth/useUser';
 import { AppState, useAppStore } from '@/store/appStore';
+import { useRouter } from 'expo-router';
 
 // Replace emoji icons with professional vector icons
 const SettingsIcon = ({ size, color }: { size?: number; color?: string }) => (
@@ -40,7 +40,16 @@ export default function Profile() {
   const userProfile = useAppStore((s: AppState) => s.userProfile);
   const theme = useAppStore((s: AppState) => s.theme);
   const setTheme = useAppStore((s: AppState) => s.setTheme);
+  const notificationsEnabled = useAppStore((s: AppState) => s.notificationsEnabled);
+  const setNotificationsEnabled = useAppStore((s: AppState) => s.setNotificationsEnabled);
+  const subscriptionPlan = useAppStore((s: AppState) => s.subscriptionPlan);
+  const setSubscriptionPlan = useAppStore((s: AppState) => s.setSubscriptionPlan);
+  const security = useAppStore((s: AppState) => s.security);
+  const setSecurity = useAppStore((s: AppState) => s.setSecurity);
+  const setUserProfile = useAppStore((s: AppState) => s.setUserProfile);
+  const router = useRouter();
   
+  // local notification group toggles (non-persisted), optional
   const [notifications, setNotifications] = useState({
     milestones: true,
     focusReminders: true,
@@ -48,10 +57,11 @@ export default function Profile() {
     marketing: false,
   });
 
-  const [security, setSecurity] = useState({
-    biometric: true,
-    twoFactor: false,
-  });
+  const [showEditModal, setShowEditModal] = useState(false);
+  const [editName, setEditName] = useState(userProfile?.name || '');
+  const [editEmail, setEditEmail] = useState(userProfile?.email || '');
+  const [showSubscriptionModal, setShowSubscriptionModal] = useState(false);
+  const [showSecurityModal, setShowSecurityModal] = useState(false);
 
   const handleSignOut = async () => {
     Alert.alert(
@@ -121,9 +131,7 @@ export default function Profile() {
       {/* Header */}
       <View style={styles.header}>
         <Text style={styles.headerTitle}>Profile</Text>
-        <TouchableOpacity>
-          <SettingsIcon size={24} color={colors.textPrimary} />
-        </TouchableOpacity>
+        <View />
       </View>
 
       <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.scrollContent}>
@@ -152,18 +160,18 @@ export default function Profile() {
             <SettingItem 
               icon={User} 
               label="Personal Information" 
-              onPress={() => {}}
+              onPress={() => setShowEditModal(true)}
             />
             <SettingItem 
               icon={CreditCard} 
               label="Subscription" 
-              value="Pro Plan" 
-              onPress={() => {}}
+              value={subscriptionPlan + ' Plan'} 
+              onPress={() => setShowSubscriptionModal(true)}
             />
             <SettingItem 
               icon={Shield} 
               label="Security" 
-              onPress={() => {}}
+              onPress={() => setShowSecurityModal(true)}
             />
           </View>
         </View>
@@ -176,15 +184,8 @@ export default function Profile() {
               icon={Bell} 
               label="Notifications" 
               isSwitch 
-              value={notifications.milestones as unknown as string}
-              onSwitch={(v) => setNotifications({...notifications, milestones: v})}
-            />
-            <SettingItem 
-              icon={User} 
-              label="Dark Mode" 
-              isSwitch 
-              value={theme === 'dark' as unknown as string}
-              onSwitch={(v) => setTheme(v ? 'dark' : 'light')}
+              value={notificationsEnabled as unknown as string}
+              onSwitch={(v) => setNotificationsEnabled(v)}
             />
           </View>
         </View>
@@ -196,7 +197,15 @@ export default function Profile() {
             <SettingItem 
               icon={HelpCircle} 
               label="Help Center" 
-              onPress={() => {}}
+              onPress={async () => {
+                const url = 'https://wa.me/2348072027335';
+                const supported = await Linking.canOpenURL(url);
+                if (supported) {
+                  Linking.openURL(url);
+                } else {
+                  router.push('/(tabs)/lockmate');
+                }
+              }}
             />
             <SettingItem 
               icon={Shield} 
@@ -214,6 +223,113 @@ export default function Profile() {
         
         <Text style={styles.versionText}>Version 1.0.0 (Build 142)</Text>
       </ScrollView>
+
+      {/* Edit Info Modal */}
+      <Modal visible={showEditModal} transparent animationType="slide" onRequestClose={() => setShowEditModal(false)}>
+        <View style={styles.modalBackdrop}>
+          <View style={styles.modalCard}>
+            <Text style={styles.modalTitle}>Edit Information</Text>
+            <TextInput
+              value={editName}
+              onChangeText={setEditName}
+              placeholder="Name"
+              style={styles.input}
+              placeholderTextColor={colors.textTertiary}
+            />
+            <TextInput
+              value={editEmail}
+              onChangeText={setEditEmail}
+              placeholder="Email"
+              keyboardType="email-address"
+              style={styles.input}
+              placeholderTextColor={colors.textTertiary}
+            />
+            <View style={styles.modalActions}>
+              <TouchableOpacity style={styles.modalButton} onPress={() => setShowEditModal(false)}>
+                <Text style={styles.modalButtonText}>Cancel</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={[styles.modalButton, styles.modalPrimary]}
+                onPress={() => {
+                  const next = {
+                    id: userProfile?.id || 'user',
+                    name: editName || userProfile?.name || 'LockIn Member',
+                    email: editEmail || userProfile?.email || 'member@lockin.app',
+                    niche: userProfile?.niche || 'General',
+                    goal: userProfile?.goal || '',
+                    preferredSchedule: userProfile?.preferredSchedule || '',
+                    voicePreference: userProfile?.voicePreference || 'enabled',
+                    timezone: userProfile?.timezone || Intl.DateTimeFormat().resolvedOptions().timeZone,
+                  };
+                  setUserProfile(next);
+                  setShowEditModal(false);
+                }}
+              >
+                <Text style={[styles.modalButtonText, styles.modalPrimaryText]}>Save</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </View>
+      </Modal>
+
+      {/* Subscription Modal */}
+      <Modal visible={showSubscriptionModal} transparent animationType="fade" onRequestClose={() => setShowSubscriptionModal(false)}>
+        <View style={styles.modalBackdrop}>
+          <View style={styles.modalCard}>
+            <Text style={styles.modalTitle}>Choose Plan</Text>
+            {(['Free','Pro','Enterprise'] as const).map(p => (
+              <TouchableOpacity key={p} style={styles.optionRow} onPress={() => setSubscriptionPlan(p)}>
+                <View style={[styles.radioOuter, subscriptionPlan === p && styles.radioOuterActive]}>
+                  {subscriptionPlan === p && <View style={styles.radioInner} />}
+                </View>
+                <Text style={styles.optionLabel}>{p} Plan</Text>
+              </TouchableOpacity>
+            ))}
+            <View style={styles.modalActions}>
+              <TouchableOpacity style={styles.modalButton} onPress={() => setShowSubscriptionModal(false)}>
+                <Text style={styles.modalButtonText}>Done</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </View>
+      </Modal>
+
+      {/* Security Modal */}
+      <Modal visible={showSecurityModal} transparent animationType="fade" onRequestClose={() => setShowSecurityModal(false)}>
+        <View style={styles.modalBackdrop}>
+          <View style={styles.modalCard}>
+            <Text style={styles.modalTitle}>Security</Text>
+            <View style={styles.optionRow}>
+              <Text style={styles.optionLabel}>Biometric Unlock</Text>
+              <Switch
+                value={security.biometricEnabled}
+                onValueChange={(v) => setSecurity({ biometricEnabled: v })}
+                trackColor={{ false: '#e0e0e0', true: colors.primaryDark }}
+                thumbColor={'#fff'}
+              />
+            </View>
+            <View style={styles.optionRow}>
+              <Text style={styles.optionLabel}>Two-Factor Auth</Text>
+              <Switch
+                value={security.twoFactorEnabled}
+                onValueChange={(v) => {
+                  setSecurity({ twoFactorEnabled: v });
+                  if (v) {
+                    Alert.alert('Two-Factor Enabled', 'A verification code will be required at sign-in.');
+                  }
+                }}
+                trackColor={{ false: '#e0e0e0', true: colors.primaryDark }}
+                thumbColor={'#fff'}
+              />
+            </View>
+            <View style={styles.modalActions}>
+              <TouchableOpacity style={styles.modalButton} onPress={() => setShowSecurityModal(false)}>
+                <Text style={styles.modalButtonText}>Close</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </View>
+      </Modal>
     </View>
   );
 }
@@ -232,7 +348,8 @@ const styles = StyleSheet.create({
     backgroundColor: colors.surfaceColor,
   },
   headerTitle: {
-    ...typography.h2,
+    fontSize: typography.fontSize['2xl'],
+    fontWeight: typography.fontWeight.semiBold,
     color: colors.textPrimary,
   },
   scrollContent: {
@@ -264,20 +381,22 @@ const styles = StyleSheet.create({
     borderColor: colors.borderColor,
   },
   avatarText: {
-    ...typography.h1,
-    fontSize: 24,
+    fontSize: typography.fontSize['3xl'],
+    fontWeight: typography.fontWeight.bold,
     color: colors.primaryDark,
   },
   profileInfo: {
     flex: 1,
   },
   profileName: {
-    ...typography.h3,
+    fontSize: typography.fontSize.xl,
+    fontWeight: typography.fontWeight.bold,
     color: colors.textPrimary,
     marginBottom: 4,
   },
   profileEmail: {
-    ...typography.caption,
+    fontSize: typography.fontSize.xs,
+    fontWeight: typography.fontWeight.medium,
     color: colors.textSecondary,
     marginBottom: 8,
   },
@@ -299,8 +418,8 @@ const styles = StyleSheet.create({
     marginBottom: spacing.lg,
   },
   sectionTitle: {
-    ...typography.h3,
-    fontSize: 18,
+    fontSize: typography.fontSize.xl,
+    fontWeight: typography.fontWeight.bold,
     color: colors.textPrimary,
     marginBottom: spacing.sm,
     marginLeft: spacing.xs,
@@ -337,7 +456,8 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   settingLabel: {
-    ...typography.body,
+    fontSize: typography.fontSize.base,
+    fontWeight: typography.fontWeight.medium,
     color: colors.textPrimary,
   },
   settingRight: {
@@ -346,7 +466,8 @@ const styles = StyleSheet.create({
     gap: spacing.sm,
   },
   settingValue: {
-    ...typography.caption,
+    fontSize: typography.fontSize.xs,
+    fontWeight: typography.fontWeight.medium,
     color: colors.textSecondary,
   },
   signOutButton: {
@@ -361,14 +482,99 @@ const styles = StyleSheet.create({
     marginBottom: spacing.lg,
   },
   signOutText: {
-    ...typography.body,
-    fontWeight: '600',
+    fontSize: typography.fontSize.base,
+    fontWeight: typography.fontWeight.medium,
     color: colors.errorColor,
   },
   versionText: {
     textAlign: 'center',
-    ...typography.caption,
+    fontSize: typography.fontSize.xs,
+    fontWeight: typography.fontWeight.medium,
     color: colors.textTertiary,
     marginBottom: spacing.lg,
-  }
+  },
+  modalBackdrop: {
+    flex: 1,
+    backgroundColor: 'rgba(0,0,0,0.3)',
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: spacing.lg,
+  },
+  modalCard: {
+    width: '100%',
+    backgroundColor: colors.backgroundColor,
+    borderRadius: 16,
+    padding: spacing.lg,
+  },
+  modalTitle: {
+    fontSize: typography.fontSize.xl,
+    fontWeight: typography.fontWeight.bold,
+    color: colors.textPrimary,
+    marginBottom: spacing.md,
+  },
+  input: {
+    borderWidth: 1,
+    borderColor: colors.borderLight,
+    borderRadius: 12,
+    paddingHorizontal: spacing.md,
+    paddingVertical: spacing.sm,
+    marginBottom: spacing.md,
+    color: colors.textPrimary,
+    backgroundColor: colors.surfaceColor,
+  },
+  modalActions: {
+    flexDirection: 'row',
+    justifyContent: 'flex-end',
+    gap: spacing.md,
+    marginTop: spacing.md,
+  },
+  modalButton: {
+    paddingHorizontal: spacing.lg,
+    paddingVertical: spacing.sm,
+    borderRadius: 10,
+    backgroundColor: colors.surfaceColor,
+  },
+  modalButtonText: {
+    fontSize: typography.fontSize.base,
+    fontWeight: typography.fontWeight.medium,
+    color: colors.textPrimary,
+  },
+  modalPrimary: {
+    backgroundColor: colors.primaryDark,
+  },
+  modalPrimaryText: {
+    color: '#fff',
+  },
+  optionRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingVertical: spacing.sm,
+  },
+  optionLabel: {
+    fontSize: typography.fontSize.base,
+    fontWeight: typography.fontWeight.medium,
+    color: colors.textPrimary,
+    marginLeft: spacing.sm,
+    flex: 1,
+  },
+  radioOuter: {
+    width: 20,
+    height: 20,
+    borderRadius: 10,
+    borderWidth: 2,
+    borderColor: colors.borderLight,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginRight: spacing.sm,
+  },
+  radioOuterActive: {
+    borderColor: colors.primaryDark,
+  },
+  radioInner: {
+    width: 10,
+    height: 10,
+    borderRadius: 5,
+    backgroundColor: colors.primaryDark,
+  },
 });

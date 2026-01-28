@@ -19,6 +19,9 @@ export interface ProgressData {
   totalDays: number;
   streak: number;
   lastActiveDate: string;
+  startDateISO?: string;
+  endDateISO?: string;
+  isLocked?: boolean;
   completedTasks: string[];
   missedDays: number[];
   batteryLevel: number; // 0-100
@@ -60,6 +63,17 @@ export interface AppState {
   authToken: string | null;
   setAuthToken: (token: string | null) => void;
 
+  // Preferences
+  notificationsEnabled: boolean;
+  setNotificationsEnabled: (v: boolean) => void;
+  subscriptionPlan: 'Free' | 'Pro' | 'Enterprise';
+  setSubscriptionPlan: (p: 'Free' | 'Pro' | 'Enterprise') => void;
+  security: {
+    biometricEnabled: boolean;
+    twoFactorEnabled: boolean;
+  };
+  setSecurity: (updates: Partial<AppState['security']>) => void;
+
   // Onboarding
   hasOnboarded: boolean;
   setOnboarded: (v: boolean) => void;
@@ -98,6 +112,9 @@ const INITIAL_PROGRESS: ProgressData = {
   totalDays: APP_CONFIG.COMMITMENT_DAYS,
   streak: 0,
   lastActiveDate: new Date().toISOString(),
+  startDateISO: new Date().toISOString(),
+  endDateISO: new Date(Date.now() + APP_CONFIG.COMMITMENT_DAYS * 24 * 60 * 60 * 1000).toISOString(),
+  isLocked: false,
   completedTasks: [],
   missedDays: [],
   batteryLevel: 100,
@@ -118,6 +135,20 @@ export const useAppStore = create<AppState>()(
       // Auth
       authToken: null,
       setAuthToken: (token) => set({ authToken: token }),
+
+      // Preferences
+      notificationsEnabled: true,
+      setNotificationsEnabled: (v) => set({ notificationsEnabled: v }),
+      subscriptionPlan: 'Pro',
+      setSubscriptionPlan: (p) => set({ subscriptionPlan: p }),
+      security: {
+        biometricEnabled: true,
+        twoFactorEnabled: false,
+      },
+      setSecurity: (updates) => {
+        const current = get().security;
+        set({ security: { ...current, ...updates } });
+      },
 
       // Onboarding
       hasOnboarded: false,
@@ -174,6 +205,9 @@ export const useAppStore = create<AppState>()(
       partialize: (state) => ({
                 authToken: state.authToken,
                 theme: state.theme,
+        notificationsEnabled: state.notificationsEnabled,
+        subscriptionPlan: state.subscriptionPlan,
+        security: state.security,
         hasOnboarded: state.hasOnboarded,
         userProfile: state.userProfile,
         progress: state.progress,

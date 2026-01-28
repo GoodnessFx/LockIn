@@ -1,8 +1,8 @@
 import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
-// Replaced lucide-react-native icons with emoji/text alternatives
-const AlertTriangle = ({ size, color }: { size?: number; color?: string }) => <Text style={{ fontSize: size || 20 }}>⚠️</Text>;
-const RefreshCw = ({ size, color }: { size?: number; color?: string }) => <Text style={{ fontSize: size || 20 }}>🔄</Text>;
+import { Ionicons } from '@expo/vector-icons';
+const AlertTriangle = ({ size, color }: { size?: number; color?: string }) => <Ionicons name="warning-outline" size={size || 20} color={color || '#333'} />;
+const RefreshCw = ({ size, color }: { size?: number; color?: string }) => <Ionicons name="refresh-outline" size={size || 20} color={color || '#333'} />;
 
 interface ErrorBoundaryState {
   hasError: boolean;

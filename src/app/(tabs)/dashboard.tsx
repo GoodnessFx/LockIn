@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Ionicons } from '@expo/vector-icons';
 import {
   View,
@@ -12,7 +12,8 @@ import { StatusBar } from "expo-status-bar";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { colors, typography, spacing, shadows } from '@/theme/theme';
 import { useAuth } from "@/utils/auth/useAuth";
-import { useAppStore } from "@/store/appStore";
+import { useAppStore, AppState } from "@/store/appStore";
+import * as Animatable from 'react-native-animatable';
 import BatteryProgressIndicator from "@/components/BatteryProgressIndicator";
 import CountdownTimer from "@/components/CountdownTimer";
 import LiveClock from "@/components/LiveClock";
@@ -66,6 +67,8 @@ export default function Dashboard() {
   const updateProgress = useAppStore((s: AppState) => s.updateProgress);
 
   const [refreshing, setRefreshing] = useState(false);
+  const [showConfetti, setShowConfetti] = useState(false);
+  const [pausedDuringSession, setPausedDuringSession] = useState(false);
 
   // Countdown timer state
   const [timeLeft, setTimeLeft] = useState({
@@ -76,7 +79,7 @@ export default function Dashboard() {
   });
   
   // Focus timer state
-  const [focusTime, setFocusTime] = useState(25 * 60); // 25 minutes in seconds
+  const [focusTime, setFocusTime] = useState(57 * 60); // 57 minutes in seconds
   const [isFocusRunning, setIsFocusRunning] = useState(false);
   const [focusMode, setFocusMode] = useState<'work' | 'break' | 'longBreak'>('work'); 
 
@@ -88,14 +91,56 @@ export default function Dashboard() {
   }, []);
 
   const toggleFocusTimer = () => {
-    setIsFocusRunning(!isFocusRunning);
+    if (isFocusRunning) {
+      setIsFocusRunning(false);
+      setPausedDuringSession(true);
+    } else {
+      setIsFocusRunning(true);
+      if (focusTime === 57 * 60) {
+        setPausedDuringSession(false);
+      }
+    }
   };
 
   const resetFocusTimer = () => {
     setIsFocusRunning(false);
-    setFocusTime(25 * 60);
+    setFocusTime(57 * 60);
     setFocusMode('work');
+    setPausedDuringSession(false);
   };
+
+  useEffect(() => {
+    if (!progress.endDateISO) {
+      const start = progress.startDateISO ? new Date(progress.startDateISO) : new Date();
+      const end = new Date(start.getTime() + (progress.totalDays * 24 * 60 * 60 * 1000));
+      updateProgress({
+        startDateISO: start.toISOString(),
+        endDateISO: end.toISOString(),
+        totalDays: progress.totalDays || 97
+      });
+    }
+  }, []);
+
+  useEffect(() => {
+    if (!isFocusRunning) return;
+    const id = setInterval(() => {
+      setFocusTime((t) => Math.max(0, t - 1));
+    }, 1000);
+    return () => clearInterval(id);
+  }, [isFocusRunning]);
+
+  useEffect(() => {
+    if (focusTime === 0) {
+      setIsFocusRunning(false);
+      if (!pausedDuringSession) {
+        setShowConfetti(true);
+        setTimeout(() => setShowConfetti(false), 4000);
+      }
+      setFocusTime(57 * 60);
+      setFocusMode('work');
+      setPausedDuringSession(false);
+    }
+  }, [focusTime, pausedDuringSession]);
 
   return (
     <View style={[styles.container, { paddingTop: insets.top }]}>
@@ -104,18 +149,12 @@ export default function Dashboard() {
       {/* Header */}
       <View style={styles.header}>
         <View>
+          <Text style={styles.brand}>LockedIn</Text>
           <Text style={styles.greeting}>Good Morning,</Text>
           <Text style={styles.userName}>{userProfile?.name || 'LockIn Member'}</Text>
         </View>
         <View style={styles.headerRight}>
           <LiveClock />
-          <TouchableOpacity style={styles.profileButton}>
-            <View style={styles.avatarPlaceholder}>
-               <Text style={styles.avatarText}>
-                 {userProfile?.name ? userProfile.name.charAt(0).toUpperCase() : 'U'}
-               </Text>
-            </View>
-          </TouchableOpacity>
         </View>
       </View>
 
@@ -128,35 +167,58 @@ export default function Dashboard() {
       >
         {/* Battery Progress Indicator */}
         <View style={styles.section}>
-          <BatteryProgressIndicator level={progress.batteryLevel} />
+          <BatteryProgressIndicator />
         </View>
 
         {/* Countdown Timer */}
         <View style={styles.section}>
-          <CountdownTimer />
+          <CountdownTimer 
+            targetDate={progress.endDateISO ? new Date(progress.endDateISO) : undefined}
+            onComplete={() => {
+              updateProgress({ isLocked: true, currentDay: progress.totalDays });
+              setShowConfetti(true);
+              setTimeout(() => setShowConfetti(false), 4000);
+            }}
+          />
+          {showConfetti && (
+            <View style={styles.confettiOverlay} pointerEvents="none">
+              {[...Array(12)].map((_, i) => (
+                <Animatable.Text
+                  key={i}
+                  animation="bounceInDown"
+                  iterationCount={1}
+                  delay={i * 100}
+                  style={styles.confettiPiece}
+                >
+                  *
+                </Animatable.Text>
+              ))}
+              <Text style={styles.confettiTitle}>Achievement Unlocked</Text>
+            </View>
+          )}
         </View>
 
         {/* Stats Grid */}
         <View style={styles.statsGrid}>
           <View style={styles.statCard}>
-            <View style={[styles.statIcon, { backgroundColor: '#E3F2FD' }]}>
-              <Target color="#2196F3" />
+            <View style={styles.statIcon}>
+              <Target color={colors.textSecondary} />
             </View>
             <Text style={styles.statValue}>{progress.streak}</Text>
             <Text style={styles.statLabel}>Day Streak</Text>
           </View>
           
           <View style={styles.statCard}>
-            <View style={[styles.statIcon, { backgroundColor: '#E8F5E9' }]}>
-              <CheckCircle color="#4CAF50" />
+            <View style={styles.statIcon}>
+              <CheckCircle color={colors.textSecondary} />
             </View>
             <Text style={styles.statValue}>{progress.completedTasks.length}</Text>
             <Text style={styles.statLabel}>Tasks Done</Text>
           </View>
           
           <View style={styles.statCard}>
-            <View style={[styles.statIcon, { backgroundColor: '#FFF3E0' }]}>
-              <Zap color="#FF9800" />
+            <View style={styles.statIcon}>
+              <Zap color={colors.textSecondary} />
             </View>
             <Text style={styles.statValue}>{progress.batteryLevel}%</Text>
             <Text style={styles.statLabel}>Energy</Text>
@@ -256,32 +318,24 @@ const styles = StyleSheet.create({
     borderBottomColor: colors.borderLight,
   },
   greeting: {
-    ...typography.caption,
+    fontSize: typography.fontSize.sm,
+    fontWeight: typography.fontWeight.medium,
     color: colors.textSecondary,
   },
   userName: {
-    ...typography.h2,
+    fontSize: typography.fontSize['2xl'],
+    fontWeight: typography.fontWeight.semiBold,
     color: colors.textPrimary,
   },
   headerRight: {
     alignItems: 'flex-end',
-  },
-  profileButton: {
     marginTop: spacing.xs,
   },
-  avatarPlaceholder: {
-    width: 36,
-    height: 36,
-    borderRadius: 18,
-    backgroundColor: colors.surfaceColor,
-    alignItems: 'center',
-    justifyContent: 'center',
-    borderWidth: 1,
-    borderColor: colors.borderColor,
-  },
-  avatarText: {
-    ...typography.h3,
-    color: colors.primaryDark,
+  brand: {
+    fontSize: typography.fontSize['2xl'],
+    fontWeight: typography.fontWeight.bold,
+    color: colors.textSecondary,
+    marginBottom: spacing.xs,
   },
   scrollContent: {
     padding: spacing.md,
@@ -296,13 +350,14 @@ const styles = StyleSheet.create({
     marginBottom: spacing.md,
   },
   sectionTitle: {
-    ...typography.h3,
+    fontSize: typography.fontSize.xl,
+    fontWeight: typography.fontWeight.bold,
     color: colors.textPrimary,
   },
   seeAllText: {
-    ...typography.body,
+    fontSize: typography.fontSize.base,
+    fontWeight: typography.fontWeight.medium,
     color: colors.primaryDark,
-    fontSize: 14,
   },
   statsGrid: {
     flexDirection: 'row',
@@ -330,13 +385,13 @@ const styles = StyleSheet.create({
     marginBottom: spacing.xs,
   },
   statValue: {
-    ...typography.h2,
-    fontSize: 20,
+    fontSize: typography.fontSize['2xl'],
+    fontWeight: typography.fontWeight.bold,
     color: colors.textPrimary,
   },
   statLabel: {
-    ...typography.caption,
-    fontSize: 10,
+    fontSize: typography.fontSize.xs,
+    fontWeight: typography.fontWeight.medium,
     color: colors.textSecondary,
     marginTop: 2,
   },
@@ -360,7 +415,8 @@ const styles = StyleSheet.create({
     marginBottom: spacing.lg,
   },
   focusTitle: {
-    ...typography.h3,
+    fontSize: typography.fontSize.xl,
+    fontWeight: typography.fontWeight.bold,
     color: colors.textPrimary,
   },
   focusBadge: {
@@ -380,8 +436,8 @@ const styles = StyleSheet.create({
     marginBottom: spacing.lg,
   },
   timerText: {
-    ...typography.h1,
-    fontSize: 56,
+    fontSize: typography.fontSize['5xl'],
+    fontWeight: typography.fontWeight.bold,
     fontVariant: ['tabular-nums'],
     color: colors.textPrimary,
     letterSpacing: 2,
@@ -390,7 +446,6 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'center',
     alignItems: 'center',
-    gap: spacing.lg,
   },
   controlButton: {
     width: 56,
@@ -406,11 +461,13 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.3,
     shadowRadius: 8,
     elevation: 6,
+    marginRight: spacing.md,
   },
   resetButton: {
     backgroundColor: colors.surfaceColor,
     borderWidth: 1,
     borderColor: colors.borderColor,
+    marginLeft: spacing.md,
   },
   taskCard: {
     backgroundColor: colors.surfaceElevated,
@@ -426,7 +483,6 @@ const styles = StyleSheet.create({
   taskLeft: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: spacing.md,
   },
   checkbox: {
     width: 24,
@@ -436,17 +492,40 @@ const styles = StyleSheet.create({
     borderColor: colors.borderColor,
     alignItems: 'center',
     justifyContent: 'center',
+    marginRight: spacing.md,
   },
   taskTitle: {
-    ...typography.body,
-    fontWeight: '600',
+    fontSize: typography.fontSize.base,
+    fontWeight: typography.fontWeight.medium,
     color: colors.textPrimary,
   },
   taskSubtitle: {
-    ...typography.caption,
+    fontSize: typography.fontSize.xs,
+    fontWeight: typography.fontWeight.medium,
     color: colors.textSecondary,
   },
   taskRight: {
     padding: 4,
+  },
+  confettiOverlay: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    alignItems: 'center',
+    justifyContent: 'flex-start',
+    paddingTop: spacing.xl,
+  },
+  confettiPiece: {
+    fontSize: 24,
+    color: '#ff9800',
+    marginBottom: 4,
+  },
+  confettiTitle: {
+    marginTop: spacing.md,
+    fontSize: 18,
+    fontWeight: '700',
+    color: colors.textPrimary,
   }
 });

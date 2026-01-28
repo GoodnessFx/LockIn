@@ -13,6 +13,7 @@ import {
   Switch,
   Animated,
   ViewStyle,
+  Alert,
 } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -33,37 +34,14 @@ import { User, Post, Message, Achievement, FilterState } from '../../types/socia
 
 import { INITIAL_USERS, INITIAL_POSTS, INITIAL_MESSAGES } from '../../data/socialData';
 
-// Achievement Badge Component
-interface AchievementBadgeProps {
-  achievement: Achievement;
-  animationDelay?: number;
-}
-
-const AchievementBadge: React.FC<AchievementBadgeProps> = ({ achievement, animationDelay = 0 }) => {
-  return (
-    <Animatable.View 
-      animation="bounceIn" 
-      delay={animationDelay}
-      style={styles.achievementBadge}
-    >
-      <LinearGradient
-        colors={[achievement.color, achievement.color + '99']}
-        style={styles.badgeGradient}
-      >
-        <Ionicons name={achievement.icon as any} size={16} color="#FFFFFF" />
-      </LinearGradient>
-      <Text style={styles.badgeTitle} numberOfLines={1}>{achievement.title}</Text>
-    </Animatable.View>
-  );
-};
+ 
 
 // Progress Chart Component
 interface ProgressChartProps {
   progress: number;
-  color?: string;
 }
 
-const ProgressChart: React.FC<ProgressChartProps> = ({ progress, color = colors.accentColor }) => {
+const ProgressChart: React.FC<ProgressChartProps> = ({ progress }) => {
   const animatedValue = useRef(new Animated.Value(0)).current;
   
   useEffect(() => {
@@ -83,11 +61,8 @@ const ProgressChart: React.FC<ProgressChartProps> = ({ progress, color = colors.
     <View style={styles.progressContainer}>
       <View style={styles.progressBackground}>
         <Animated.View 
-          style={[
-            styles.progressFill, 
-            { width, backgroundColor: color } as any
-          ]} 
-        />
+          style={[styles.progressFill, { width, backgroundColor: '#666' } as any]} 
+          />
       </View>
       <Text style={styles.progressText}>{progress}%</Text>
     </View>
@@ -104,12 +79,12 @@ export default function LockmateScreen() {
   const [showFilters, setShowFilters] = useState(false);
   const [showChat, setShowChat] = useState(false);
   const [selectedChatUser, setSelectedChatUser] = useState<User | null>(null);
+  const [messageText, setMessageText] = useState('');
   const [searchQuery, setSearchQuery] = useState('');
   const [filters, setFilters] = useState<FilterState>({});
-  const [darkMode, setDarkMode] = useState(false);
-  const [showAchievements, setShowAchievements] = useState(false);
-  const [selectedUser, setSelectedUser] = useState<User | null>(null);
-  const [showConfetti, setShowConfetti] = useState(false);
+  const notificationsEnabled = useAppStore((s) => s.notificationsEnabled);
+  const setNotificationsEnabled = useAppStore((s) => s.setNotificationsEnabled);
+  const [connections, setConnections] = useState<Set<number | string>>(new Set());
   
   // Animation values
   const refreshProgress = useRef(new Animated.Value(0)).current;
@@ -120,12 +95,13 @@ export default function LockmateScreen() {
   const [posts, setPosts] = useState<Post[]>(INITIAL_POSTS);
   const [messages, setMessages] = useState<Message[]>(INITIAL_MESSAGES);
 
-  const { userProfile } = useAppStore();
+  const { userProfile, theme } = useAppStore();
+  const darkMode = theme === 'dark';
 
   const currentUser = {
-    id: userProfile?.uid || 'current',
-    name: userProfile?.displayName || 'You',
-    avatar: userProfile?.photoURL || 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150'
+    id: userProfile?.id || 'current',
+    name: userProfile?.name || 'You',
+    avatar: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150'
   };
 
   const onRefresh = async () => {
@@ -143,21 +119,13 @@ export default function LockmateScreen() {
     }, 1000);
   };
 
-  const toggleDarkMode = () => {
-    const newMode = !darkMode;
-    setDarkMode(newMode);
-    
-    // Animate transition
-    Animated.timing(darkModeAnim, {
-      toValue: newMode ? 1 : 0,
-      duration: 300,
-      useNativeDriver: false
-    }).start();
-  };
-
   const handleConnect = (userId: number | string) => {
-    console.log('Connecting to user:', userId);
-    // In real app, this would send a connection request
+    if (!connections.has(userId)) {
+      const next = new Set(connections);
+      next.add(userId);
+      setConnections(next);
+      Alert.alert('Connected', 'You are now connected.');
+    }
   };
 
   const handleMessage = (userId: number | string) => {
@@ -196,6 +164,30 @@ export default function LockmateScreen() {
     setPosts([newPost, ...posts]);
   };
 
+  const handleSendMessage = () => {
+    const text = messageText.trim();
+    if (!text || !selectedChatUser) return;
+    const newMsg: Message = {
+      id: Date.now().toString(),
+      text,
+      timestamp: new Date().toISOString(),
+      user: { id: currentUser.id, name: currentUser.name },
+      status: 'sent',
+    };
+    setMessages([...messages, newMsg]);
+    setMessageText('');
+    setTimeout(() => {
+      const reply: Message = {
+        id: `${newMsg.id}-r`,
+        text: 'Got it. Let’s keep the momentum.',
+        timestamp: new Date().toISOString(),
+        user: { id: selectedChatUser.id, name: selectedChatUser.name },
+        status: 'read',
+      };
+      setMessages((prev) => [...prev, reply]);
+    }, 1200);
+  };
+
   const renderTabContent = () => {
     switch (activeTab) {
       case 'discover':
@@ -221,24 +213,7 @@ export default function LockmateScreen() {
               </TouchableOpacity>
             </View>
 
-            {/* Stats Cards */}
-            <View style={styles.statsContainer}>
-              <Animatable.View animation="fadeInLeft" delay={100} style={styles.statCard}>
-                <Ionicons name="people" size={24} color={colors.successColor} />
-                <Text style={styles.statNumber}>1.2k</Text>
-                <Text style={styles.statLabel}>Active Partners</Text>
-              </Animatable.View>
-              <Animatable.View animation="fadeInUp" delay={200} style={styles.statCard}>
-                <Ionicons name="flash" size={24} color="#FF6B35" />
-                <Text style={styles.statNumber}>89%</Text>
-                <Text style={styles.statLabel}>Success Rate</Text>
-              </Animatable.View>
-              <Animatable.View animation="fadeInRight" delay={300} style={styles.statCard}>
-                <Ionicons name="trophy" size={24} color="#FFD700" />
-                <Text style={styles.statNumber}>45d</Text>
-                <Text style={styles.statLabel}>Avg Streak</Text>
-              </Animatable.View>
-            </View>
+            {/* Stats removed */}
 
             {/* User Cards */}
             <FlatList
@@ -250,10 +225,7 @@ export default function LockmateScreen() {
                 <Animatable.View
                   animation="fadeInUp"
                   delay={index * 100}
-                  style={[
-                    styles.userCard,
-                    darkMode && styles.userCardDark
-                  ]}
+                  style={styles.userCard}
                 >
                   <View style={styles.userCardHeader}>
                     <View style={styles.userAvatar}>
@@ -261,58 +233,32 @@ export default function LockmateScreen() {
                       {item.isOnline && <View style={styles.onlineIndicator} />}
                     </View>
                     <View style={styles.userInfo}>
-                      <Text style={[styles.userName, darkMode && styles.textLight]}>{item.name}</Text>
-                      <Text style={[styles.userLocation, darkMode && styles.textLightSecondary]}>
+                      <Text style={styles.userName}>{item.name}</Text>
+                      <Text style={styles.userLocation}>
                         <Ionicons name="location" size={12} /> {item.location}
                       </Text>
                     </View>
                     <View style={styles.streakBadge}>
-                      <Ionicons name="flame" size={14} color="#FF6B35" />
                       <Text style={styles.streakText}>{item.streak}d</Text>
                     </View>
                   </View>
                   
-                  <Text style={[styles.userBio, darkMode && styles.textLightSecondary]} numberOfLines={2}>
+                  <Text style={styles.userBio} numberOfLines={2}>
                     {item.bio}
                   </Text>
                   
                   {/* Progress Chart */}
                   <View style={styles.progressSection}>
-                    <Text style={[styles.progressLabel, darkMode && styles.textLightSecondary]}>Goal Progress</Text>
-                    <ProgressChart progress={item.progress || 0} color={item.progress && item.progress > 80 ? '#00B894' : '#FDCB6E'} />
+                    <Text style={styles.progressLabel}>Goal Progress</Text>
+                    <ProgressChart progress={item.progress || 0} />
                   </View>
                   
-                  {/* Achievement Badges */}
-                  <View style={styles.achievementsRow}>
-                    {item.achievements?.slice(0, 3).map((achievement, i) => (
-                      <AchievementBadge 
-                        key={achievement.id} 
-                        achievement={achievement} 
-                        animationDelay={300 + (i * 100)}
-                      />
-                    ))}
-                    {item.achievements && item.achievements.length > 3 && (
-                      <TouchableOpacity 
-                        style={styles.moreAchievements}
-                        onPress={() => {
-                          setSelectedUser(item);
-                          setShowAchievements(true);
-                        }}
-                      >
-                        <Text style={styles.moreAchievementsText}>+{item.achievements.length - 3}</Text>
-                      </TouchableOpacity>
-                    )}
-                  </View>
+                  {/* Achievements removed */}
                   
                   <View style={styles.userCardActions}>
                     <TouchableOpacity 
                       style={[styles.userCardButton, styles.connectButton]}
-                      onPress={() => {
-                        handleConnect(item.id);
-                        // Show confetti for successful connection
-                        setShowConfetti(true);
-                        setTimeout(() => setShowConfetti(false), 3000);
-                      }}
+                      onPress={() => handleConnect(item.id)}
                     >
                       <Text style={styles.connectButtonText}>Connect</Text>
                     </TouchableOpacity>
@@ -339,13 +285,10 @@ export default function LockmateScreen() {
               style={styles.createPostButton}
               onPress={() => setShowCreatePost(true)}
             >
-              <LinearGradient
-                colors={['#000000', '#333333']}
-                style={styles.createPostGradient}
-              >
-                <Ionicons name="add" size={24} color="white" />
+              <View style={styles.createPostGradient}>
+                <Ionicons name="add" size={24} color="#222" />
                 <Text style={styles.createPostText}>Share your progress</Text>
-              </LinearGradient>
+              </View>
             </TouchableOpacity>
 
             {/* Posts Feed */}
@@ -376,7 +319,7 @@ export default function LockmateScreen() {
             <View style={styles.chatHeader}>
               <Text style={styles.chatTitle}>Messages</Text>
               <TouchableOpacity style={styles.newChatButton}>
-                <Ionicons name="create-outline" size={24} color={colors.accentColor} />
+                <Ionicons name="create-outline" size={24} color="#222" />
               </TouchableOpacity>
             </View>
 
@@ -419,50 +362,21 @@ export default function LockmateScreen() {
   };
 
   return (
-    <Animated.View 
-      style={[
-        styles.container, 
-        { 
-          backgroundColor: darkModeAnim.interpolate({
-            inputRange: [0, 1],
-            outputRange: [colors.background, '#121212']
-          })
-        }
-      ]}
-    >
-      <StatusBar style={darkMode ? "light" : "dark"} />
+    <View style={styles.container}>
+      <StatusBar style="dark" />
       
       {/* Header */}
       <View style={[styles.header, { paddingTop: insets.top + 10 }]}>
-        <Text style={[
-          styles.headerTitle,
-          darkMode && { color: colors.textSecondary }
-        ]}>LockMate</Text>
+        <Text style={styles.headerTitle}>LockMate</Text>
         <View style={styles.headerActions}>
-          {/* Dark Mode Toggle */}
           <TouchableOpacity 
-            style={styles.darkModeToggle} 
-            onPress={toggleDarkMode}
+            style={styles.headerButton}
+            onPress={() => setNotificationsEnabled(!notificationsEnabled)}
           >
-            <Ionicons 
-              name={darkMode ? "sunny" : "moon"} 
-              size={22} 
-              color={darkMode ? colors.lightText : colors.textPrimary} 
-            />
-          </TouchableOpacity>
-          
-          <TouchableOpacity style={styles.headerButton}>
             <Ionicons 
               name="notifications-outline" 
               size={24} 
-              color={darkMode ? colors.lightText : colors.textPrimary} 
-            />
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.headerButton}>
-            <Ionicons 
-              name="settings-outline" 
-              size={24} 
-              color={darkMode ? colors.lightText : colors.textPrimary} 
+              color={colors.textPrimary} 
             />
           </TouchableOpacity>
         </View>
@@ -480,11 +394,13 @@ export default function LockmateScreen() {
             style={[styles.tab, activeTab === tab.key && styles.activeTab]}
             onPress={() => setActiveTab(tab.key as any)}
           >
-            <Ionicons 
-              name={tab.icon as any} 
-              size={20} 
-              color={activeTab === tab.key ? colors.primaryDark : colors.textSecondary} 
-            />
+            <View style={[styles.tabIcon, activeTab === tab.key && styles.activeTabIcon]}>
+              <Ionicons 
+                name={tab.icon as any} 
+                size={20} 
+                color={activeTab === tab.key ? colors.primaryDark : colors.textSecondary} 
+              />
+            </View>
             <Text style={[
               styles.tabLabel,
               activeTab === tab.key && styles.activeTabLabel
@@ -496,22 +412,16 @@ export default function LockmateScreen() {
       </View>
 
       {/* Content */}
-      <View style={[styles.content, darkMode && styles.contentDark]}>
+      <View style={styles.content}>
         {renderTabContent()}
       </View>
 
-      {/* Modals */}
-      <Modal
+      {/* Create Post */}
+      <CreatePost
+        onCreate={handleCreatePost}
+        onClose={() => setShowCreatePost(false)}
         visible={showCreatePost}
-        animationType="slide"
-        presentationStyle="pageSheet"
-      >
-        <CreatePost
-          onCreate={handleCreatePost}
-          onClose={() => setShowCreatePost(false)}
-          visible={showCreatePost}
-        />
-      </Modal>
+      />
 
       <FilterModal
         visible={showFilters}
@@ -521,97 +431,9 @@ export default function LockmateScreen() {
       />
 
       {/* Achievements Modal */}
-      <Modal
-        visible={showAchievements}
-        animationType="fade"
-        transparent={true}
-        onRequestClose={() => setShowAchievements(false)}
-      >
-        <TouchableOpacity 
-          style={styles.modalOverlay}
-          activeOpacity={1}
-          onPress={() => setShowAchievements(false)}
-        >
-          <View style={[styles.achievementsModal, darkMode && styles.achievementsModalDark]}>
-            <Text style={[styles.achievementsTitle, darkMode && styles.textLight]}>
-              {selectedUser?.name}'s Achievements
-            </Text>
-            <FlatList
-              data={selectedUser?.achievements || []}
-              keyExtractor={(item) => item.id}
-              numColumns={2}
-              renderItem={({ item, index }) => (
-                <Animatable.View 
-                  animation="zoomIn" 
-                  delay={index * 100}
-                  style={styles.achievementItem}
-                >
-                  <LinearGradient
-                    colors={[item.color, item.color + '99']}
-                    style={styles.achievementGradient}
-                  >
-                    <Ionicons name={item.icon as any} size={24} color="#FFFFFF" />
-                  </LinearGradient>
-                  <Text style={[styles.achievementItemTitle, darkMode && styles.textLight]}>{item.title}</Text>
-                  <Text style={[styles.achievementDescription, darkMode && styles.textLightSecondary]}>
-                    {item.description}
-                  </Text>
-                </Animatable.View>
-              )}
-            />
-            <TouchableOpacity 
-              style={styles.closeButton}
-              onPress={() => setShowAchievements(false)}
-            >
-              <Ionicons name="close" size={24} color={darkMode ? colors.lightText : colors.textPrimary} />
-            </TouchableOpacity>
-          </View>
-        </TouchableOpacity>
-      </Modal>
+      {/* Achievements modal removed */}
 
-      {/* Confetti Animation */}
-      {showConfetti && (
-        <Animatable.View 
-          style={styles.confettiContainer}
-          animation="fadeOut"
-          duration={2000}
-          delay={1000}
-        >
-          {Array.from({ length: 50 }).map((_, i) => {
-            const size = Math.random() * 8 + 4;
-            const left = Math.random() * width;
-            const delay = Math.random() * 2000;
-            const duration = Math.random() * 3000 + 2000;
-            const color = [
-              '#FDCB6E', '#FF7675', '#74B9FF', '#55EFC4', 
-              '#A29BFE', '#FD79A8', '#00B894', '#6C5CE7'
-            ][Math.floor(Math.random() * 8)];
-            
-            return (
-              <Animatable.View
-                key={i}
-                style={[
-                  styles.confetti,
-                  {
-                    width: size,
-                    height: size,
-                    backgroundColor: color,
-                    left: left,
-                  }
-                ]}
-                animation={{
-                  0: { opacity: 0, translateY: -20 },
-                  0.1: { opacity: 1, translateY: 0 },
-                  1: { opacity: 0, translateY: 500 }
-                }}
-                duration={duration}
-                delay={delay}
-                easing="linear"
-              />
-            );
-          })}
-        </Animatable.View>
-      )}
+      {/* Confetti removed */}
 
       {/* Chat Modal */}
       <Modal
@@ -635,7 +457,7 @@ export default function LockmateScreen() {
               <ChatMessage
                 key={message.id}
                 message={message}
-                isCurrentUser={message.user.id === 1}
+                isCurrentUser={message.user.id === currentUser.id}
                 animationDelay={index * 50}
               />
             ))}
@@ -646,21 +468,23 @@ export default function LockmateScreen() {
               style={styles.messageInput}
               placeholder="Type a message..."
               placeholderTextColor={colors.textTertiary}
+              value={messageText}
+              onChangeText={setMessageText}
             />
-            <TouchableOpacity style={styles.sendButton}>
-              <Ionicons name="send" size={20} color={colors.primaryDark} />
+            <TouchableOpacity style={styles.sendButton} onPress={handleSendMessage}>
+              <Ionicons name="send" size={20} color="#222" />
             </TouchableOpacity>
           </View>
         </View>
       </Modal>
-    </Animated.View>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: colors.backgroundColor,
+    backgroundColor: '#ffffff',
   },
   header: {
     flexDirection: 'row',
@@ -668,7 +492,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingHorizontal: spacing.lg,
     paddingBottom: spacing.md,
-    backgroundColor: colors.backgroundColor,
+    backgroundColor: '#ffffff',
     borderBottomWidth: 1,
     borderBottomColor: colors.borderColor,
   },
@@ -689,7 +513,7 @@ const styles = StyleSheet.create({
   },
   tabNavigation: {
     flexDirection: 'row',
-    backgroundColor: colors.backgroundColor,
+    backgroundColor: '#ffffff',
     borderBottomWidth: 1,
     borderBottomColor: colors.borderColor,
     paddingHorizontal: spacing.sm,
@@ -704,12 +528,21 @@ const styles = StyleSheet.create({
   },
   activeTab: {
     borderBottomWidth: 2,
-    borderBottomColor: colors.primaryDark,
+    borderBottomColor: '#222',
   },
   tabLabel: {
     fontSize: typography.fontSize.sm,
     color: colors.textSecondary,
     fontWeight: typography.fontWeight.medium,
+  },
+  tabIcon: {
+    paddingHorizontal: 8,
+    paddingVertical: 6,
+    borderRadius: 12,
+    backgroundColor: 'rgba(0,0,0,0.04)',
+  },
+  activeTabIcon: {
+    backgroundColor: 'rgba(37,99,235,0.08)',
   },
   activeTabLabel: {
     color: colors.primaryDark,
@@ -718,13 +551,12 @@ const styles = StyleSheet.create({
   content: {
     flex: 1,
   },
-  contentDark: {
-    backgroundColor: '#121212',
-  },
+  /* dark content removed */
   tabContent: {
     flex: 1,
     paddingHorizontal: spacing.lg,
     paddingTop: spacing.lg,
+    backgroundColor: '#ffffff',
   },
   searchContainer: {
     flexDirection: 'row',
@@ -735,7 +567,7 @@ const styles = StyleSheet.create({
     flex: 1,
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: colors.surfaceColor,
+    backgroundColor: '#ffffff',
     borderRadius: borderRadius.lg,
     paddingHorizontal: spacing.md,
     paddingVertical: spacing.sm,
@@ -743,11 +575,11 @@ const styles = StyleSheet.create({
   },
   searchInput: {
     flex: 1,
-    fontSize: typography.fontSize.md,
+    fontSize: typography.fontSize.base,
     color: colors.textPrimary,
   },
   filterButton: {
-    backgroundColor: colors.surfaceColor,
+    backgroundColor: '#ffffff',
     borderRadius: borderRadius.lg,
     padding: spacing.md,
     alignItems: 'center',
@@ -779,11 +611,12 @@ const styles = StyleSheet.create({
     marginTop: spacing.xs,
   },
   userCard: {
-    backgroundColor: colors.surfaceColor,
+    backgroundColor: '#ffffff',
     borderRadius: borderRadius.lg,
     padding: spacing.md,
     marginBottom: spacing.md,
-    ...shadows.sm,
+    borderWidth: 1,
+    borderColor: '#e5e5e5',
   },
   userCardDark: {
     backgroundColor: '#1E1E1E',
@@ -807,7 +640,7 @@ const styles = StyleSheet.create({
     marginLeft: spacing.sm,
   },
   userName: {
-    fontSize: typography.fontSize.md,
+    fontSize: typography.fontSize.base,
     fontWeight: typography.fontWeight.bold,
     color: colors.textPrimary,
   },
@@ -944,7 +777,7 @@ const styles = StyleSheet.create({
   },
   createPostText: {
     color: 'white',
-    fontSize: typography.fontSize.md,
+    fontSize: typography.fontSize.base,
     fontWeight: typography.fontWeight.medium,
   },
   chatHeader: {
@@ -996,7 +829,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   chatName: {
-    fontSize: typography.fontSize.md,
+    fontSize: typography.fontSize.base,
     fontWeight: typography.fontWeight.medium,
     color: colors.textPrimary,
     marginBottom: spacing.xs,
@@ -1017,7 +850,7 @@ const styles = StyleSheet.create({
     width: 8,
     height: 8,
     borderRadius: 4,
-    backgroundColor: colors.accentColor,
+    backgroundColor: '#666',
   },
   chatModal: {
     flex: 1,
@@ -1033,7 +866,7 @@ const styles = StyleSheet.create({
     borderBottomColor: colors.borderColor,
   },
   chatModalTitle: {
-    fontSize: typography.fontSize.lg,
+    fontSize: typography.fontSize.base,
     fontWeight: typography.fontWeight.medium,
     color: colors.textPrimary,
   },
@@ -1056,7 +889,7 @@ const styles = StyleSheet.create({
     borderRadius: borderRadius.lg,
     paddingHorizontal: spacing.md,
     paddingVertical: spacing.sm,
-    fontSize: typography.fontSize.md,
+    fontSize: typography.fontSize.base,
     color: colors.textPrimary,
   },
   sendButton: {
@@ -1072,76 +905,12 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
-  achievementsModal: {
-    width: '80%',
-    maxHeight: '70%',
-    backgroundColor: colors.backgroundColor,
-    borderRadius: borderRadius.lg,
-    padding: spacing.md,
-    ...shadows.md,
-  },
-  achievementsModalDark: {
-    backgroundColor: '#1E1E1E',
-  },
-  achievementsTitle: {
-    fontSize: typography.fontSize.lg,
-    fontWeight: typography.fontWeight.bold,
-    color: colors.textPrimary,
-    marginBottom: spacing.md,
-    textAlign: 'center',
-  },
-  achievementItem: {
-    flex: 1,
-    alignItems: 'center',
-    margin: spacing.xs,
-    padding: spacing.sm,
-    backgroundColor: colors.surfaceColor,
-    borderRadius: borderRadius.md,
-    ...shadows.sm,
-  },
-  achievementGradient: {
-    width: 50,
-    height: 50,
-    borderRadius: 25,
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginBottom: spacing.sm,
-  },
-  achievementItemTitle: {
-    fontSize: typography.fontSize.sm,
-    fontWeight: typography.fontWeight.medium,
-    color: colors.textPrimary,
-    marginBottom: 4,
-    textAlign: 'center',
-  },
-  achievementDescription: {
-    fontSize: typography.fontSize.xs,
-    color: colors.textSecondary,
-    textAlign: 'center',
-  },
-  closeButton: {
-    position: 'absolute',
-    top: spacing.sm,
-    right: spacing.sm,
-    padding: spacing.xs,
-  },
-  confettiContainer: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
-    pointerEvents: 'none',
-  },
-  confetti: {
-    position: 'absolute',
-    top: -20,
-    borderRadius: 2,
-  },
+  /* achievements styles removed */
+  /* confetti styles removed */
   textLight: {
-    color: colors.lightText || '#FFFFFF',
+    color: '#FFFFFF',
   },
   textLightSecondary: {
-    color: colors.lightTextSecondary || '#CCCCCC',
+    color: '#CCCCCC',
   },
 });

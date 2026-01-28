@@ -3,71 +3,82 @@ import { User, Post, Message } from '@/types/social';
 export const INITIAL_USERS: User[] = [
   {
     id: 1,
-    name: 'Goodness Iyamah',
+    name: 'Joel Ilhogo',
     avatar: 'https://images.unsplash.com/photo-1494790108755-2616b612b786?w=150',
-    bio: 'Full-stack developer learning AI/ML. Looking for coding accountability partners!',
-    goals: ['Programming', 'AI/ML', 'Reading'],
-    streak: 45,
+    bio: 'Fashion designer in Lagos crafting bold streetwear.',
+    goals: ['Fashion', 'Design', 'Business'],
+    streak: 18,
     isOnline: true,
-    mutualConnections: 3,
-    studyHours: 6,
-    location: 'San Francisco, CA',
-    progress: 78,
+    mutualConnections: 2,
+    studyHours: 4,
+    location: 'Lagos, Nigeria',
+    progress: 56,
     achievements: [
-      { id: 'a1', title: 'Coding Ninja', icon: 'code', color: '#6C5CE7', description: 'Completed 30+ days coding streak' },
-      { id: 'a2', title: 'Early Bird', icon: 'sunny', color: '#FDCB6E', description: 'Consistent morning sessions' },
-      { id: 'a3', title: 'Team Player', icon: 'people', color: '#00B894', description: 'Helped 10+ community members' }
+      { id: 'a1', title: 'Style Builder', icon: 'color-palette', color: '#6C5CE7', description: 'Designed 10+ outfits' }
     ]
   },
   {
     id: 2,
-    name: 'Oluwatobi Onatade',
+    name: 'Gold Iniobong',
     avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150',
-    bio: 'Medical student preparing for MCAT. Early bird study sessions preferred.',
-    goals: ['Academic Study', 'Fitness', 'Meditation'],
-    streak: 23,
-    isOnline: false,
-    mutualConnections: 1,
-    studyHours: 8,
-    location: 'Boston, MA',
-    progress: 65,
+    bio: 'Writer from Abuja building a daily writing habit.',
+    goals: ['Writing', 'Reading', 'Publishing'],
+    streak: 27,
+    isOnline: true,
+    mutualConnections: 3,
+    studyHours: 3,
+    location: 'Abuja, Nigeria',
+    progress: 62,
     achievements: [
-      { id: 'a4', title: 'Focus Master', icon: 'fitness', color: '#FF7675', description: 'Completed 20+ pomodoro sessions' },
-      { id: 'a5', title: 'Knowledge Seeker', icon: 'book', color: '#74B9FF', description: 'Studied 100+ hours' }
+      { id: 'a4', title: 'Daily Scribe', icon: 'book', color: '#FF7675', description: 'Wrote 30 days in a row' }
     ]
   },
   {
     id: 3,
-    name: 'Gold Iniobong',
+    name: 'Tobi',
     avatar: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=150',
-    bio: 'UX Designer learning Japanese. Love morning study sessions with coffee!',
-    goals: ['Language Learning', 'Design', 'Writing'],
-    streak: 67,
-    isOnline: true,
-    mutualConnections: 5,
-    studyHours: 4,
-    location: 'Austin, TX',
-    progress: 92,
+    bio: 'Django dev and car enthusiast from Ibadan.',
+    goals: ['Backend', 'Django', 'Automotive'],
+    streak: 12,
+    isOnline: false,
+    mutualConnections: 1,
+    studyHours: 2,
+    location: 'Ibadan, Nigeria',
+    progress: 40,
     achievements: [
-      { id: 'a6', title: 'Consistency King', icon: 'trophy', color: '#FDCB6E', description: '60+ day streak' },
-      { id: 'a7', title: 'Polyglot', icon: 'language', color: '#6C5CE7', description: 'Learning multiple languages' },
-      { id: 'a8', title: 'Creative Genius', icon: 'brush', color: '#FF7675', description: 'Completed 20+ design projects' }
+      { id: 'a6', title: 'Django Starter', icon: 'code', color: '#FDCB6E', description: 'Built first API' }
     ]
   },
   {
     id: 4,
-    name: 'Joel Ilhogo',
+    name: 'Muiz',
     avatar: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=150',
-    bio: 'Aspiring data scientist. Let\'s connect and learn together!',
-    goals: ['Data Science', 'Python', 'Machine Learning'],
-    streak: 12,
+    bio: 'Backend engineer who loves CLI and system devops.',
+    goals: ['Backend', 'DevOps', 'Systems'],
+    streak: 33,
     isOnline: true,
-    mutualConnections: 2,
+    mutualConnections: 4,
     studyHours: 5,
-    location: 'New York, NY',
-    progress: 40,
+    location: 'Lagos, Nigeria',
+    progress: 70,
     achievements: [
-      { id: 'a9', title: 'Data Dabbler', icon: 'analytics', color: '#A29BFE', description: 'Started data science journey' }
+      { id: 'a9', title: 'Shell Master', icon: 'terminal', color: '#A29BFE', description: 'Automated daily workflows' }
+    ]
+  },
+  {
+    id: 5,
+    name: 'Goodness Iyamah',
+    avatar: 'https://images.unsplash.com/photo-1494790108755-2616b612b786?w=150',
+    bio: 'Builder in blockchain and growth. Tech + financial markets experience; crafting systems like a senior developer.',
+    goals: ['Blockchain', 'Growth', 'Systems'],
+    streak: 21,
+    isOnline: true,
+    mutualConnections: 6,
+    studyHours: 5,
+    location: 'Lagos, Nigeria',
+    progress: 68,
+    achievements: [
+      { id: 'a10', title: 'Chain Architect', icon: 'link', color: '#6C5CE7', description: 'Designed robust on-chain workflows' }
     ]
   }
 ];

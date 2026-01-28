@@ -28,5 +28,13 @@
     "**/*.js",
     "**/*.jsx"
   ],
+  "exclude": [
+    "tests/**",
+    "android/**",
+    "ios/**",
+    "node_modules/**"
+    ,
+    "src/services/background/**"
+  ],
   "extends": "expo/tsconfig.base"
 }

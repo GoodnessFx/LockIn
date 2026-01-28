@@ -13,19 +13,14 @@ const cfg: ExpoConfig = {
     resizeMode: "contain",
     backgroundColor: "#ffffff"
   },
-  android: {
-    package: "com.lockin.app",
-    adaptiveIcon: {
-      foregroundImage: "./assets/images/adaptive-icon.png",
-      backgroundColor: "#ffffff"
-    }
-  },
   ios: {
     bundleIdentifier: "com.lockin.app",
+    buildNumber: "1.0.0",
     supportsTablet: true,
     infoPlist: {
       NSCameraUsageDescription: "Allow LockIn to use your camera for profile photos",
-      NSPhotoLibraryUsageDescription: "Allow LockIn to access your photo library to select profile photos"
+      NSPhotoLibraryUsageDescription: "Allow LockIn to access your photo library to select profile photos",
+      ITSAppUsesNonExemptEncryption: false
     }
   },
   platforms: [
@@ -38,6 +33,7 @@ const cfg: ExpoConfig = {
   ],
   android: {
     package: "com.lockin.app",
+    versionCode: 1,
     adaptiveIcon: {
       foregroundImage: "./assets/images/adaptive-icon.png",
       backgroundColor: "#ffffff"
@@ -46,7 +42,7 @@ const cfg: ExpoConfig = {
   },
   extra: {
     eas: {
-      projectId: process.env.EAS_PROJECT_ID
+      projectId: "f8a06781-8114-4ec5-9cf4-53ecdca858a6"
     }
   }
 };

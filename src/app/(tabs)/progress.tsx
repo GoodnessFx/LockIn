@@ -1,10 +1,10 @@
 import React from 'react';
-import { View, Text, ScrollView, StyleSheet, TouchableOpacity } from 'react-native';
+import { View, Text, ScrollView, StyleSheet, TouchableOpacity, Alert } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { colors, typography, spacing, shadows } from '@/theme/theme';
-import { useAppStore, AppState } from '@/store/appStore';
+import { useAppStore, AppState, CurriculumItem } from '@/store/appStore';
 import BatteryProgressIndicator from '@/components/BatteryProgressIndicator';
 
 const Milestone = ({ day, title, completed, locked }: { day: number; title: string; completed: boolean; locked: boolean }) => (
@@ -37,6 +37,8 @@ export default function ProgressScreen() {
   const insets = useSafeAreaInsets();
   const progress = useAppStore((s: AppState) => s.progress);
   const curriculum = useAppStore((s: AppState) => s.curriculum);
+  const updateProgress = useAppStore((s: AppState) => s.updateProgress);
+  const markTaskComplete = useAppStore((s: AppState) => s.markTaskComplete);
 
   // Mock curriculum if empty (fallback)
   const displayCurriculum: CurriculumItem[] = curriculum.length > 0 ? curriculum : [
@@ -47,6 +49,28 @@ export default function ProgressScreen() {
     { id: '30', day: 30, title: 'Habit Formation', description: 'Solidify your habits', completed: false, type: 'milestone', estimatedTime: 60 },
     { id: '97', day: 97, title: 'Transformation Complete', description: 'Celebrate your journey', completed: false, type: 'milestone', estimatedTime: 0 },
   ];
+
+  const handleCompleteDay = (day: number) => {
+    if (day > progress.currentDay) return;
+    const taskId = `day-${day}`;
+    if (progress.completedTasks.includes(taskId)) return;
+    markTaskComplete(taskId);
+    const nextDay = Math.min(progress.currentDay + 1, progress.totalDays);
+    const nextStreak = progress.streak + 1;
+    const dayRatio = nextDay / progress.totalDays;
+    const totalTasks = curriculum.length;
+    const doneTasks = totalTasks > 0 ? curriculum.filter(t => t.completed).length : progress.completedTasks.length;
+    const taskRatio = totalTasks > 0 ? doneTasks / totalTasks : (progress.completedTasks.length + 1) / Math.max(1, progress.totalDays);
+    const blended = 0.5 * dayRatio + 0.5 * taskRatio;
+    const nextBattery = Math.max(0, Math.min(100, Math.round(blended * 100)));
+    updateProgress({
+      currentDay: nextDay,
+      streak: nextStreak,
+      batteryLevel: nextBattery,
+      lastActiveDate: new Date().toISOString(),
+    });
+    Alert.alert('Progress Updated', `Day ${day} completed.`);
+  };
 
   return (
     <View style={[styles.container, { paddingTop: insets.top }]}>
@@ -64,7 +88,7 @@ export default function ProgressScreen() {
       >
         {/* Battery Indicator Section */}
         <View style={styles.batterySection}>
-          <BatteryProgressIndicator level={progress.batteryLevel} />
+          <BatteryProgressIndicator />
           <View style={styles.statsRow}>
             <View style={styles.statItem}>
               <Text style={styles.statValue}>{progress.streak}</Text>
@@ -83,13 +107,18 @@ export default function ProgressScreen() {
           <Text style={styles.sectionTitle}>Timeline</Text>
           <View style={styles.timelineContainer}>
             {displayCurriculum.map((item, index) => (
-              <Milestone 
+              <TouchableOpacity
                 key={item.id || index}
-                day={item.day}
-                title={item.title}
-                completed={item.completed || item.day < progress.currentDay}
-                locked={item.day > progress.currentDay}
-              />
+                activeOpacity={item.day === progress.currentDay ? 0.7 : 1}
+                onPress={() => handleCompleteDay(item.day)}
+              >
+                <Milestone 
+                  day={item.day}
+                  title={item.title}
+                  completed={progress.completedTasks.includes(`day-${item.day}`) || item.day < progress.currentDay}
+                  locked={item.day > progress.currentDay}
+                />
+              </TouchableOpacity>
             ))}
           </View>
         </View>
@@ -129,7 +158,7 @@ const styles = StyleSheet.create({
     borderRadius: 16,
     padding: spacing.lg,
     marginBottom: spacing.xl,
-    ...shadows.medium,
+    ...shadows.md,
   },
   statsRow: {
     flexDirection: 'row',
@@ -138,7 +167,7 @@ const styles = StyleSheet.create({
     marginTop: spacing.lg,
     paddingTop: spacing.lg,
     borderTopWidth: 1,
-    borderTopColor: colors.border,
+    borderTopColor: colors.borderColor,
   },
   statItem: {
     alignItems: 'center',
@@ -156,7 +185,7 @@ const styles = StyleSheet.create({
   divider: {
     width: 1,
     height: 40,
-    backgroundColor: colors.border,
+    backgroundColor: colors.borderColor,
   },
   sectionTitle: {
     fontSize: 20,
@@ -192,15 +221,15 @@ const styles = StyleSheet.create({
     zIndex: 1,
   },
   milestoneCompleted: {
-    backgroundColor: colors.success,
+    backgroundColor: colors.successColor,
   },
   milestoneActive: {
     backgroundColor: colors.primaryDark,
   },
   milestoneLockedIcon: {
-    backgroundColor: colors.surface,
+    backgroundColor: colors.surfaceColor,
     borderWidth: 1,
-    borderColor: colors.border,
+    borderColor: colors.borderColor,
   },
   milestoneDayText: {
     color: '#fff',
@@ -210,7 +239,7 @@ const styles = StyleSheet.create({
   milestoneLine: {
     width: 2,
     flex: 1,
-    backgroundColor: colors.border,
+    backgroundColor: colors.borderColor,
     marginTop: -4,
     marginBottom: -14, // Connect to next item
   },

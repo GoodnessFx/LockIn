@@ -21,20 +21,6 @@ const PostCard: React.FC<PostCardProps> = ({
   animationDelay = 0,
 }) => {
   if (!post) return null;
-  // Map common emojis to Ionicons for professional UI
-  const getIconForContent = (text: string): keyof typeof Ionicons.glyphMap | null => {
-    if (!text) return null;
-    if (text.includes('🔥')) return 'flame-outline';
-    if (text.includes('🎉')) return 'trophy-outline';
-    if (text.includes('☀️') || text.includes('☀')) return 'sunny-outline';
-    if (text.includes('🚀')) return 'rocket-outline';
-    if (text.includes('✅')) return 'checkmark-circle-outline';
-    if (text.includes('💡')) return 'bulb-outline';
-    if (text.includes('💪')) return 'fitness-outline';
-    if (text.includes('🔒')) return 'lock-closed-outline';
-    return null;
-  };
-
   const sanitizeContent = (text: string) => {
     if (!text) return '';
     // Remove common emojis used in content
@@ -43,8 +29,6 @@ const PostCard: React.FC<PostCardProps> = ({
       .trim();
   };
 
-  const leadingIcon = getIconForContent(post.content);
-
   return (
     <View style={styles.card}>
       <TouchableOpacity style={styles.header} onPress={() => onUserPress?.(post.id)}>
@@ -52,15 +36,12 @@ const PostCard: React.FC<PostCardProps> = ({
         <Text style={styles.author}>{post.user?.name || 'User'}</Text>
       </TouchableOpacity>
       <View style={styles.contentRow}>
-        {leadingIcon && (
-          <Ionicons name={leadingIcon} size={18} color="#666" style={styles.contentIcon} />
-        )}
         <Text style={styles.content}>{sanitizeContent(post.content)}</Text>
       </View>
       {post.image && <View style={styles.imagePlaceholder} />}
       <View style={styles.actions}>
         <TouchableOpacity style={styles.action} onPress={() => onLike?.(post.id, !post.isLiked)}>
-          <Ionicons name={post.isLiked ? 'heart' : 'heart-outline'} size={18} color={post.isLiked ? '#e74c3c' : '#666'} />
+          <Ionicons name={post.isLiked ? 'heart' : 'heart-outline'} size={18} color={post.isLiked ? '#333' : '#666'} />
           <Text style={styles.actionText}>{post.likes}</Text>
         </TouchableOpacity>
         <TouchableOpacity style={styles.action} onPress={() => onComment?.(post.id)}>

@@ -30,18 +30,11 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
     await setTheme(isDark ? 'light' : 'dark');
   };
 
-  const themedColors = isDark ? {
+  const themedColors = {
+    ...colors,
     background: colors.backgroundColor,
     surface: colors.surfaceColor,
     text: colors.textPrimary,
-    textSecondary: colors.textSecondary,
-    ...colors
-  } : {
-    background: colors.backgroundColor,
-    surface: colors.surfaceColor,
-    text: colors.textPrimary,
-    textSecondary: colors.textSecondary,
-    ...colors
   };
 
   const contextValue: ThemeContextType = {
@@ -67,4 +60,3 @@ export function useTheme() {
   }
   return context;
 }
-
