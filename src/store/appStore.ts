@@ -3,6 +3,8 @@ import { persist, createJSONStorage } from 'zustand/middleware';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { APP_CONFIG } from '@/config/constants';
 
+export type UserRole = 'user' | 'team_member' | 'admin';
+
 export interface UserProfile {
   id: string;
   name: string;
@@ -12,6 +14,9 @@ export interface UserProfile {
   preferredSchedule: string;
   voicePreference: 'enabled' | 'disabled';
   timezone: string;
+  role?: UserRole;
+  teamId?: string;
+  avatarUrl?: string | null;
 }
 
 export interface ProgressData {

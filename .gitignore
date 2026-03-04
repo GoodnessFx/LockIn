@@ -16,7 +16,6 @@ expo-env.d.ts
 *.p12
 *.key
 *.mobileprovision
-*.keystore
 
 # Metro
 .metro-health-check*
@@ -39,7 +38,6 @@ yarn-error.*
 app-example
 
 .env
-google-service-account.json
 
 .metro-virtual/
 caches/

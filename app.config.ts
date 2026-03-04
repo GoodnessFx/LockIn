@@ -41,6 +41,8 @@ const cfg: ExpoConfig = {
     permissions: ["CAMERA"]
   },
   extra: {
+    supabaseUrl: process.env.SUPABASE_URL,
+    supabaseAnonKey: process.env.SUPABASE_ANON_KEY,
     eas: {
       projectId: "f8a06781-8114-4ec5-9cf4-53ecdca858a6"
     }

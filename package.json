@@ -16,6 +16,7 @@
     "@react-native-community/slider": "^5.0.1",
     "@react-native-seoul/masonry-list": "^1.4.2",
     "expo": "~54.0.30",
+    "@supabase/supabase-js": "^2.45.4",
     "expo-av": "~16.0.8",
     "expo-blur": "~15.0.8",
     "expo-camera": "~17.0.10",

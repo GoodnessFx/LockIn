@@ -1,8 +1,11 @@
 import { Tabs } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { colors } from '@/theme/theme';
+import { useAppStore } from '@/store/appStore';
 
 export default function TabLayout() {
+  const role = useAppStore((s) => s.userProfile?.role);
+  const canSeeTeam = role === 'team_member' || role === 'admin';
   return (
     <Tabs
       screenOptions={{
@@ -60,6 +63,16 @@ export default function TabLayout() {
           title: 'Lockmate',
           tabBarIcon: ({ color, size }) => (
             <Ionicons name="people" size={size} color={color} />
+          ),
+        }}
+      />
+      <Tabs.Screen
+        name="team"
+        options={{
+          title: 'Team',
+          href: canSeeTeam ? '/(tabs)/team' : null,
+          tabBarIcon: ({ color, size }) => (
+            <Ionicons name="people-circle" size={size} color={color} />
           ),
         }}
       />
