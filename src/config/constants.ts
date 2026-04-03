@@ -7,11 +7,31 @@ export const APP_CONFIG = {
 };
 
 export const API_CONFIG = {
-  BASE_URL: 'https://api.lockin.app/v1', // Replace with actual API URL in production
-  TIMEOUT: 10000,
+  BASE_URL: 'https://locked-in.up.railway.app/api/v1',
+  TIMEOUT: 15000,
   ENDPOINTS: {
-    AUTH: '/auth',
-    USER: '/user',
+    HEALTH: '/health',
+    AUTH: {
+      LOGIN: '/auth/login',
+      REGISTER: '/auth/register',
+      LOGOUT: '/auth/logout',
+      REFRESH: '/auth/refresh',
+      FORGOT_PASSWORD: '/auth/forgot-password',
+      RESET_PASSWORD: '/auth/reset-password',
+    },
+    OAUTH: {
+      GOOGLE: '/oauth/google',
+    },
+    USER: {
+      ME: '/user/me',
+      CHANGE_PASSWORD: '/user/change-password',
+    },
+    PROFILE: {
+      UPLOAD: '/profile/upload',
+      SERVE: (userId: string) => `/profile/serve/${userId}`,
+      DELETE: '/profile/delete',
+    },
+    // Keep these for now if they are used elsewhere, but flag them if not in docs
     PROGRESS: '/progress',
     CURRICULUM: '/curriculum',
     AI_CHAT: '/ai/chat',

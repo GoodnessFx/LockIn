@@ -1,5 +1,6 @@
 import { router } from "expo-router";
 import {
+  Alert,
   Keyboard,
   KeyboardAvoidingView,
   Platform,
@@ -20,46 +21,29 @@ const SignUp = () => {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const { signIn } = useAuth();
+  const { signUp } = useAuth();
   
   const setUserProfile = useAppStore((s: AppState) => s.setUserProfile);
   const userProfile = useAppStore((s: AppState) => s.userProfile);
 
   const handleSignUp = async () => {
     if (!email || !password || !name) {
-      alert("Please fill in all fields");
+      Alert.alert("Error", "Please fill in all fields");
       return;
     }
 
-    // Update user profile in store with Name and Email
-    // We merge with existing data (from onboarding)
-    const newUserId = "user_" + Date.now().toString(36) + Math.random().toString(36).substr(2);
-    
-    if (userProfile) {
-      setUserProfile({
-        ...userProfile,
-        name: name,
-        email: email,
-        id: newUserId,
-      });
-    } else {
-      // Should not happen if onboarding flow is followed, but fallback:
-      setUserProfile({
-        id: newUserId,
-        name: name,
-        email: email,
-        niche: "General",
-        goal: "Improvement",
-        preferredSchedule: "",
-        voicePreference: "enabled",
-        timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
-      });
-    }
+    const userData = {
+      name: name,
+      email: email,
+      password: password,
+      // Merge with existing data if any (e.g. from onboarding)
+      ...(userProfile || {}),
+    };
 
-    // Sign in the user
-    const result = await signIn(email, password);
+    // Sign up the user
+    const result = await signUp(userData);
     if (!result.success) {
-      alert(result.error);
+      Alert.alert("Registration failed", result.error || "Please try again.");
     }
   };
 

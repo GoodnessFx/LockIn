@@ -35,7 +35,7 @@ class AIService {
     try {
       if (this.isOnline) {
         const response = await apiService.askAI(prompt, context);
-        if (response.success && response.data) {
+        if (response.data) {
           return this.parseAIResponse(response.data);
         }
       }
@@ -53,7 +53,7 @@ class AIService {
     try {
       if (this.isOnline) {
         const response = await apiService.generateCurriculum(niche);
-        if (response.success && response.data) {
+        if (response.data) {
           return response.data;
         }
       }

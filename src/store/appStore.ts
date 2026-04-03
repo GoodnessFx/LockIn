@@ -8,6 +8,7 @@ export type UserRole = 'user' | 'team_member' | 'admin';
 export interface UserProfile {
   id: string;
   name: string;
+  username?: string;
   email: string;
   niche: string;
   goal: string;
@@ -67,6 +68,8 @@ export interface AppState {
   // Auth
   authToken: string | null;
   setAuthToken: (token: string | null) => void;
+  refreshToken: string | null;
+  setRefreshToken: (token: string | null) => void;
 
   // Preferences
   notificationsEnabled: boolean;
@@ -140,6 +143,8 @@ export const useAppStore = create<AppState>()(
       // Auth
       authToken: null,
       setAuthToken: (token) => set({ authToken: token }),
+      refreshToken: null,
+      setRefreshToken: (token) => set({ refreshToken: token }),
 
       // Preferences
       notificationsEnabled: true,
