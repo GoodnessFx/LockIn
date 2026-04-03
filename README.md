@@ -30,65 +30,72 @@ All critical user state — authentication tokens, profile data, curriculum, pro
 Tech Stack
 LayerTechnologyFrameworkReact Native 0.81.5 + Expo SDK 54LanguageTypeScript (strict mode)RoutingExpo Router v6 (file-based)State ManagementZustand v5 with AsyncStorage persistenceBackend / AuthSupabase (Postgres, Realtime, Storage, Auth)AI ServiceCustom REST API (locked-in.up.railway.app) with offline fallbackNetworking@react-native-community/netinfoAnimationsReact Native Reanimated v4 + AnimatableUI PrimitivesReact Native Paper, RN Elements, Expo Linear GradientMediaExpo Camera, Image Picker, Image Manipulator, AV, Media LibraryCI / CDEAS Build (development, preview, production profiles)TestingJest
 
-Architecture
 lockin-mobile/
-├── src/
-│   ├── app/                        # File-based routing (Expo Router)
-│   │   ├── (tabs)/
-│   │   │   ├── dashboard.tsx       # Main commitment dashboard
-│   │   │   ├── lai.tsx             # LockIn AI assistant
-│   │   │   ├── lockmate.tsx        # Social feed
-│   │   │   ├── team.tsx            # Team activity feed (role-gated)
-│   │   │   ├── progress.tsx        # Progress analytics
-│   │   │   ├── profile.tsx         # User profile & settings
-│   │   │   └── _layout.tsx         # Tab navigator + RBAC
-│   │   ├── sign-in.tsx
-│   │   ├── sign-up.tsx
-│   │   ├── onboarding.tsx
-│   │   └── _layout.tsx             # Root layout + global providers
-│   │
-│   ├── components/
-│   │   ├── BatteryProgressIndicator.tsx
-│   │   ├── CountdownTimer.tsx
-│   │   ├── LiveClock.tsx
-│   │   ├── ErrorBoundary.tsx
-│   │   ├── lockmate/               # Social feed components
-│   │   └── onboarding/             # Onboarding step components
-│   │
-│   ├── services/
-│   │   ├── ai/
-│   │   │   ├── aiService.ts        # AI chat, curriculum gen, motivation
-│   │   │   └── curriculum.ts       # Local curriculum templates + generators
-│   │   ├── api/
-│   │   │   ├── api.ts              # Centralized HTTP client
-│   │   │   └── aiAdapter.ts        # AI response adapter
-│   │   ├── supabase/
-│   │   │   └── client.ts           # Supabase singleton
-│   │   ├── teamService.ts          # Team CRUD + Realtime + Storage
-│   │   ├── auth.ts                 # Auth helpers
-│   │   └── background/tasks.ts     # Background task registration
-│   │
-│   ├── store/
-│   │   ├── appStore.ts             # Global app state (auth, profile, progress, AI)
-│   │   └── teamStore.ts            # Team activities + offline queue
-│   │
-│   ├── theme/theme.ts              # Centralized design tokens
-│   ├── types/                      # Shared TypeScript types
-│   │   ├── team.ts
-│   │   └── social.ts
-│   ├── hooks/ThemeProvider.tsx
-│   ├── config/constants.ts         # API config, app config, theme config
-│   ├── data/                       # Static seed data
-│   └── utils/auth/                 # Auth utilities + useAuth hook
-│
-├── android/                        # Native Android project
-├── assets/images/                  # App icons, splash, adaptive icon
-├── tests/                          # Jest test suites
-├── patches/                        # Dependency patches
-├── app.config.ts                   # Expo dynamic config
-├── eas.json                        # EAS Build profiles
-└── babel.config.js
-
+|
++-- src/
+|   |
+|   +-- app/                            # File-based routing (Expo Router)
+|   |   +-- (tabs)/
+|   |   |   +-- dashboard.tsx           # Main commitment dashboard
+|   |   |   +-- lai.tsx                 # LockIn AI assistant
+|   |   |   +-- lockmate.tsx            # Social feed
+|   |   |   +-- team.tsx                # Team activity feed (role-gated)
+|   |   |   +-- progress.tsx            # Progress analytics
+|   |   |   +-- profile.tsx             # User profile & settings
+|   |   |   +-- _layout.tsx             # Tab navigator + RBAC
+|   |   +-- sign-in.tsx
+|   |   +-- sign-up.tsx
+|   |   +-- onboarding.tsx
+|   |   +-- _layout.tsx                 # Root layout + global providers
+|   |
+|   +-- components/
+|   |   +-- BatteryProgressIndicator.tsx
+|   |   +-- CountdownTimer.tsx
+|   |   +-- LiveClock.tsx
+|   |   +-- ErrorBoundary.tsx
+|   |   +-- lockmate/                   # Social feed components
+|   |   +-- onboarding/                 # Onboarding step components
+|   |
+|   +-- services/
+|   |   +-- ai/
+|   |   |   +-- aiService.ts            # AI chat, curriculum gen, motivation
+|   |   |   +-- curriculum.ts           # Local curriculum templates + generators
+|   |   +-- api/
+|   |   |   +-- api.ts                  # Centralized HTTP client
+|   |   |   +-- aiAdapter.ts            # AI response adapter
+|   |   +-- supabase/
+|   |   |   +-- client.ts               # Supabase singleton
+|   |   +-- teamService.ts              # Team CRUD + Realtime + Storage
+|   |   +-- auth.ts                     # Auth helpers
+|   |   +-- background/tasks.ts         # Background task registration
+|   |
+|   +-- store/
+|   |   +-- appStore.ts                 # Global state (auth, profile, progress, AI)
+|   |   +-- teamStore.ts                # Team activities + offline queue
+|   |
+|   +-- theme/
+|   |   +-- theme.ts                    # Centralized design tokens
+|   |
+|   +-- types/
+|   |   +-- team.ts
+|   |   +-- social.ts
+|   |
+|   +-- hooks/
+|   |   +-- ThemeProvider.tsx
+|   |
+|   +-- config/
+|   |   +-- constants.ts                # API config, app config, theme config
+|   |
+|   +-- data/                           # Static seed data
+|   +-- utils/auth/                     # Auth utilities + useAuth hook
+|
++-- android/                            # Native Android project
++-- assets/images/                      # App icons, splash, adaptive icon
++-- tests/                              # Jest test suites
++-- patches/                            # Dependency patches
++-- app.config.ts                       # Expo dynamic config
++-- eas.json                            # EAS Build profiles
++-- babel.config.js
 Getting Started
 Prerequisites
 
